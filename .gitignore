@@ -1,15 +1,78 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
+# =========================================
+# Android Studio / IntelliJ
+# =========================================
+
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
 /build
-/captures
-.externalNativeBuild
-.cxx
+/gen
+/out
+
+# Gradle files
+.gradle/
+/captures/
+/.idea/
+/local.properties
+/misc.xml
+/deployment.xml
+/gradle.xml
+/libraries/
+/nav_graphs.xml
+/asset_packs.xml
+
+# Local configuration files (sdk path, etc)
 local.properties
+
+# Log Files
+*.log
+
+# Keystore files
+*.jks
+*.keystore
+
+# Android Studio 4.0+ specific files
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+*.iml
+
+# Profiler snapshots
+*.hprof
+*.snapshot
+
+# Google Services file (if you have a private one, otherwise, you might want to commit it)
+# google-services.json
+
+# C/C++ lipstick build files
+.cxx/
+/cmake/
+
+#-------------------------------------------------------------------------------
+# Operating System Files
+#-------------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
