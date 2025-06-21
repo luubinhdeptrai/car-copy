@@ -30,7 +30,7 @@
         Đây là Activity chính chứa các Fragment của bạn.
         -->
         <activity
-            android:name="com.example.login.VIEW.MainActivity"
+            android:name="com.example.login.VIEW.SecondaryActivity"
             android:exported="true">
             <!--
              Intent filter này chỉ định rằng MainActivity là điểm vào (entry point) của ứng dụng.
@@ -42,6 +42,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.example.login.VIEW.MainActivity" />
 
         <!--
         Nếu bạn có các Activity khác (ví dụ: màn hình chi tiết, màn hình đăng nhập),
