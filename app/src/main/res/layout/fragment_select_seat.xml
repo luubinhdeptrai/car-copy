@@ -1,0 +1,56 @@
+<!-- res/layout/fragment_select_seat.xml -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Toolbar -->
+    <!-- ... -->
+
+    <!-- Seat Layout -->
+    <GridLayout
+        android:id="@+id/seat_grid_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:columnCount="5"
+        android:layout_margin="16dp">
+        <!-- Các ghế sẽ được thêm vào đây bằng code Java -->
+        <!-- Ví dụ một ghế -->
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="01"
+            android:layout_margin="4dp"
+            android:background="@drawable/seat_available_bg"/>
+    </GridLayout>
+
+    <!-- Bottom Sheet with Summary and Continue Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/price_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price: 140,000đ"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/continue_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continue"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/orange_primary"/>
+    </LinearLayout>
+
+</RelativeLayout>
+    

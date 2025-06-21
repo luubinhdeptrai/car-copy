@@ -16,6 +16,8 @@ constraintlayout = "2.2.1"
 otpviewComposeVersion = "3.1.0"
 retrofit = "2.11.0"
 retrofitVersion = "2.9.0"
+navigationFragment = "2.9.0"
+navigationUi = "2.9.0"
 
 [libraries]
 android-otpview = { module = "com.github.mukeshsolanki:Android-OtpView", version.ref = "androidOtpview" }
@@ -36,6 +38,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "loggingInterceptorVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

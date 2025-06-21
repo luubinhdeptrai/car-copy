@@ -1,0 +1,14 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Hình nền khi mục được chọn -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <!-- Màu cam nhạt (màu cam chính với 10% độ trong suốt) -->
+            <solid android:color="#1AF4511E" />
+            <!-- Bo tròn các góc -->
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+    <!-- Hình nền mặc định (trong suốt) -->
+    <item android:state_checked="false" android:drawable="@android:color/transparent" />
+</selector>
+    
