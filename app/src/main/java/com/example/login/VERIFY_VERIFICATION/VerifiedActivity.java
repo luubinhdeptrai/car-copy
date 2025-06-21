@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
-import com.example.login.HOME.MainActivity;
+import com.example.login.VIEW.MainActivity;
 import com.example.login.R;
 import com.example.login.SEND_VERIFICATION.EmailRequest;
 import com.example.login.SEND_VERIFICATION.SendCodeResponse;

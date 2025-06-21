@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.login">
+    <!-- Thay "com.yourdomain.bookingapp" bằng package name thực tế của bạn -->
 
+    <!--
+     Khai báo các quyền mà ứng dụng cần.
+     INTERNET là bắt buộc để giao tiếp với server.
+     ACCESS_FINE_LOCATION/ACCESS_COARSE_LOCATION thường cần thiết cho các ứng dụng đặt xe
+     để xác định vị trí người dùng.
+    -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 
     <application
@@ -13,12 +23,19 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.Login"
+        android:theme="@style/Theme.BookingApp"
         tools:targetApi="31">
+        <!--
+        Khai báo MainActivity.
+        Đây là Activity chính chứa các Fragment của bạn.
+        -->
         <activity
-            android:name=".LOGIN.LoginActivity"
+            android:name="com.example.login.VIEW.MainActivity"
             android:exported="true">
+            <!--
+             Intent filter này chỉ định rằng MainActivity là điểm vào (entry point) của ứng dụng.
+             Nó sẽ là màn hình được khởi chạy khi người dùng nhấn vào biểu tượng ứng dụng.
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,16 +43,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".VERIFY_VERIFICATION.VerifiedActivity" />
-        <activity android:name=".HOME.MainActivity" />
-        <activity android:name=".SIGNUP.SignUpActivity" />
-        <activity android:name=".VERIFY_RESET_PASSWORD.VerifyResetPasswordActivity" />
-
-
-
-
-
+        <!--
+        Nếu bạn có các Activity khác (ví dụ: màn hình chi tiết, màn hình đăng nhập),
+        bạn sẽ cần khai báo chúng ở đây.
+        Ví dụ:
+        <activity android:name=".DetailActivity" />
+        -->
 
     </application>
 
 </manifest>
+    
