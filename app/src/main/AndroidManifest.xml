@@ -35,6 +35,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".VIEW.BookingActivity"
+            android:exported="false" />
+        <activity android:name=".VIEW.ProfileHostActivity"
+            android:exported="false" />
 
     </application>
 
