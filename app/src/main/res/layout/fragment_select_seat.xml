@@ -1,56 +1,188 @@
 <!-- res/layout/fragment_select_seat.xml -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".VIEW.SelectSeatFragment">
 
-    <!-- Toolbar -->
-    <!-- ... -->
-
-    <!-- Seat Layout -->
-    <GridLayout
-        android:id="@+id/seat_grid_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:columnCount="5"
-        android:layout_margin="16dp">
-        <!-- Các ghế sẽ được thêm vào đây bằng code Java -->
-        <!-- Ví dụ một ghế -->
-        <Button
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:text="01"
-            android:layout_margin="4dp"
-            android:background="@drawable/seat_available_bg"/>
-    </GridLayout>
-
-    <!-- Bottom Sheet with Summary and Continue Button -->
+    <!-- 1. PHẦN CUỐI CÙNG (BOTTOM) - CỐ ĐỊNH -->
+    <!-- Phần này được đặt ở đây để ScrollView có thể tham chiếu đến nó -->
     <LinearLayout
+        android:id="@+id/bottom_summary_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:padding="16dp"
         android:background="@color/white"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/selected_seats_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Departure"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/selected_seats_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 ticket(s)\n15"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/price_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Price: 140,000đ"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textColor="@color/orange_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/continue_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue"
+            android:layout_height="60dp"
             android:layout_marginTop="16dp"
-            android:backgroundTint="@color/orange_primary"/>
+            android:text="Continue"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/orange_primary" />
     </LinearLayout>
 
+    <!-- 2. PHẦN ĐẦU (TOP) - CỐ ĐỊNH -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_select_seat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        app:navigationIcon="@drawable/ic_arrow_back">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vũng Tàu -> TP. Hồ Chí Minh"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Friday, 20/06/2025"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- 3. NỘI DUNG CUỘN (NẰM GIỮA) -->
+    <!-- Layout này sẽ tự động co giãn để lấp đầy không gian giữa Toolbar và phần cuối -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_select_seat"
+        android:layout_above="@id/bottom_summary_layout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="16dp">
+
+            <!-- Departure Date Section -->
+            <TextView
+                android:id="@+id/departure_date_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Departure date"
+                android:textColor="@color/text_primary"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/departure_date_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17:30 Friday, 20/06/2025"
+                android:textColor="@color/text_secondary" />
+
+            <!-- Bus Layout Container -->
+            <LinearLayout
+                android:id="@+id/bus_layout_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <!-- Dãy ghế bên trái -->
+                <GridLayout
+                    android:id="@+id/seat_grid_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2" />
+
+                <!-- Lối đi ở giữa -->
+                <Space
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent" />
+
+                <!-- Dãy ghế bên phải -->
+                <GridLayout
+                    android:id="@+id/seat_grid_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2" />
+            </LinearLayout>
+
+            <!-- Legend for seat status -->
+            <LinearLayout
+                android:id="@+id/seat_legend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+                <View
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/seat_sold_out_bg" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Sold out" />
+                <View
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/seat_available_bg" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Available" />
+                <View
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:background="@drawable/seat_selected_bg" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="Selected" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
 </RelativeLayout>
-    
