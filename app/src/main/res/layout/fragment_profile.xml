@@ -42,7 +42,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <ImageView
                         android:layout_width="48dp"
@@ -76,18 +79,38 @@
                 </LinearLayout>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
+
                 <!-- Các mục khác -->
-                <TextView style="@style/ProfileMenuItem" android:text="Setting" android:drawableStart="@drawable/ic_settings"/>
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
                 <TextView
+                    android:id="@+id/setting_menu_item"
+                    style="@style/ProfileMenuItem"
+                    android:text="Setting"
+                    android:drawableStart="@drawable/ic_settings"/>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
+
+                <TextView
+                    android:id="@+id/support_menu_item"
                     style="@style/ProfileMenuItem"
                     android:text="Quick Support"
                     android:drawableStart="@drawable/ic_help"
                     app:drawableTint="@color/text_primary" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
-                <TextView style="@style/ProfileMenuItem" android:text="Delete Account" android:drawableStart="@drawable/ic_delete"/>
+
+                <TextView
+                    android:id="@+id/delete_account_menu_item"
+                    style="@style/ProfileMenuItem"
+                    android:text="Delete Account"
+                    android:drawableStart="@drawable/ic_delete"/>
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
-                <TextView style="@style/ProfileMenuItem" android:text="Logout" android:drawableStart="@drawable/ic_logout"/>
+
+                <TextView
+                    android:id="@+id/logout_menu_item"
+                    style="@style/ProfileMenuItem"
+                    android:text="Logout"
+                    android:drawableStart="@drawable/ic_logout"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

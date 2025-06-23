@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -18,114 +17,95 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Hàng chứa thời gian đi và đến -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
-
             <TextView
-                android:id="@+id/tvDepartureTime"
+                android:id="@+id/departure_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                tools:text="17:30" />
-
+                android:textColor="@color/text_primary"
+                tools:text="17:30"/>
             <View
                 android:layout_width="20dp"
                 android:layout_height="1dp"
+                android:background="@color/divider"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@android:color/darker_gray" />
-
+                android:layout_marginEnd="8dp"/>
             <TextView
-                android:id="@+id/tvArrivalTime"
+                android:id="@+id/arrival_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/darker_gray"
                 android:textSize="18sp"
-                tools:text="20:30" />
-
+                android:textColor="@color/text_secondary"
+                tools:text="20:30"/>
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
-            <!-- Bạn có thể thêm các icon thông tin khác ở đây -->
+                android:layout_weight="1"/>
         </LinearLayout>
 
-        <!-- Hàng chứa thông tin giá, loại ghế, số ghế trống -->
         <TextView
-            android:id="@+id/tvTripInfo"
+            android:id="@+id/trip_details_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            tools:text="140,000đ • Chair • 28 seats left" />
+            tools:text="140,000đ • Chair • 28 seats left"/>
 
-        <!-- Hàng chứa chi tiết điểm đi, đến và khoảng cách -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-
-            <!-- Dấu chấm và đường kẻ dọc -->
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_circle_filled"
-                    app:tint="@color/orange_primary" />
-
+                    app:tint="@color/orange_primary"/>
                 <View
                     android:layout_width="1dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:background="@android:color/darker_gray" />
-
+                    android:background="@color/divider"/>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_location_pin"
-                    app:tint="@color/orange_primary" />
+                    app:tint="@color/orange_primary"/>
             </LinearLayout>
-
-            <!-- Chi tiết văn bản -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical">
-
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
                 <TextView
-                    android:id="@+id/tvDeparture"
+                    android:id="@+id/departure_location_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    tools:text="VP Bến Xe Vũng Tàu" />
-
+                    tools:text="VP Bến Xe Vũng Tàu"/>
                 <TextView
-                    android:id="@+id/tvDistanceDuration"
+                    android:id="@+id/trip_duration_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Distance: 120km - 3h" />
-
+                    tools:text="Distance: 120km - 3h"/>
                 <View
-                    android:layout_width="0dp"
-                    android:layout_height="24dp" />
-
+                    android:layout_height="24dp"
+                    android:layout_width="0dp"/>
                 <TextView
-                    android:id="@+id/tvDestination"
+                    android:id="@+id/destination_location_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    tools:text="Bến Xe Miền Tây" />
+                    tools:text="Bến Xe Miền Tây"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
