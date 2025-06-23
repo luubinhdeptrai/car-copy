@@ -1,21 +1,18 @@
 package com.example.login.VIEW;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
-import com.example.login.R; // Thay bằng package của bạn
+import com.example.login.R;
 
 public class HomeFragment extends Fragment {
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -27,26 +24,30 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Tìm layout FUTA Bus Ticket bằng ID
+        // Tìm các layout có thể click bằng ID
         LinearLayout futaBusTicketLayout = view.findViewById(R.id.futa_bus_ticket_layout);
+        LinearLayout cityBusLayout = view.findViewById(R.id.city_bus_layout);
+        LinearLayout expressLayout = view.findViewById(R.id.express_layout);
 
-        // Bắt sự kiện click
+        // Bắt sự kiện click cho "FUTA Bus Ticket"
         futaBusTicketLayout.setOnClickListener(v -> {
-            // Sử dụng NavController để điều hướng theo action đã định nghĩa trong nav_graph.xml
-            Navigation.findNavController(view).navigate(R.id.action_home_to_buyTicket);
+            // Khởi chạy BookingActivity bằng Intent
+            Intent intent = new Intent(getActivity(), BookingActivity.class);
+            startActivity(intent);
         });
 
-        // Bạn có thể bắt sự kiện cho các layout khác tương tự
-        LinearLayout cityBusLayout = view.findViewById(R.id.city_bus_layout);
+        // Bắt sự kiện click cho "City Bus"
         cityBusLayout.setOnClickListener(v -> {
             // TODO: Điều hướng đến màn hình đặt vé xe bus thành phố
-            Toast.makeText(getContext(), "City Bus Clicked", Toast.LENGTH_SHORT).show();
+            // Hiện tại, chỉ hiển thị thông báo
+            Toast.makeText(getContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
         });
 
-        LinearLayout expressLayout = view.findViewById(R.id.express_layout);
+        // Bắt sự kiện click cho "Express"
         expressLayout.setOnClickListener(v -> {
             // TODO: Điều hướng đến màn hình đặt xe giao hàng
-            Toast.makeText(getContext(), "Express Clicked", Toast.LENGTH_SHORT).show();
+            // Hiện tại, chỉ hiển thị thông báo
+            Toast.makeText(getContext(), "Tính năng đang được phát triển", Toast.LENGTH_SHORT).show();
         });
     }
 }
