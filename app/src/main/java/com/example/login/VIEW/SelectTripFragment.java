@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.login.ADAPTERS.TripAdapter;
+import com.example.login.ADAPTERS.*;
 import com.example.login.MODELS.Trip;
 import com.example.login.R;
 
