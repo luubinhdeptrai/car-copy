@@ -1,3 +1,4 @@
+// File: com/example/login/ADAPTERS/TripAdapter.java
 package com.example.login.ADAPTERS;
 
 import android.content.Context;
@@ -8,7 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.login.MODELS.Route;
 import com.example.login.MODELS.Trip;
+import com.example.login.MODELS.Vehicle;
 import com.example.login.R;
 import java.text.NumberFormat;
 import java.util.List;
@@ -31,29 +35,46 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         return new TripViewHolder(itemView);
     }
 
+    // Sửa lại trong file: TripAdapter.java
+
     @Override
     public void onBindViewHolder(@NonNull TripViewHolder holder, int position) {
         Trip currentTrip = tripList.get(position);
+        Route routeInfo = currentTrip.getRoute();
+        Vehicle vehicleInfo = currentTrip.getVehicle();
 
-        // Gán dữ liệu vào các View
-        holder.departureTime.setText(currentTrip.getDepartureTime());
-        holder.arrivalTime.setText(currentTrip.getArrivalTime());
-        holder.departureLocation.setText(currentTrip.getDeparture());
-        holder.destinationLocation.setText(currentTrip.getDestination());
+        // --- Lấy dữ liệu từ các object lồng nhau ---
 
-        // Format giá tiền cho đẹp
+        // Lấy thời gian đi và đến (chỉ lấy giờ:phút)
+        String departureTimeStr = currentTrip.getDepartureTime().substring(11, 16);
+        String arrivalTimeStr = currentTrip.getArrivalTime().substring(11, 16);
+
+        holder.departureTime.setText(departureTimeStr);
+        holder.arrivalTime.setText(arrivalTimeStr);
+
+        // Lấy tên điểm đi và điểm đến từ trong 'route'
+        holder.departureLocation.setText(routeInfo.getOriginStation().getName());
+        holder.destinationLocation.setText(routeInfo.getDestinationStation().getName());
+
+        // Format giá tiền
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         String formattedPrice = currencyFormat.format(currentTrip.getPrice()).replace("₫", "đ");
 
-        String details = String.format(Locale.US, "%s • %s • %d seats left",
+        // Lấy thông tin loại xe từ trong 'vehicle'
+        // Số ghế trống bây giờ không có trong JSON, nên ta có thể hiển thị sức chứa của xe
+        String details = String.format(Locale.US, "%s • %s • %d seats",
                 formattedPrice,
-                currentTrip.getTypeSeat(),
-                currentTrip.getEmptySeat());
+                vehicleInfo.getType(),
+                vehicleInfo.getCapacity());
         holder.tripDetails.setText(details);
 
-        String duration = String.format(Locale.US, "Distance: %.0fkm - %.1fh",
-                currentTrip.getDistance(),
-                currentTrip.getDuration());
+        // Chuyển đổi phút sang giờ để hiển thị
+        int totalMinutes = routeInfo.getEstimatedDurationMin();
+        double hours = totalMinutes / 60.0;
+
+        String duration = String.format(Locale.US, "Distance: %dkm - %.1fh",
+                routeInfo.getDistanceKm(),
+                hours);
         holder.tripDuration.setText(duration);
     }
 
@@ -79,6 +100,11 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
             // Bắt sự kiện click cho toàn bộ item
             itemView.setOnClickListener(v -> {
+                // Chuyển sang màn hình chọn ghế
+                // Bạn có thể truyền thông tin của chuyến đi được chọn (`currentTrip`) sang màn hình tiếp theo nếu cần
+                // Ví dụ: Bundle bundle = new Bundle();
+                // bundle.putSerializable("SELECTED_TRIP", tripList.get(getAdapterPosition()));
+                // Navigation.findNavController(v).navigate(R.id.action_selectTrip_to_selectSeat, bundle);
                 Navigation.findNavController(v).navigate(R.id.action_selectTrip_to_selectSeat);
             });
         }
