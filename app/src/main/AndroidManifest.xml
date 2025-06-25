@@ -28,7 +28,7 @@
          Nó chứa NavHostFragment để quản lý tất cả các màn hình Fragment.
         -->
         <activity
-            android:name=".VIEW.MainActivity"
+            android:name=".LOGIN.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -41,6 +41,9 @@
             android:name=".VIEW.BookingActivity"
             android:exported="false" />
         <activity android:name=".VIEW.ProfileHostActivity"
+            android:exported="false" />
+
+        <activity android:name=".VIEW.MainActivity"
             android:exported="false" />
 
 

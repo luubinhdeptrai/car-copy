@@ -52,6 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email"
+                    android:text="customer1@gmail.com"
                     android:inputType="textEmailAddress"
                     android:minHeight="48dp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -69,6 +70,7 @@
                 app:hintTextColor="@color/material_dynamic_primary40"
                 app:passwordToggleEnabled="true"> <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextPasswordLogin"
+                android:text="password123"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Mật khẩu"
