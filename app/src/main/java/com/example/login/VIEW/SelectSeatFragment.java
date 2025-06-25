@@ -26,8 +26,10 @@ import com.example.login.MODELS.TicketSeatResponse;
 import com.example.login.MODELS.Trip;
 import com.example.login.R;
 
+import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +50,7 @@ public class SelectSeatFragment extends Fragment {
     // Data
     private Trip selectedTrip;
     private final List<Seat> seatList = new ArrayList<>();
-    private final List<Seat> selectedSeats = new ArrayList<>();
+    private final ArrayList<Seat> selectedSeats = new ArrayList<>(); // Giữ lại kiểu Seat để dễ quản lý
     private double pricePerSeat;
     private ApiService apiService;
 
@@ -69,7 +71,7 @@ public class SelectSeatFragment extends Fragment {
         }
 
         if (selectedTrip == null) {
-            Toast.makeText(getContext(), "Lỗi: Không nhận được thông tin chuyến đi.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error: Could not retrieve trip information.", Toast.LENGTH_LONG).show();
             Navigation.findNavController(view).popBackStack();
             return;
         }
@@ -95,11 +97,11 @@ public class SelectSeatFragment extends Fragment {
 
         continueButton.setOnClickListener(v -> {
             if (selectedSeats.isEmpty()) {
-                Toast.makeText(getContext(), "Vui lòng chọn ít nhất một ghế.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please select at least one seat.", Toast.LENGTH_SHORT).show();
             } else {
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("SELECTED_TRIP_FINAL", selectedTrip);
-                bundle.putSerializable("SELECTED_SEATS_FINAL", new ArrayList<>(selectedSeats));
+                bundle.putSerializable("CONFIRMATION_TRIP", selectedTrip);
+                bundle.putSerializable("CONFIRMATION_SEATS", selectedSeats); // Gửi cả list Seat đi
                 Navigation.findNavController(v).navigate(R.id.action_selectSeat_to_confirmation, bundle);
             }
         });
@@ -111,7 +113,7 @@ public class SelectSeatFragment extends Fragment {
 
         String tripId = selectedTrip.getId();
         if (tripId == null || tripId.isEmpty()) {
-            Toast.makeText(getContext(), "Lỗi: Không có ID chuyến đi.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error: Trip ID is missing.", Toast.LENGTH_LONG).show();
             initializeSeatsFallback(capacity);
             populateSeatGrid();
             return;
@@ -129,36 +131,24 @@ public class SelectSeatFragment extends Fragment {
 
                         if (apiSeats != null) {
                             for (TicketSeatResponse ticket : apiSeats) {
-                                // Key của Map là seatNumber từ API (ví dụ: "1", "2", "10")
                                 apiSeatStatusMap.put(ticket.getSeatNumber(), ticket.getStatus());
                             }
                         }
 
-                        // --- SỬA LỖI TẠI ĐÂY ---
-                        // Duyệt qua tất cả các ghế (từ 1 đến sức chứa của xe)
                         for (int i = 1; i <= capacity; i++) {
-                            // Tạo số ghế để hiển thị trên nút (ví dụ: "01", "02", "10")
                             String seatNumberForDisplay = String.format(Locale.US, "%02d", i);
-
-                            // Tạo số ghế để tra cứu trong Map, phải khớp với định dạng từ API (ví dụ: "1", "2", "10")
                             String seatNumberForLookup = String.valueOf(i);
-
-                            // Dùng key "1", "2"... để tra cứu trong Map
                             String backendStatus = apiSeatStatusMap.getOrDefault(seatNumberForLookup, "available");
-
-                            // Tạo đối tượng Seat với số ghế để hiển thị và trạng thái đúng từ backend
                             seatList.add(new Seat(seatNumberForDisplay, backendStatus));
                         }
-                        // --- KẾT THÚC SỬA LỖI ---
-
                     } else {
                         Log.e("SelectSeatFragment", "API call successful but 'success' is false. Message: " + wrapperResponse.getMessage());
-                        Toast.makeText(getContext(), "Lỗi tải thông tin ghế: " + wrapperResponse.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Error loading seat info: " + wrapperResponse.getMessage(), Toast.LENGTH_LONG).show();
                         initializeSeatsFallback(capacity);
                     }
                 } else {
                     Log.e("SelectSeatFragment", "API call unsuccessful: " + response.code());
-                    Toast.makeText(getContext(), "Lỗi tải thông tin ghế: " + response.code(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Error loading seat info: " + response.code(), Toast.LENGTH_LONG).show();
                     initializeSeatsFallback(capacity);
                 }
                 populateSeatGrid();
@@ -167,7 +157,7 @@ public class SelectSeatFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<TicketSeatListResponse> call, @NonNull Throwable t) {
                 Log.e("SelectSeatFragment", "API call failed: " + t.getMessage(), t);
-                Toast.makeText(getContext(), "Không thể kết nối đến máy chủ để tải ghế.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Could not connect to the server to load seats.", Toast.LENGTH_LONG).show();
                 initializeSeatsFallback(capacity);
                 populateSeatGrid();
             }
@@ -212,10 +202,8 @@ public class SelectSeatFragment extends Fragment {
         updateSeatButtonAppearance(seatButton, seat);
 
         if (seat.getStatus() == SeatStatus.SOLD_OUT) {
-            seatButton.setAlpha(0.5f);
             seatButton.setEnabled(false);
         } else {
-            seatButton.setAlpha(1.0f);
             seatButton.setEnabled(true);
             seatButton.setOnClickListener(v -> onSeatClick(seat, (Button) v));
         }
@@ -255,18 +243,17 @@ public class SelectSeatFragment extends Fragment {
         int ticketCount = selectedSeats.size();
         double totalPrice = ticketCount * pricePerSeat;
 
-        StringBuilder seatNumbers = new StringBuilder();
-        for (int i = 0; i < selectedSeats.size(); i++) {
-            seatNumbers.append(selectedSeats.get(i).getSeatNumber());
-            if (i < selectedSeats.size() - 1) {
-                seatNumbers.append(", ");
-            }
+        ArrayList<String> seatNumbersList = new ArrayList<>();
+        for (Seat seat : selectedSeats) {
+            seatNumbersList.add(seat.getSeatNumber());
         }
+        Collections.sort(seatNumbersList);
+        String seatNumbersText = String.join(", ", seatNumbersList);
 
         if (ticketCount > 0) {
-            selectedSeatsInfo.setText(String.format(Locale.US, "%d vé: %s", ticketCount, seatNumbers.toString()));
+            selectedSeatsInfo.setText(String.format(Locale.US, "%d ticket(s): %s", ticketCount, seatNumbersText));
         } else {
-            selectedSeatsInfo.setText("Vui lòng chọn ghế");
+            selectedSeatsInfo.setText("Please select a seat");
         }
 
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));

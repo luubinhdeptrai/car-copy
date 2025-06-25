@@ -24,7 +24,24 @@ public class Seat implements Serializable {
             this.status = SeatStatus.AVAILABLE;
         }
     }
-
+    private void setStatusFromString(String statusString) {
+        if (statusString == null) {
+            this.status = SeatStatus.AVAILABLE;
+            return;
+        }
+        switch (statusString.toLowerCase()) {
+            case "booked": // Giả sử API trả về "booked" cho ghế đã bán
+            case "sold_out":
+                this.status = SeatStatus.SOLD_OUT;
+                break;
+            case "selected": // Trạng thái này chỉ dùng ở phía client
+                this.status = SeatStatus.SELECTED;
+                break;
+            default: // Mặc định là "available"
+                this.status = SeatStatus.AVAILABLE;
+                break;
+        }
+    }
 
     public String getSeatNumber() {
         return seatNumber;
