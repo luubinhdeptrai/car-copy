@@ -26,11 +26,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_date" /> <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp">
+        tools:listitem="@layout/item_date" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
     <Button
         android:id="@+id/btn_filter_price"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
