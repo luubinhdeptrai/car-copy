@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Login</string>
+
+    <string name="no_data_found_image_description">Hình ảnh biểu thị không tìm thấy dữ liệu</string>
+
 </resources>
