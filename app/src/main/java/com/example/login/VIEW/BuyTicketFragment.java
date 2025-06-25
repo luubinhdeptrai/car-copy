@@ -1,6 +1,6 @@
 package com.example.login.VIEW;
 
-import android.app.DatePickerDialog; // THÊM import
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,10 +28,9 @@ import com.example.login.R;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar; // THÊM import
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,12 +43,17 @@ public class BuyTicketFragment extends Fragment {
 
     // Khai báo các view
     private AutoCompleteTextView actvDeparture, actvDestination;
-    private TextView tvDepartureDate, tvDepartureDay; // THÊM tvDepartureDay
+    private TextView tvDepartureDate, tvDepartureDay, tvReturnDate, tvReturnDay;
     private Spinner ticketNumberSpinner;
     private SwitchMaterial roundTripSwitch;
     private LinearLayout returnDateLayout;
     private Button searchButton;
     private Toolbar toolbar;
+
+    // Thêm biến để lưu ngày đi và ngày về
+    private Calendar selectedCalendar;
+    private Calendar selectedReturnCalendar;
+
 
     @Nullable
     @Override
@@ -65,24 +69,28 @@ public class BuyTicketFragment extends Fragment {
         actvDeparture = view.findViewById(R.id.actv_departure);
         actvDestination = view.findViewById(R.id.actv_destination);
         tvDepartureDate = view.findViewById(R.id.tv_departure_date);
-        tvDepartureDay = view.findViewById(R.id.tv_departure_day); // THÊM ánh xạ
+        tvDepartureDay = view.findViewById(R.id.tv_departure_day);
         ticketNumberSpinner = view.findViewById(R.id.ticket_number_spinner);
         roundTripSwitch = view.findViewById(R.id.round_trip_switch);
         returnDateLayout = view.findViewById(R.id.return_date_layout);
         searchButton = view.findViewById(R.id.search_route_button);
         toolbar = view.findViewById(R.id.toolbar);
+        // Ánh xạ các view cho ngày về
+        tvReturnDate = view.findViewById(R.id.tv_return_date);
+        tvReturnDay = view.findViewById(R.id.tv_return_day);
+
 
         // Gọi các hàm thiết lập
         setupAutoCompleteTextViews();
         setupTicketNumberSpinner();
         setupRoundTripSwitch();
-        setupDatePicker(); // THÊM hàm thiết lập DatePicker
+        setupDatePicker();
         setupClickListeners(view);
     }
 
-    // --- CÁC HÀM CŨ GIỮ NGUYÊN ---
     private void setupAutoCompleteTextViews() {
-        String[] locations = {"Hồ Chí Minh", "Đà Lạt", "Vũng Tàu", "Nha Trang", "Cần Thơ"};
+        // SỬA: Dịch sang tiếng Anh
+        String[] locations = {"Ho Chi Minh City", "Da Lat", "Vung Tau", "Nha Trang", "Can Tho"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, locations);
         actvDeparture.setAdapter(adapter);
         actvDestination.setAdapter(adapter);
@@ -104,87 +112,100 @@ public class BuyTicketFragment extends Fragment {
         });
     }
 
-    // --- THÊM PHẦN LOGIC CHO DATEPICKER ---
     private void setupDatePicker() {
-        // 1. Mặc định là ngày hiện tại của hệ thống
-        Calendar today = Calendar.getInstance();
-        updateDateViews(today);
+        // Khởi tạo ngày đi và ngày về
+        selectedCalendar = Calendar.getInstance();
+        selectedReturnCalendar = Calendar.getInstance();
+        selectedReturnCalendar.add(Calendar.DAY_OF_YEAR, 1); // Mặc định ngày về sau ngày đi 1 ngày
 
-        // 2. Gắn sự kiện khi người dùng bấm vào TextView
-        tvDepartureDate.setOnClickListener(v -> showDatePickerDialog());
+        // Cập nhật giao diện
+        updateDateViews(selectedCalendar, tvDepartureDate, tvDepartureDay);
+        updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
+
+        // Gắn sự kiện click cho ngày đi
+        View.OnClickListener departureClickListener = v -> showDepartureDatePickerDialog();
+        tvDepartureDate.setOnClickListener(departureClickListener);
+        tvDepartureDay.setOnClickListener(departureClickListener);
+
+        // Gắn sự kiện click cho ngày về
+        View.OnClickListener returnClickListener = v -> showReturnDatePickerDialog();
+        tvReturnDate.setOnClickListener(returnClickListener);
+        tvReturnDay.setOnClickListener(returnClickListener);
     }
 
-    private void showDatePickerDialog() {
-        // Lấy ngày đang được chọn trên TextView để mở Lịch đúng ngày đó
-        Calendar selectedDate = Calendar.getInstance();
-        try {
-            // Cố gắng đọc ngày từ TextView
-            Date date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(tvDepartureDate.getText().toString());
-            selectedDate.setTime(date);
-        } catch (ParseException e) {
-            // Nếu có lỗi, dùng ngày hiện tại
-            e.printStackTrace();
-        }
+    private void showDepartureDatePickerDialog() {
+        int year = selectedCalendar.get(Calendar.YEAR);
+        int month = selectedCalendar.get(Calendar.MONTH);
+        int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
 
-        int year = selectedDate.get(Calendar.YEAR);
-        int month = selectedDate.get(Calendar.MONTH);
-        int day = selectedDate.get(Calendar.DAY_OF_MONTH);
-
-        // Tạo DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getContext(),
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-                    // 3. Khi người dùng chọn ngày và nhấn OK, cập nhật lại TextView
-                    Calendar newDate = Calendar.getInstance();
-                    newDate.set(selectedYear, selectedMonth, selectedDayOfMonth);
-                    updateDateViews(newDate);
+                    selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
+                    updateDateViews(selectedCalendar, tvDepartureDate, tvDepartureDay);
+
+                    // Đảm bảo ngày về luôn sau ngày đi
+                    if (selectedReturnCalendar.before(selectedCalendar)) {
+                        selectedReturnCalendar.setTime(selectedCalendar.getTime());
+                        selectedReturnCalendar.add(Calendar.DAY_OF_YEAR, 1);
+                        updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
+                    }
+                },
+                year, month, day
+        );
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        datePickerDialog.show();
+    }
+
+    private void showReturnDatePickerDialog() {
+        int year = selectedReturnCalendar.get(Calendar.YEAR);
+        int month = selectedReturnCalendar.get(Calendar.MONTH);
+        int day = selectedReturnCalendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    selectedReturnCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
+                    updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
                 },
                 year, month, day
         );
 
-        // Ngăn người dùng chọn ngày trong quá khứ
-        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
-
-        // Hiển thị hộp thoại
+        // Quan trọng: Ngày về phải sau hoặc bằng ngày đi
+        datePickerDialog.getDatePicker().setMinDate(selectedCalendar.getTimeInMillis());
         datePickerDialog.show();
     }
 
-    // Hàm tiện ích để cập nhật cả TextView ngày (dd/MM/yyyy) và thứ (Tuesday)
-    private void updateDateViews(Calendar calendar) {
-        // Định dạng ngày
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        tvDepartureDate.setText(dateFormat.format(calendar.getTime()));
+    // Hàm tiện ích để cập nhật giao diện ngày
+    private void updateDateViews(Calendar calendar, TextView dateTextView, TextView dayTextView) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
+        dateTextView.setText(dateFormat.format(calendar.getTime()));
 
-        // Định dạng thứ
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.forLanguageTag("vi-VN")); // Hiển thị tiếng Việt, ví dụ "Thứ ba"
-        tvDepartureDay.setText(dayFormat.format(calendar.getTime()));
+        // SỬA: Dùng Locale.US để hiển thị tiếng Anh
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+        dayTextView.setText(dayFormat.format(calendar.getTime()));
     }
 
-
-    // --- CÁC HÀM CŨ GIỮ NGUYÊN ---
     private void setupClickListeners(View view) {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
         searchButton.setOnClickListener(v -> searchForTrips(view));
     }
 
     private void searchForTrips(View view) {
-        // ... (Code gọi API không thay đổi)
         String origin = actvDeparture.getText().toString().trim();
         String destination = actvDestination.getText().toString().trim();
-        String departureDate = tvDepartureDate.getText().toString();
 
         if (origin.isEmpty() || destination.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng chọn điểm đi và điểm đến", Toast.LENGTH_SHORT).show();
+            // SỬA: Dịch sang tiếng Anh
+            Toast.makeText(getContext(), "Please select departure and destination", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String formattedDate = formatDateForApi(departureDate);
-        if (formattedDate == null) {
-            Toast.makeText(getContext(), "Định dạng ngày không hợp lệ", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        SimpleDateFormat forApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String formattedDate = forApi.format(selectedCalendar.getTime());
 
-        Toast.makeText(getContext(), "Đang tìm kiếm chuyến đi...", Toast.LENGTH_SHORT).show();
+        // SỬA: Dịch sang tiếng Anh
+        Toast.makeText(getContext(), "Searching for trips...", Toast.LENGTH_SHORT).show();
 
         ApiService apiService = ApiClient.getNoAuthAPI();
         Call<TripSearchResponse> call = apiService.searchTrips(origin, destination, formattedDate);
@@ -201,33 +222,26 @@ public class BuyTicketFragment extends Fragment {
                             bundle.putSerializable("TRIPS_RESULT", (Serializable) trips);
                             Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
                         } else {
-                            Toast.makeText(getContext(), "Không tìm thấy chuyến đi nào phù hợp", Toast.LENGTH_LONG).show();
+                            // SỬA: Dịch sang tiếng Anh
+                            Toast.makeText(getContext(), "No suitable trips found", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        Toast.makeText(getContext(), "Lỗi: " + searchResponse.getMessage(), Toast.LENGTH_LONG).show();
+                        // SỬA: Dịch sang tiếng Anh
+                        Toast.makeText(getContext(), "Error: " + searchResponse.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getContext(), "Lỗi máy chủ: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // SỬA: Dịch sang tiếng Anh
+                    Toast.makeText(getContext(), "Server error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<TripSearchResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Lỗi kết nối mạng. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                // SỬA: Dịch sang tiếng Anh
+                Toast.makeText(getContext(), "Network connection error. Please try again!", Toast.LENGTH_SHORT).show();
                 Log.e("BuyTicketFragment", "API call failed", t);
             }
         });
     }
-
-    private String formatDateForApi(String dateInDdMmYyyy) {
-        SimpleDateFormat fromUser = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        SimpleDateFormat forApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        try {
-            Date date = fromUser.parse(dateInDdMmYyyy);
-            return forApi.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
+    
