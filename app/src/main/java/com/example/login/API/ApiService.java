@@ -2,6 +2,8 @@ package com.example.login.API;
 
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
+import com.example.login.MODELS.TicketSeatListResponse;
+import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeRequest;
@@ -22,6 +24,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
+import retrofit2.http.Path; // Import mới
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -48,6 +51,10 @@ public interface ApiService {
     Call<TripSearchResponse> searchTrips(
             @Query("originCity") String originCity,
             @Query("destinationCity") String destinationCity,
-            @Query("departureDate") String departureDate // Định dạng yyyy-MM-dd
+            @Query("departureDate") String departureDate // Định dạng YYYY-MM-dd
     );
+
+    // Thêm API mới để lấy trạng thái ghế cho một chuyến đi
+    @GET("api/trips/{tripId}/tickets")
+    Call<TicketSeatListResponse> getTicketsForTrip(@Path("tripId") String tripId); // Đã thay đổi kiểu trả về
 }
