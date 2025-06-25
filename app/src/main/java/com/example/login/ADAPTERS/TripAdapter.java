@@ -1,4 +1,3 @@
-// File: com/example/login/ADAPTERS/TripAdapter.java
 package com.example.login.ADAPTERS;
 
 import android.content.Context;
@@ -22,7 +21,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> { // Sửa TripAdapter để extend RecyclerView.Adapter và sử dụng TripAdapter.TripViewHolder
+public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> {
 
     private Context context;
     private List<Trip> trips;
@@ -49,10 +48,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         return trips.size();
     }
 
-    // Đây là lớp inner class TripViewHolder
-    // Đảm bảo nó là public static để có thể truy cập từ bên ngoài và tránh rò rỉ bộ nhớ
     public static class TripViewHolder extends RecyclerView.ViewHolder {
-        // 1. Khai báo các biến View cho các ID mới trong XML
         TextView departureTimeText;
         TextView arrivalTimeText;
         TextView tripDetailsText;
@@ -62,7 +58,6 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
 
         public TripViewHolder(@NonNull View itemView) {
             super(itemView);
-            // 2. Ánh xạ các view với ID chính xác từ layout item_trip.xml mới
             departureTimeText = itemView.findViewById(R.id.departure_time_text);
             arrivalTimeText = itemView.findViewById(R.id.arrival_time_text);
             tripDetailsText = itemView.findViewById(R.id.trip_details_text);
@@ -71,41 +66,36 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             destinationLocationText = itemView.findViewById(R.id.destination_location_text);
         }
 
-        /**
-         * Phương thức này nhận một đối tượng Trip và điền dữ liệu vào các View
-         */
         public void bind(final Trip trip) {
-            // 3. Lấy dữ liệu từ đối tượng Trip và hiển thị lên các View tương ứng
-
-            // Hiển thị giờ đi, giờ đến
+            // Display departure and arrival times
             departureTimeText.setText(formatTime(trip.getDepartureTime()));
             arrivalTimeText.setText(formatTime(trip.getArrivalTime()));
 
-            // Hiển thị địa điểm và thời gian di chuyển
+            // Display location and duration
             departureLocationText.setText(trip.getRoute().getOriginStation().getName());
             destinationLocationText.setText(trip.getRoute().getDestinationStation().getName());
-            String durationString = String.format(Locale.US, "Khoảng cách: %dkm - %s",
+            // SỬA: Dịch chuỗi sang tiếng Anh
+            String durationString = String.format(Locale.US, "Distance: %dkm - %s",
                     trip.getRoute().getDistanceKm(),
                     calculateDuration(trip.getDepartureTime(), trip.getArrivalTime())
             );
             tripDurationText.setText(durationString);
 
-            // --- PHẦN QUAN TRỌNG: TẠO CHUỖI TỔNG HỢP ---
-            // Ghép thông tin Giá, Loại xe, Ghế trống vào một chuỗi duy nhất
+            // Format and combine Price, Vehicle Type, and Available Seats
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             String formattedPrice = currencyFormat.format(trip.getPrice());
             String vehicleType = trip.getVehicle().getType();
-            // TODO: API nên trả về số ghế trống thực tế
             int availableSeats = trip.getVehicle().getCapacity();
 
-            String details = String.format(Locale.forLanguageTag("vi-VN"), "%s • %s • còn %d ghế",
+            // SỬA: Dịch chuỗi sang tiếng Anh
+            String details = String.format(Locale.US, "%s • %s • %d seats left",
                     formattedPrice,
                     vehicleType,
                     availableSeats
             );
             tripDetailsText.setText(details);
 
-            // Gắn sự kiện click cho toàn bộ item (giữ nguyên như cũ)
+            // Set click listener for the entire item
             itemView.setOnClickListener(v -> {
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("SELECTED_TRIP", trip);
@@ -113,7 +103,6 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             });
         }
 
-        // Các hàm tiện ích formatTime và calculateDuration giữ nguyên như phiên bản trước
         private String formatTime(String utcDateString) {
             try {
                 SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
@@ -140,7 +129,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
                 long hours = TimeUnit.MILLISECONDS.toHours(durationMillis);
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60;
 
-                return String.format(Locale.US, "~%d giờ %d phút", hours, minutes);
+                // SỬA: Dịch chuỗi sang tiếng Anh
+                return String.format(Locale.US, "~%d hours %d minutes", hours, minutes);
             } catch (ParseException e) {
                 e.printStackTrace();
                 return "N/A";
@@ -148,3 +138,4 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         }
     }
 }
+    
