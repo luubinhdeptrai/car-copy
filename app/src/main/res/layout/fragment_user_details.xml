@@ -1,55 +1,137 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/grey_background"
+    android:fillViewport="true"
+    tools:context=".VIEW.UserDetailsFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Profile"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="16dp"/>
-
-    <ImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_person"
-        app:tint="@color/orange_primary"/>
-
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:cardCornerRadius="16dp">
-        <!-- User info fields -->
-        <LinearLayout
-            android:orientation="vertical"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Toolbar or Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"
+            android:text="Profile"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Profile Picture -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image_details"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_person"
+            app:civ_border_color="@color/orange_primary"
+            app:civ_border_width="2dp" />
+
+        <!-- User Information Fields -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
-            <!-- ... Rows for Phone, Full name, Email, etc. ... -->
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp">
 
-    <Button
-        android:id="@+id/update_profile_button"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Update profile"
-        android:layout_marginTop="24dp"
-        app:backgroundTint="@color/orange_primary"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <Button
-        android:id="@+id/logout_button_detail"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Logout"
-        android:layout_marginTop="8dp"/>
-</LinearLayout>
+                <!-- Full Name -->
+                <RelativeLayout style="@style/UserInfoRow">
+                    <TextView
+                        style="@style/UserInfoLabel"
+                        android:text="Full name" />
+                    <TextView
+                        android:id="@+id/tv_full_name"
+                        style="@style/UserInfoValue"
+                        android:text="Nguyễn Đại Trường Danh" />
+                </RelativeLayout>
+                <View style="@style/UserInfoDivider" />
+
+                <!-- Phone Number -->
+                <RelativeLayout style="@style/UserInfoRow">
+                    <TextView
+                        style="@style/UserInfoLabel"
+                        android:text="Phone number" />
+                    <TextView
+                        android:id="@+id/tv_phone_number"
+                        style="@style/UserInfoValue"
+                        android:text="0968411942" />
+                </RelativeLayout>
+                <View style="@style/UserInfoDivider" />
+
+                <!-- Email -->
+                <RelativeLayout style="@style/UserInfoRow">
+                    <TextView
+                        style="@style/UserInfoLabel"
+                        android:text="Email" />
+                    <TextView
+                        android:id="@+id/tv_email"
+                        style="@style/UserInfoValue"
+                        android:text="Please update." />
+                </RelativeLayout>
+                <View style="@style/UserInfoDivider" />
+
+                <!-- Gender -->
+                <RelativeLayout style="@style/UserInfoRow">
+                    <TextView
+                        style="@style/UserInfoLabel"
+                        android:text="Gender" />
+                    <TextView
+                        android:id="@+id/tv_gender"
+                        style="@style/UserInfoValue"
+                        android:text="Please update." />
+                </RelativeLayout>
+                <View style="@style/UserInfoDivider" />
+
+                <!-- Birthday -->
+                <RelativeLayout style="@style/UserInfoRow">
+                    <TextView
+                        style="@style/UserInfoLabel"
+                        android:text="Birthday" />
+                    <TextView
+                        android:id="@+id/tv_birthday"
+                        style="@style/UserInfoValue"
+                        android:text="Please update." />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/btn_update_profile"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:text="Update profile"
+            app:backgroundTint="@color/orange_primary"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_logout"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:text="Logout"
+            android:textColor="@color/orange_primary"
+            app:strokeColor="@color/orange_primary" />
+
+    </LinearLayout>
+</ScrollView>
+    

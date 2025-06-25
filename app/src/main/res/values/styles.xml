@@ -14,5 +14,48 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
     </style>
+    <!-- Style cho một dòng thông tin có thể click -->
+    <style name="UserInfoRowClickable" parent="UserInfoRow">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- Style cho giá trị có thể sửa (thêm icon bút chì) -->
+    <style name="UserInfoValue.Editable">
+        <item name="android:drawableEnd">@drawable/ic_edit</item>
+        <item name="android:drawablePadding">8dp</item>
+    </style>
+
+    <!-- Các style cũ bạn đã có -->
+    <style name="UserInfoRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <style name="UserInfoLabel" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="UserInfoValue" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="UserInfoDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/divider</item>
+    </style>
 </resources>
     
