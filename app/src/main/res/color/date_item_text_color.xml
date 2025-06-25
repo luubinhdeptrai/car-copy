@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu khi ô được chọn -->
     <item android:color="@color/white" android:state_selected="true" />
+    <!-- Màu khi ô bị vô hiệu hóa (ngày trong quá khứ) -->
+    <item android:color="@color/divider" android:state_enabled="false" />
+    <!-- Màu mặc định (cho các ngày trong tương lai chưa được chọn) -->
     <item android:color="@color/text_secondary" />
 </selector>
