@@ -25,7 +25,7 @@ public class VerifyResetPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.verify_reset_password); // Make sure this matches your XML layout file name
+        setContentView(R.layout.activity_reset_password); // Make sure this matches your XML layout file name
 
         // Ánh xạ các View từ layout
         editTextNewPassword = findViewById(R.id.editTextNewPassword);
