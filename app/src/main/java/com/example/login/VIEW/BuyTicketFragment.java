@@ -195,15 +195,14 @@ public class BuyTicketFragment extends Fragment {
         });
     }
 
-    // <<< SỬA: Thêm tham số origin và destination >>>
+    // --- SỬA: Thêm tham số origin và destination ---
     private void navigateToSelectTrip(View view, String origin, String destination, List<Trip> trips) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("TRIPS_RESULT", (Serializable) trips);
         bundle.putLong("SELECTED_DATE_MILLIS", selectedCalendar.getTimeInMillis());
-        // <<< THÊM: Gửi thông tin điểm đi và điểm đến >>>
+        // --- THÊM: Gửi thông tin điểm đi và điểm đến ---
         bundle.putString("DEPARTURE_LOCATION", origin);
         bundle.putString("DESTINATION_LOCATION", destination);
         Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
     }
 }
-    

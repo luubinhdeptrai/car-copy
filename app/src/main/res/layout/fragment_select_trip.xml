@@ -18,7 +18,7 @@
         android:layout_gravity="center_horizontal"
         android:textColor="@color/black"
         android:textStyle="bold"
-        tools:text="Bà Rịa - Vũng Tàu → TP. Hồ Chí Minh"/>
+        tools:text="Ba Ria - Vung Tau → Ho Chi Minh City"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/date_recycler_view"
@@ -27,35 +27,36 @@
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_date" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
-    <Button
-        android:id="@+id/btn_filter_price"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        android:text="Giá" />
-    <Button
-        android:id="@+id/btn_filter_seat_type"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        android:text="Loại ghế" />
-    <Button
-        android:id="@+id/btn_filter_time"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Giờ" />
-</LinearLayout>
+        <Button
+            android:id="@+id/btn_filter_price"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:text="Price" />
+        <Button
+            android:id="@+id/btn_filter_seat_type"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:text="Seat" />
+        <Button
+            android:id="@+id/btn_filter_time"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Time" />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -80,18 +81,17 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:src="@drawable/ic_no_data_found" android:contentDescription="@string/no_data_found_image_description" />
+                android:src="@drawable/ic_no_data_found"
+                android:contentDescription="@string/no_data_found_image_description" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Không tìm thấy dữ liệu nào!"
+                android:text="No data found!"
                 android:textSize="18sp"
                 android:textColor="#888888"/>
-
         </LinearLayout>
-
     </FrameLayout>
-
 </LinearLayout>
+    
