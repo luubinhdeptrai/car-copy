@@ -46,6 +46,15 @@
         <activity android:name=".VIEW.MainActivity"
             android:exported="false" />
 
+        <activity android:name=".SIGNUP.SignUpActivity"
+            android:exported="false" />
+
+        <activity android:name=".VERIFY_RESET_PASSWORD.VerifyResetPasswordActivity"
+            android:exported="false" />
+
+        <activity android:name=".VERIFY_VERIFICATION.VerifiedActivity"
+            android:exported="false" />
+
 
 
 

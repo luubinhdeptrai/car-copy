@@ -29,22 +29,22 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    @POST("auth/signup")
+    @POST("api/auth/signup")
     Call<SignupResponse> signup(@Body SignupRequest request);
 
     @POST("api/auth/login")
     Call<LoginResponse> loginUser(@Body LoginRequest request); // Đang dùng
 
-    @PATCH("auth/send-verification-code")
+    @PATCH("api/auth/send-verification-code")
     Call<SendCodeResponse> sendVerificationCode(@Body EmailRequest request);
 
-    @PATCH("auth/verify-verification-code")
+    @PATCH("api/auth/verify-verification-code")
     Call<VerifyCodeResponse> verifyVerificationCode(@Body VerifyCodeRequest request);
 
-    @PATCH("auth/send-reset-password-code")
+    @PATCH("api/auth/send-reset-password-code")
     Call<SendResetPasswordCodeResponse> sendResetPasswordCode(@Body SendResetPasswordCodeRequest request);
 
-    @PATCH("auth/verify-reset-password-code")
+    @PATCH("api/auth/verify-reset-password-code")
     Call<VerifyResetPasswordResponse> verifyResetPasswordCode(@Body VerifyResetPasswordRequest request);
 
     @GET("api/trips/search")
