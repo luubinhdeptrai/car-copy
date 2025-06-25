@@ -2,6 +2,7 @@
 agp = "8.10.1"
 androidOtpview = "1.1.0"
 androidOtpviewPinview = "2.1.2"
+circleimageview = "3.1.0"
 converterGson = "2.9.0"
 gson = "2.11.0"
 junit = "4.13.2"
@@ -23,6 +24,7 @@ navigationUi = "2.9.0"
 android-otpview = { module = "com.github.mukeshsolanki:Android-OtpView", version.ref = "androidOtpview" }
 android-otpview-pinview = { module = "com.github.mukeshsolanki:android-otpview-pinview", version.ref = "androidOtpviewPinview" }
 android-otpview-pinview-otpview-compose = { module = "com.github.mukeshsolanki.android-otpview-pinview:otpview-compose", version.ref = "otpviewComposeVersion" }
+circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 converter-gson-v290 = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

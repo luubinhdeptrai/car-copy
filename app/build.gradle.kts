@@ -58,6 +58,7 @@ dependencies {
     // Gson
     implementation (libs.gson)
 
+    implementation(libs.circleimageview)
 
 
 }

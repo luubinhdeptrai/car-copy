@@ -3,13 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/profile_nav_graph"
-    app:startDestination="@id/userDetailsFragment"> <!-- Mặc định bắt đầu bằng UserDetails -->
+    app:startDestination="@id/userDetailsFragment">
 
     <fragment
         android:id="@+id/userDetailsFragment"
         android:name="com.example.login.VIEW.UserDetailsFragment"
         android:label="User Details"
-        tools:layout="@layout/fragment_user_details" />
+        tools:layout="@layout/fragment_user_details" >
+        <!-- SỬA: Thêm action để điều hướng sang màn hình sửa -->
+        <action
+            android:id="@+id/action_userDetails_to_editProfile"
+            app:destination="@id/editUserProfileFragment" />
+    </fragment>
+
+    <!-- THÊM: Khai báo Fragment mới cho màn hình sửa thông tin -->
+    <fragment
+        android:id="@+id/editUserProfileFragment"
+        android:name="com.example.login.VIEW.EditUserProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_user_profile" />
 
     <fragment
         android:id="@+id/settingsFragment"
@@ -18,3 +30,4 @@
         tools:layout="@layout/fragment_settings" />
 
 </navigation>
+    
