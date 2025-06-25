@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.login.MODELS.DateModel;
 import com.example.login.R;
+import com.example.login.INTERFACES.OnDateSelectedListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -20,11 +21,13 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder
     private List<DateModel> dateList;
     private int selectedPosition;
     private Context context;
+    private OnDateSelectedListener listener;
 
-    public DateAdapter(Context context, List<DateModel> dateList, int initialSelectedPosition) {
+    public DateAdapter(Context context, List<DateModel> dateList, int initialSelectedPosition, OnDateSelectedListener listener) {
         this.context = context;
         this.dateList = dateList;
         this.selectedPosition = initialSelectedPosition;
+        this.listener = listener;
     }
 
     @NonNull
@@ -69,27 +72,23 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder
             boolean isToday = itemCal.equals(todayCal);
             boolean isSelected = (selectedPosition == position);
 
-            // --- SỬA LỖI: Logic xử lý giao diện mới ---
+            // Logic xử lý giao diện
             if (isSelected) {
                 // Ưu tiên 1: Nếu item đang được chọn -> nền cam, chữ trắng.
                 itemView.setBackgroundResource(R.drawable.date_item_background);
-                itemView.setSelected(true); // Kích hoạt state_selected trong selector
+                itemView.setSelected(true);
                 dayOfWeekText.setTextColor(ContextCompat.getColor(context, R.color.white));
                 dateText.setTextColor(ContextCompat.getColor(context, R.color.white));
-
             } else if (isToday) {
-                // Ưu tiên 2: Nếu không được chọn, kiểm tra xem có phải ngày hôm nay không.
-                // Nếu là ngày hôm nay -> viền cam, chữ cam.
+                // Ưu tiên 2: Nếu là ngày hôm nay (nhưng không được chọn) -> viền cam, chữ cam.
                 itemView.setBackgroundResource(R.drawable.date_item_today_unselected_bg);
                 itemView.setSelected(false);
                 dayOfWeekText.setTextColor(ContextCompat.getColor(context, R.color.orange_primary));
                 dateText.setTextColor(ContextCompat.getColor(context, R.color.orange_primary));
-
             } else {
-                // Ưu tiên 3: Các trường hợp còn lại (ngày tương lai, không được chọn).
-                // -> Nền trong suốt, chữ xám.
+                // Ưu tiên 3: Các trường hợp còn lại -> nền trong suốt, chữ xám.
                 itemView.setBackgroundResource(R.drawable.date_item_background);
-                itemView.setSelected(false); // Kích hoạt state mặc định (trong suốt)
+                itemView.setSelected(false);
                 dayOfWeekText.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
                 dateText.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
             }
@@ -101,6 +100,10 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder
                     selectedPosition = getAdapterPosition();
                     notifyItemChanged(previousSelectedPosition);
                     notifyItemChanged(selectedPosition);
+
+                    if (listener != null) {
+                        listener.onDateSelected(dateModel.getDate());
+                    }
                 }
             });
         }

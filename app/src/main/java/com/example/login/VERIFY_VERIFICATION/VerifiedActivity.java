@@ -34,7 +34,7 @@ public class VerifiedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.verifiy_verification_layout);
+        setContentView(R.layout.activity_verify_code);
 
         etVerificationCode = findViewById(R.id.editTextVerificationCode);
         btnVerifyCode = findViewById(R.id.btnVerifyCode);
