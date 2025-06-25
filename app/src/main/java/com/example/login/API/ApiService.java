@@ -2,6 +2,7 @@ package com.example.login.API;
 
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
+import com.example.login.MODELS.DeleteAccountResponse;
 import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
@@ -57,4 +59,8 @@ public interface ApiService {
     // Thêm API mới để lấy trạng thái ghế cho một chuyến đi
     @GET("api/trips/{tripId}/tickets")
     Call<TicketSeatListResponse> getTicketsForTrip(@Path("tripId") String tripId);
+
+    // THÊM MỚI: API để xoá tài khoản người dùng hiện tại
+    @DELETE("api/users/deleteMe")
+    Call<DeleteAccountResponse> deleteAccount();
 }

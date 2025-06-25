@@ -95,11 +95,11 @@ public class LoginActivity extends AppCompatActivity {
                         errorMessage = response.body().getMessage();
                     } else if (response.errorBody() != null) {
                         try {
-                            errorMessage = response.errorBody().string();
+                           errorMessage = response.errorBody().string();
                         } catch (IOException e) { /* ignore */ }
                     }
                     Log.e("Login", "Đăng nhập thất bại: " + errorMessage);
-                    Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_LONG).show();
                 }
             }
 

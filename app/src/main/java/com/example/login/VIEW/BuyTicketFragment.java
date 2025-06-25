@@ -198,7 +198,7 @@ public class BuyTicketFragment extends Fragment {
                     }
                 } else {
                     String errorMessage = response.body() != null ? response.body().getMessage() : "Lỗi server: " + response.code();
-                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
                 }
                 navigateToSelectTrip(view, origin, destination, trips);
             }
