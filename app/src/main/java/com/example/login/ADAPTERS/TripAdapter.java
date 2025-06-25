@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,31 +74,44 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             arrivalTimeText.setText(formatTime(trip.getArrivalTime()));
 
             // Display location and duration
-            departureLocationText.setText(trip.getRoute().getOriginStation().getName());
-            destinationLocationText.setText(trip.getRoute().getDestinationStation().getName());
-            // SỬA: Dịch chuỗi sang tiếng Anh
-            String durationString = String.format(Locale.US, "Distance: %dkm - %s",
-                    trip.getRoute().getDistanceKm(),
-                    calculateDuration(trip.getDepartureTime(), trip.getArrivalTime())
-            );
-            tripDurationText.setText(durationString);
+            if (trip.getRoute() != null && trip.getRoute().getOriginStation() != null && trip.getRoute().getDestinationStation() != null) {
+                departureLocationText.setText(trip.getRoute().getOriginStation().getName());
+                destinationLocationText.setText(trip.getRoute().getDestinationStation().getName());
+                String durationString = String.format(Locale.US, "Khoảng cách: %dkm - %s",
+                        trip.getRoute().getDistanceKm(),
+                        calculateDuration(trip.getDepartureTime(), trip.getArrivalTime())
+                );
+                tripDurationText.setText(durationString);
+            }
 
-            // Format and combine Price, Vehicle Type, and Available Seats
+
+            // THAY ĐỔI: Toàn bộ logic hiển thị chi tiết chuyến đi
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             String formattedPrice = currencyFormat.format(trip.getPrice());
             String vehicleType = trip.getVehicle().getType();
-            int availableSeats = trip.getVehicle().getCapacity();
+            String seatsInfo;
 
-            // SỬA: Dịch chuỗi sang tiếng Anh
-            String details = String.format(Locale.US, "%s • %s • %d seats left",
+            // Kiểm tra xem số ghế đã được load chưa (dựa vào giá trị khởi tạo -1)
+            if (trip.getAvailableSeats() == -1) {
+                seatsInfo = "Đang kiểm tra..."; // Hiển thị text tạm thời
+            } else {
+                seatsInfo = String.format(Locale.forLanguageTag("vi-VN"), "%d ghế trống", trip.getAvailableSeats());
+            }
+
+            String details = String.format(Locale.US, "%s • %s • %s",
                     formattedPrice,
                     vehicleType,
-                    availableSeats
+                    seatsInfo
             );
             tripDetailsText.setText(details);
 
             // Set click listener for the entire item
             itemView.setOnClickListener(v -> {
+                // Kiểm tra xem số ghế đã load xong chưa trước khi chuyển màn hình
+                if (trip.getAvailableSeats() == -1) {
+                    Toast.makeText(itemView.getContext(), "Vui lòng đợi kiểm tra thông tin ghế...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("SELECTED_TRIP", trip);
                 Navigation.findNavController(v).navigate(R.id.action_selectTrip_to_selectSeat, bundle);
@@ -104,6 +119,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         }
 
         private String formatTime(String utcDateString) {
+            if (utcDateString == null) return "N/A";
             try {
                 SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
                 utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -119,6 +135,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         }
 
         private String calculateDuration(String startUtc, String endUtc) {
+            if (startUtc == null || endUtc == null) return "N/A";
             try {
                 SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
                 utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -129,8 +146,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
                 long hours = TimeUnit.MILLISECONDS.toHours(durationMillis);
                 long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60;
 
-                // SỬA: Dịch chuỗi sang tiếng Anh
-                return String.format(Locale.US, "~%d hours %d minutes", hours, minutes);
+                return String.format(Locale.US, "~%d giờ %d phút", hours, minutes);
             } catch (ParseException e) {
                 e.printStackTrace();
                 return "N/A";
@@ -138,4 +154,3 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         }
     }
 }
-    

@@ -18,6 +18,8 @@ import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
 import com.example.login.INTERFACES.OnDateSelectedListener;
 import com.example.login.MODELS.DateModel;
+import com.example.login.MODELS.TicketSeatListResponse;
+import com.example.login.MODELS.TicketSeatResponse;
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
 import com.example.login.R;
@@ -62,6 +64,7 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
         layoutNoData = view.findViewById(R.id.layout_no_data);
         tvRouteTitle = view.findViewById(R.id.tv_route_title);
         long selectedDateMillis = System.currentTimeMillis();
+
         if (getArguments() != null) {
             Serializable serializableTrips = getArguments().getSerializable("TRIPS_RESULT");
             if (serializableTrips instanceof List) {
@@ -71,13 +74,22 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
             departureLocation = getArguments().getString("DEPARTURE_LOCATION", "");
             destinationLocation = getArguments().getString("DESTINATION_LOCATION", "");
         }
+
         String routeTitle = departureLocation + " → " + destinationLocation;
         tvRouteTitle.setText(routeTitle);
+
         if (trips == null) {
             trips = new ArrayList<>();
         }
+
         setupDateRecyclerView(selectedDateMillis);
-        updateTripList(trips);
+
+        // THAY ĐỔI: Không cập nhật danh sách ngay, mà gọi hàm fetch số ghế trước
+        if (!trips.isEmpty()) {
+            fetchAvailableSeatsForAllTrips(trips);
+        } else {
+            updateTripList(trips); // Cập nhật để hiện màn hình "No data"
+        }
     }
 
     private void updateTripList(List<Trip> newTrips) {
@@ -93,6 +105,57 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
             tripRecyclerView.setAdapter(tripAdapter);
         }
     }
+
+    // THÊM MỚI: Toàn bộ phương thức này được thêm vào
+    private void fetchAvailableSeatsForAllTrips(List<Trip> tripsToProcess) {
+        // Cập nhật UI ngay lập tức để người dùng thấy danh sách chuyến đi
+        // Adapter sẽ hiển thị "Đang kiểm tra..." cho số ghế
+        updateTripList(tripsToProcess);
+
+        ApiService apiService = ApiClient.getNoAuthAPI();
+
+        for (final Trip trip : tripsToProcess) {
+            apiService.getTicketsForTrip(trip.getId()).enqueue(new Callback<TicketSeatListResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<TicketSeatListResponse> call, @NonNull Response<TicketSeatListResponse> response) {
+                    int availableCount = 0;
+                    if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                        List<TicketSeatResponse> allSeats = response.body().getData();
+                        if (allSeats != null) {
+                            // Đếm chính xác số ghế có trạng thái "available"
+                            for (TicketSeatResponse seat : allSeats) {
+                                if (seat.getStatus() != null && "available".equalsIgnoreCase(seat.getStatus())) {
+                                    availableCount++;
+                                }
+                            }
+                        }
+                    }
+                    // Cập nhật số ghế vào đối tượng Trip
+                    trip.setAvailableSeats(availableCount);
+
+                    // Báo cho adapter biết item này đã thay đổi để cập nhật UI
+                    if (tripAdapter != null) {
+                        int position = trips.indexOf(trip);
+                        if (position != -1) {
+                            tripAdapter.notifyItemChanged(position);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<TicketSeatListResponse> call, @NonNull Throwable t) {
+                    trip.setAvailableSeats(0); // Coi như là 0 nếu lỗi
+                    if (tripAdapter != null) {
+                        int position = trips.indexOf(trip);
+                        if (position != -1) {
+                            tripAdapter.notifyItemChanged(position);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
 
     private void setupDateRecyclerView(long selectedDateMillis) {
         dates = new ArrayList<>();
@@ -112,8 +175,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
         if (initialSelectedPosition < 0) {
             initialSelectedPosition = 0;
         }
-        // --- SỬA LỖI TẠI ĐÂY ---
-        // Truyền 'this' (Fragment đang implement OnDateSelectedListener) làm tham số thứ 4
         dateAdapter = new DateAdapter(getContext(), dates, initialSelectedPosition, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         dateRecyclerView.setLayoutManager(layoutManager);
@@ -131,7 +192,7 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
 
     @Override
     public void onDateSelected(Date selectedDate) {
-        Toast.makeText(getContext(), "Loading trips...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Đang tải các chuyến đi...", Toast.LENGTH_SHORT).show();
         fetchTripsForDate(selectedDate);
     }
 
@@ -149,12 +210,17 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
                         newTrips = response.body().getData();
                     }
                 }
-                updateTripList(newTrips);
+                // THAY ĐỔI: Gọi hàm fetch số ghế cho danh sách chuyến đi mới
+                if (!newTrips.isEmpty()) {
+                    fetchAvailableSeatsForAllTrips(newTrips);
+                } else {
+                    updateTripList(newTrips);
+                }
             }
 
             @Override
             public void onFailure(Call<TripSearchResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Network Error. Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi mạng. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
                 updateTripList(new ArrayList<>());
             }
         });

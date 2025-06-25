@@ -1,13 +1,11 @@
-// File: com/example/login/MODELS/Trip.java
 package com.example.login.MODELS;
 
-import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import java.util.List;
 
 public class Trip implements Serializable {
-    @SerializedName("_id")
-    private String id;
 
+    private String _id;
     private Route route;
     private Vehicle vehicle;
     private String departureTime;
@@ -15,9 +13,13 @@ public class Trip implements Serializable {
     private double price;
     private String status;
 
-    // Getters
+    // THÊM MỚI: Thêm trường transient để lưu số ghế trống đã tính toán.
+    // Dùng transient để thư viện Gson/Moshi bỏ qua khi parse JSON ban đầu.
+    // Khởi tạo là -1 để biết rằng dữ liệu chưa được load.
+    private transient int availableSeats = -1;
+
     public String getId() {
-        return id;
+        return _id;
     }
 
     public Route getRoute() {
@@ -42,5 +44,58 @@ public class Trip implements Serializable {
 
     public String getStatus() {
         return status;
+    }
+
+    // THÊM MỚI: Thêm getter và setter cho trường mới
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    // --- Các class con như Route, Vehicle, Station bạn đã có, giữ nguyên ---
+    public static class Route implements Serializable {
+        private String _id;
+        private Station originStation;
+        private Station destinationStation;
+        private int distanceKm;
+
+        public Station getOriginStation() {
+            return originStation;
+        }
+
+        public Station getDestinationStation() {
+            return destinationStation;
+        }
+
+        public int getDistanceKm() {
+            return distanceKm;
+        }
+    }
+
+    public static class Vehicle implements Serializable {
+        private String _id;
+        private String type;
+        private int capacity;
+
+        public String getType() {
+            return type;
+        }
+
+        public int getCapacity() {
+            return capacity;
+        }
+    }
+
+    public static class Station implements Serializable {
+        private String _id;
+        private String name;
+        private String city;
+
+        public String getName() {
+            return name;
+        }
     }
 }
