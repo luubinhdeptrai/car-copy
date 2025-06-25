@@ -1,4 +1,4 @@
-package com.example.login.VIEW;// package com.example.login.VIEW;
+package com.example.login.VIEW;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -150,7 +150,7 @@ public class BuyTicketFragment extends Fragment {
     private void updateDateViews(Calendar calendar, TextView dateTextView, TextView dayTextView) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM", Locale.US);
         dateTextView.setText(dateFormat.format(calendar.getTime()));
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("vi", "VN")); // Hiển thị Thứ bằng tiếng Việt
         dayTextView.setText(dayFormat.format(calendar.getTime()));
     }
 
@@ -163,39 +163,48 @@ public class BuyTicketFragment extends Fragment {
         String origin = actvDeparture.getText().toString().trim();
         String destination = actvDestination.getText().toString().trim();
         if (origin.isEmpty() || destination.isEmpty()) {
-            Toast.makeText(getContext(), "Please select departure and destination", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Vui lòng chọn điểm đi và điểm đến", Toast.LENGTH_SHORT).show();
             return;
         }
         SimpleDateFormat forApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String formattedDate = forApi.format(selectedCalendar.getTime());
-        Toast.makeText(getContext(), "Searching for trips...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Đang tìm kiếm chuyến đi...", Toast.LENGTH_SHORT).show();
         ApiService apiService = ApiClient.getNoAuthAPI();
         Call<TripSearchResponse> call = apiService.searchTrips(origin, destination, formattedDate);
         call.enqueue(new Callback<TripSearchResponse>() {
             @Override
             public void onResponse(Call<TripSearchResponse> call, Response<TripSearchResponse> response) {
+                // <<< THAY ĐỔI LOGIC TẠI ĐÂY >>>
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<Trip> trips = response.body().getData();
-                    if (trips != null && !trips.isEmpty()) {
-                        // --- SỬA: Thêm ngày đã chọn vào Bundle ---
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("TRIPS_RESULT", (Serializable) trips);
-                        bundle.putLong("SELECTED_DATE_MILLIS", selectedCalendar.getTimeInMillis()); // Gửi ngày đi
-                        Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
-                    } else {
-                        Toast.makeText(getContext(), "No suitable trips found", Toast.LENGTH_LONG).show();
+                    // Đề phòng trường hợp API trả về data=null, ta khởi tạo một list rỗng
+                    if (trips == null) {
+                        trips = new ArrayList<>();
                     }
+                    navigateToSelectTrip(view, trips);
                 } else {
-                    String errorMessage = response.body() != null ? response.body().getMessage() : "Server error: " + response.code();
+                    // Nếu có lỗi từ server, vẫn chuyển màn hình nhưng với danh sách rỗng
+                    String errorMessage = response.body() != null ? response.body().getMessage() : "Lỗi server: " + response.code();
                     Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    navigateToSelectTrip(view, new ArrayList<>()); // Chuyển đi với list rỗng
                 }
             }
+
             @Override
             public void onFailure(Call<TripSearchResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Network connection error. Please try again!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi kết nối mạng. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
                 Log.e("BuyTicketFragment", "API call failed", t);
+                // Nếu không có mạng, vẫn có thể chuyển màn hình với danh sách rỗng
+                navigateToSelectTrip(view, new ArrayList<>());
             }
         });
     }
+
+    // <<< THÊM PHƯƠNG THỨC MỚI ĐỂ GỌN GÀNG HƠN >>>
+    private void navigateToSelectTrip(View view, List<Trip> trips) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("TRIPS_RESULT", (Serializable) trips);
+        bundle.putLong("SELECTED_DATE_MILLIS", selectedCalendar.getTimeInMillis());
+        Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
+    }
 }
-    
