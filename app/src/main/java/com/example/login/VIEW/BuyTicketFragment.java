@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,6 +51,8 @@ public class BuyTicketFragment extends Fragment {
     private Toolbar toolbar;
     private Calendar selectedCalendar;
     private Calendar selectedReturnCalendar;
+    // THÊM: Khai báo ImageView cho nút swap
+    private ImageView ivSwap;
 
     @Nullable
     @Override
@@ -72,6 +75,8 @@ public class BuyTicketFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         tvReturnDate = view.findViewById(R.id.tv_return_date);
         tvReturnDay = view.findViewById(R.id.tv_return_day);
+        // THÊM: Ánh xạ nút swap
+        ivSwap = view.findViewById(R.id.iv_swap);
 
         // Gọi các hàm thiết lập
         setupAutoCompleteTextViews();
@@ -157,6 +162,18 @@ public class BuyTicketFragment extends Fragment {
     private void setupClickListeners(View view) {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
         searchButton.setOnClickListener(v -> searchForTrips(view));
+        // THÊM: Gắn sự kiện click cho nút swap
+        ivSwap.setOnClickListener(v -> swapLocations());
+    }
+
+    // THÊM: Phương thức để hoán đổi địa điểm
+    private void swapLocations() {
+        String departure = actvDeparture.getText().toString();
+        String destination = actvDestination.getText().toString();
+
+        // Hoán đổi nội dung của hai AutoCompleteTextView
+        actvDeparture.setText(destination);
+        actvDestination.setText(departure);
     }
 
     private void searchForTrips(View view) {
@@ -195,14 +212,13 @@ public class BuyTicketFragment extends Fragment {
         });
     }
 
-    // --- SỬA: Thêm tham số origin và destination ---
     private void navigateToSelectTrip(View view, String origin, String destination, List<Trip> trips) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("TRIPS_RESULT", (Serializable) trips);
         bundle.putLong("SELECTED_DATE_MILLIS", selectedCalendar.getTimeInMillis());
-        // --- THÊM: Gửi thông tin điểm đi và điểm đến ---
         bundle.putString("DEPARTURE_LOCATION", origin);
         bundle.putString("DESTINATION_LOCATION", destination);
         Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
     }
 }
+    
