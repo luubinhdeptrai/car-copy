@@ -60,5 +60,6 @@ dependencies {
 
     implementation(libs.circleimageview)
 
-
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
 }
