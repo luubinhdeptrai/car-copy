@@ -90,7 +90,7 @@ public class BuyTicketFragment extends Fragment {
 
     private void setupAutoCompleteTextViews() {
         // SỬA: Dịch sang tiếng Anh
-        String[] locations = {"Ho Chi Minh City", "Da Lat", "Vung Tau", "Nha Trang", "Can Tho"};
+        String[] locations = {"Hồ Chí Minh", "Đà Lạt", "Vũng Tàu", "Nha Trang", "Cần Thơ"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, locations);
         actvDeparture.setAdapter(adapter);
         actvDestination.setAdapter(adapter);

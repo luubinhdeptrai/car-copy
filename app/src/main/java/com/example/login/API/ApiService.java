@@ -56,5 +56,5 @@ public interface ApiService {
 
     // Thêm API mới để lấy trạng thái ghế cho một chuyến đi
     @GET("api/trips/{tripId}/tickets")
-    Call<TicketSeatListResponse> getTicketsForTrip(@Path("tripId") String tripId); // Đã thay đổi kiểu trả về
+    Call<TicketSeatListResponse> getTicketsForTrip(@Path("tripId") String tripId);
 }
