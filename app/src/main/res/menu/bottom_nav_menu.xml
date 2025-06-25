@@ -8,11 +8,6 @@
         android:id="@+id/navigation_history"
         android:icon="@drawable/ic_history"
         android:title="History"/>
-    <!-- Item trống để tạo không gian cho FAB và hiển thị chữ -->
-    <item
-        android:id="@+id/navigation_placeholder"
-        android:title="FUTAPay"
-        android:enabled="false"/>
     <item
         android:id="@+id/navigation_notification"
         android:icon="@drawable/ic_notifications"
@@ -22,4 +17,3 @@
         android:icon="@drawable/ic_person"
         android:title="Profile"/>
 </menu>
-    

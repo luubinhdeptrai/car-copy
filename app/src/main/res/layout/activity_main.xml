@@ -1,54 +1,33 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".VIEW.MainActivity">
 
-    <!-- SỬA: Thay đổi ID và trỏ đến main_nav_graph -->
+    <!-- NavHostFragment để chứa các màn hình chính -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation_view"
         app:defaultNavHost="true"
         app:navGraph="@navigation/main_nav_graph" />
 
-    <!-- Phần BottomAppBar và FAB giữ nguyên -->
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_app_bar"
+    <!-- Thanh menu 5 mục tiêu chuẩn -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:fabAlignmentMode="center"
-        app:fabCradleMargin="10dp"
-        app:fabCradleRoundedCornerRadius="20dp"
-        app:fabCradleVerticalOffset="10dp"
-        android:backgroundTint="@android:color/white">
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:itemIconTint="@color/bottom_nav_icon_tint"
+        app:itemTextColor="@color/bottom_nav_icon_tint"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemBackground="@drawable/bottom_nav_item_background"
+        app:itemActiveIndicatorStyle="@style/App.BottomNavigationView.Indicator" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            app:itemIconTint="@color/bottom_nav_icon_tint"
-            app:itemTextColor="@color/bottom_nav_icon_tint"
-            app:itemBackground="@drawable/bottom_nav_item_background"
-            app:itemRippleColor="@android:color/transparent"
-            app:itemActiveIndicatorStyle="@style/App.BottomNavigationView.Indicator"
-            app:menu="@menu/bottom_nav_menu"/>
-
-    </com.google.android.material.bottomappbar.BottomAppBar>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_payment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="Payment"
-        android:src="@drawable/ic_qr_code"
-        app:backgroundTint="@color/orange_primary"
-        app:layout_anchor="@id/bottom_app_bar"
-        app:tint="@color/white" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>
