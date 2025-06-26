@@ -3,6 +3,8 @@ package com.example.login.MODELS;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
+    @SerializedName("fullname")
+    private String fullname;
     @SerializedName("email")
     private String email;
     @SerializedName("phoneNumber")
@@ -44,5 +46,13 @@ public class User {
 
     public String getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 }

@@ -3,6 +3,7 @@ package com.example.login.API;
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
 import com.example.login.MODELS.DeleteAccountResponse;
+import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
@@ -63,4 +64,6 @@ public interface ApiService {
     // THÊM MỚI: API để xoá tài khoản người dùng hiện tại
     @DELETE("api/users/deleteMe")
     Call<DeleteAccountResponse> deleteAccount();
+    @GET("api/users/profile")
+    Call<ProfileResponse> getUserProfile();
 }

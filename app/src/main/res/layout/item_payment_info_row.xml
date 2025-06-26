@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Full name" />
+        <TextView android:id="@+id/tv_payment_fullname" style="@style/PaymentValue" tools:text="Luu Binh" />
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Phone number" />
+        <TextView android:id="@+id/tv_payment_phone" style="@style/PaymentValue" tools:text="0823632539" />
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Email" />
+        <TextView android:id="@+id/tv_payment_email" style="@style/PaymentValue" tools:text="email@example.com" />
+    </RelativeLayout>
+</LinearLayout>
