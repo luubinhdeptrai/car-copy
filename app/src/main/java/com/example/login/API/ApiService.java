@@ -3,6 +3,7 @@ package com.example.login.API;
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
 import com.example.login.MODELS.DeleteAccountResponse;
+import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
@@ -18,13 +19,18 @@ import com.example.login.VERIFY_RESET_PASSWORD.VerifyResetPasswordResponse;
 import com.example.login.VERIFY_RESET_PASSWORD.VerifyResetPasswordRequest;
 import com.example.login.VERIFY_VERIFICATION.VerifyCodeRequest;
 import com.example.login.VERIFY_VERIFICATION.VerifyCodeResponse;
-
+import com.example.login.MODELS.ConfirmBookingRequest;
+import com.example.login.MODELS.ConfirmBookingResponse;
+import com.example.login.MODELS.CreatePaymentUrlRequest;
+import com.example.login.MODELS.CreatePaymentUrlResponse;
+import com.example.login.MODELS.LockSeatRequest;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path; // Import mới
@@ -66,4 +72,15 @@ public interface ApiService {
     Call<DeleteAccountResponse> deleteAccount();
     @GET("api/users/profile")
     Call<ProfileResponse> getUserProfile();
+
+
+    //Booking & Payment
+    @POST("/api/booking/lock")
+    Call<LockSeatResponse> lockSeat(@Body LockSeatRequest request);
+
+    @POST("/api/booking/confirm")
+    Call<ConfirmBookingResponse> confirmBooking(@Body ConfirmBookingRequest request);
+
+    @POST("/api/booking/create-payment-url")
+    Call<CreatePaymentUrlResponse> createPaymentUrl(@Body CreatePaymentUrlRequest request);
 }

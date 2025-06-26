@@ -20,19 +20,16 @@ import retrofit2.Response;
 
 public class SelectSeatViewModel extends ViewModel {
 
-    // LiveData để giữ danh sách ghế, Fragment sẽ lắng nghe sự thay đổi của nó
     private final MutableLiveData<List<Seat>> _seatList = new MutableLiveData<>();
     public LiveData<List<Seat>> getSeatList() {
         return _seatList;
     }
 
-    // Cờ để đảm bảo chỉ gọi API một lần duy nhất
     private boolean areSeatsLoaded = false;
 
-    // Phương thức để Fragment gọi khi cần tải dữ liệu ghế
     public void fetchSeats(ApiService apiService, String tripId, int capacity) {
         if (areSeatsLoaded) {
-            return; // Nếu đã tải rồi thì không làm gì cả
+            return;
         }
 
         apiService.getTicketsForTrip(tripId).enqueue(new Callback<TicketSeatListResponse>() {
@@ -41,36 +38,44 @@ public class SelectSeatViewModel extends ViewModel {
                 List<Seat> freshSeatList = new ArrayList<>();
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<TicketSeatResponse> apiSeats = response.body().getData();
-                    Map<String, String> apiSeatStatusMap = new HashMap<>();
+                    Map<String, TicketSeatResponse> apiSeatMap = new HashMap<>();
                     if (apiSeats != null) {
                         for (TicketSeatResponse ticket : apiSeats) {
-                            apiSeatStatusMap.put(ticket.getSeatNumber(), ticket.getStatus());
+                            apiSeatMap.put(ticket.getSeatNumber(), ticket);
                         }
                     }
+
                     for (int i = 1; i <= capacity; i++) {
-                        String seatNumDisplay = String.format(Locale.US, "%02d", i);
                         String seatNumLookup = String.valueOf(i);
-                        String status = apiSeatStatusMap.getOrDefault(seatNumLookup, "available");
-                        freshSeatList.add(new Seat(seatNumDisplay, status));
+                        String seatNumDisplay = String.format(Locale.US, "%02d", i);
+                        TicketSeatResponse ticket = apiSeatMap.get(seatNumLookup);
+
+                        if (ticket != null) {
+                            // Use ticket data if it exists
+                            freshSeatList.add(new Seat(ticket.getId(), seatNumDisplay, ticket.getStatus()));
+                        } else {
+                            // Otherwise, it's an available seat with no ticket ID yet
+                            freshSeatList.add(new Seat(null, seatNumDisplay, "available"));
+                        }
                     }
                 } else {
-                    // Nếu có lỗi, tạo danh sách ghế mặc định
+                    // On error, create a default list of available seats
                     for (int i = 1; i <= capacity; i++) {
-                        freshSeatList.add(new Seat(String.format(Locale.US, "%02d", i), "available"));
+                        String seatNumDisplay = String.format(Locale.US, "%02d", i);
+                        freshSeatList.add(new Seat(null, seatNumDisplay, "available"));
                     }
                 }
-                // Cập nhật LiveData, Fragment sẽ tự động nhận được dữ liệu mới
                 _seatList.postValue(freshSeatList);
-                areSeatsLoaded = true; // Đánh dấu đã tải xong
+                areSeatsLoaded = true;
             }
 
             @Override
             public void onFailure(Call<TicketSeatListResponse> call, Throwable t) {
-                // Xử lý lỗi mạng
                 Log.e("SelectSeatViewModel", "API call failed", t);
                 List<Seat> fallbackList = new ArrayList<>();
                 for (int i = 1; i <= capacity; i++) {
-                    fallbackList.add(new Seat(String.format(Locale.US, "%02d", i), "available"));
+                    String seatNumDisplay = String.format(Locale.US, "%02d", i);
+                    fallbackList.add(new Seat(null, seatNumDisplay, "available"));
                 }
                 _seatList.postValue(fallbackList);
                 areSeatsLoaded = true;
@@ -78,22 +83,21 @@ public class SelectSeatViewModel extends ViewModel {
         });
     }
 
-    // Phương thức để xử lý việc chọn/bỏ chọn một ghế
-    public void toggleSeatSelection(Seat clickedSeat) {
+    public void toggleSeatSelection(Seat seatToToggle) {
         List<Seat> currentList = _seatList.getValue();
         if (currentList == null) return;
 
+        List<Seat> newList = new ArrayList<>();
         for (Seat seat : currentList) {
-            if (seat.getSeatNumber().equals(clickedSeat.getSeatNumber())) {
+            if (seat.getSeatNumber().equals(seatToToggle.getSeatNumber())) {
                 if (seat.getStatus() == SeatStatus.AVAILABLE) {
                     seat.setStatus(SeatStatus.SELECTED);
                 } else if (seat.getStatus() == SeatStatus.SELECTED) {
                     seat.setStatus(SeatStatus.AVAILABLE);
                 }
-                break;
             }
+            newList.add(seat);
         }
-        // Cập nhật lại LiveData để giao diện được vẽ lại với trạng thái mới
-        _seatList.setValue(currentList);
+        _seatList.setValue(newList);
     }
 }

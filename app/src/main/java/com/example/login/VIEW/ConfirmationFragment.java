@@ -11,8 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import com.example.login.API.ApiClient;
+import com.example.login.API.ApiService;
+import com.example.login.MODELS.LockSeatRequest;
+import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
+import com.example.login.MODELS.Route;
 import com.example.login.R;
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -23,28 +28,26 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmationFragment extends Fragment {
 
     private Trip tripToShow;
     private ArrayList<Seat> selectedSeats;
+    private ApiService apiService;
+    private Button continueButton;
+    private int lockedTicketsCount = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Nhận dữ liệu từ Bundle một cách an toàn
-        if (getArguments() != null) {
-            Serializable tripSerializable = getArguments().getSerializable("CONFIRMATION_TRIP");
-            if (tripSerializable instanceof Trip) {
-                tripToShow = (Trip) tripSerializable;
-            }
+        apiService = ApiClient.getAuthAPI(getContext());
 
-            Serializable seatsSerializable = getArguments().getSerializable("CONFIRMATION_SEATS");
-            if (seatsSerializable instanceof ArrayList) {
-                // Cần kiểm tra kiểu của phần tử trong list, nhưng để đơn giản, ta ép kiểu trực tiếp
-                // Trong thực tế, cần vòng lặp để kiểm tra và ép kiểu từng phần tử
-                selectedSeats = (ArrayList<Seat>) seatsSerializable;
-            }
+        if (getArguments() != null) {
+            tripToShow = (Trip) getArguments().getSerializable("CONFIRMATION_TRIP");
+            selectedSeats = (ArrayList<Seat>) getArguments().getSerializable("CONFIRMATION_SEATS");
         }
     }
 
@@ -60,26 +63,83 @@ public class ConfirmationFragment extends Fragment {
 
         if (tripToShow == null || selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "Error: Confirmation data is missing.", Toast.LENGTH_LONG).show();
-            // Quay lại màn hình trước nếu thiếu dữ liệu
             Navigation.findNavController(view).popBackStack();
             return;
         }
 
-        // Gán dữ liệu lên giao diện
         populateViews(view);
 
-        // Thiết lập sự kiện click cho nút "Continue"
-        Button continueButton = view.findViewById(R.id.continue_button);
+        continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("PAYMENT_TRIP", tripToShow);
-            bundle.putSerializable("PAYMENT_SEATS", selectedSeats);
-            Navigation.findNavController(v).navigate(R.id.action_confirmation_to_payment, bundle);
+            continueButton.setEnabled(false);
+            Toast.makeText(getContext(), "Locking selected tickets...", Toast.LENGTH_SHORT).show();
+            lockAllSelectedTickets();
         });
     }
 
+    private void lockAllSelectedTickets() {
+        lockedTicketsCount = 0;
+        if (selectedSeats == null || selectedSeats.isEmpty()) {
+            Toast.makeText(getContext(), "No seats selected.", Toast.LENGTH_SHORT).show();
+            continueButton.setEnabled(true);
+            return;
+        }
+        lockTicketAtIndex(0);
+    }
+
+    private void lockTicketAtIndex(int index) {
+        if (index >= selectedSeats.size()) {
+            if (lockedTicketsCount == selectedSeats.size()) {
+                navigateToPayment();
+            } else {
+                Toast.makeText(getContext(), "Failed to lock all seats. Please try again.", Toast.LENGTH_LONG).show();
+                continueButton.setEnabled(true);
+            }
+            return;
+        }
+
+        Seat seat = selectedSeats.get(index);
+        String ticketId = seat.getId();
+
+        if (ticketId == null || ticketId.isEmpty()) {
+            Toast.makeText(getContext(), "Error: Ticket ID missing for seat " + seat.getSeatNumber(), Toast.LENGTH_SHORT).show();
+            continueButton.setEnabled(true);
+            return;
+        }
+
+        apiService.lockSeat(new LockSeatRequest(ticketId)).enqueue(new Callback<LockSeatResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    lockedTicketsCount++;
+                    lockTicketAtIndex(index + 1);
+                } else {
+                    String errorMsg = "Failed to lock seat " + seat.getSeatNumber() + ".";
+                    if (response.body() != null) {
+                        errorMsg += " " + response.body().getMessage();
+                    }
+                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    continueButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Network Error while locking seats.", Toast.LENGTH_SHORT).show();
+                continueButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void navigateToPayment() {
+        Toast.makeText(getContext(), "All seats locked successfully!", Toast.LENGTH_SHORT).show();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("PAYMENT_TRIP", tripToShow);
+        bundle.putSerializable("PAYMENT_SEATS", selectedSeats);
+        Navigation.findNavController(requireView()).navigate(R.id.action_confirmation_to_payment, bundle);
+    }
+
     private void populateViews(View view) {
-        // Ánh xạ Views
         TextView tvRouteTitle = view.findViewById(R.id.tv_route_title_confirmation);
         View tripInfoCard = view.findViewById(R.id.trip_info_card);
         TextView departureTime = tripInfoCard.findViewById(R.id.departure_time_text);
@@ -90,16 +150,10 @@ public class ConfirmationFragment extends Fragment {
         TextView tripDuration = tripInfoCard.findViewById(R.id.trip_duration_text);
         TextView seatNumberValue = view.findViewById(R.id.seat_number_value);
 
-        // TODO: Ánh xạ các TextView cho thông tin hành khách (sẽ được tải từ API)
-        // TextView fullnameValue = view.findViewById(R.id.fullname_value);
-        // TextView phoneValue = view.findViewById(R.id.phone_value);
-        // TextView emailValue = view.findViewById(R.id.email_value);
-
-        // Điền dữ liệu
         String routeTitleText = tripToShow.getRoute().getOriginStation().getName() + " → " + tripToShow.getRoute().getDestinationStation().getName();
         tvRouteTitle.setText(routeTitleText);
-        departureTime.setText(formatTime(tripToShow.getDepartureTime()));
-        arrivalTime.setText(formatTime(tripToShow.getArrivalTime()));
+        departureTime.setText(formatTime(tripToShow.getDepartureTime(), "HH:mm"));
+        arrivalTime.setText(formatTime(tripToShow.getArrivalTime(), "HH:mm"));
         departureLocation.setText(tripToShow.getRoute().getOriginStation().getName());
         destinationLocation.setText(tripToShow.getRoute().getDestinationStation().getName());
 
@@ -120,15 +174,14 @@ public class ConfirmationFragment extends Fragment {
         seatNumberValue.setText(String.join(", ", seatNumbers));
     }
 
-    private String formatTime(String utcDateString) {
+    private String formatTime(String utcDateString, String format) {
         if (utcDateString == null) return "N/A";
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = utcFormat.parse(utcDateString);
-            SimpleDateFormat localFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            localFormat.setTimeZone(TimeZone.getDefault());
-            return localFormat.format(date);
+            SimpleDateFormat desiredFormat = new SimpleDateFormat(format, Locale.getDefault());
+            return desiredFormat.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
             return "N/A";
