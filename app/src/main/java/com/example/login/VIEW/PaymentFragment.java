@@ -1,8 +1,10 @@
 package com.example.login.VIEW;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,8 @@ import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.User;
 import com.example.login.R;
+import com.vnpay.authentication.VNP_AuthenticationActivity;
+import com.vnpay.authentication.VNP_SdkCompletedCallback;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,10 +46,10 @@ public class PaymentFragment extends Fragment {
     private ApiService apiService;
 
     private TextView tvRouteTitle, tvDate, tvPaymentRoute, tvPaymentDepartureTime,
-            tvTicketCount, tvSeatPosition, tvPassengerName, tvPassengerPhone,
-            tvPassengerEmail, tvTicketPrice, tvPaymentFee, tvTotalPrice,
-            tvPickup, tvDropoff;
+            tvTicketCount, tvSeatPosition, tvPickup, tvDropoff, tvPassengerName,
+            tvPassengerPhone, tvPassengerEmail, tvTicketPrice, tvPaymentFee, tvTotalPrice;
     private Button payButton;
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,21 +71,24 @@ public class PaymentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar_payment);
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
-
-        bindViews(view);
-
-        if (trip != null && seats != null) {
-            populateData();
-        } else {
+        if (trip == null || seats == null || seats.isEmpty()) {
             Toast.makeText(getContext(), "Error: Payment data is missing.", Toast.LENGTH_LONG).show();
+            Navigation.findNavController(view).popBackStack();
+            return;
         }
 
-        payButton.setOnClickListener(v -> showPaymentMethodDialog());
+        bindViews(view);
+        populateData();
+
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        payButton.setOnClickListener(v -> {
+            payButton.setEnabled(false);
+            showPaymentMethodDialog();
+        });
     }
 
     private void bindViews(View view) {
+        toolbar = view.findViewById(R.id.toolbar_payment);
         tvRouteTitle = view.findViewById(R.id.tv_route_title_payment);
         tvDate = view.findViewById(R.id.tv_date_payment);
         tvPaymentRoute = view.findViewById(R.id.tv_payment_route);
@@ -105,11 +112,11 @@ public class PaymentFragment extends Fragment {
         tvPaymentRoute.setText(routeTitleText);
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-            Date departureDateObj = utcFormat.parse(trip.getDepartureTime());
-            SimpleDateFormat localDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", new Locale("vi", "VN"));
-            SimpleDateFormat localTimeFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US);
-            tvDate.setText(localDateFormat.format(departureDateObj));
-            tvPaymentDepartureTime.setText(localTimeFormat.format(departureDateObj));
+            Date departureDate = utcFormat.parse(trip.getDepartureTime());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            tvDate.setText(dateFormat.format(departureDate));
+            tvPaymentDepartureTime.setText(timeFormat.format(departureDate));
         } catch (Exception e) {
             tvDate.setText("N/A");
             tvPaymentDepartureTime.setText("N/A");
@@ -139,18 +146,17 @@ public class PaymentFragment extends Fragment {
             public void onResponse(@NonNull Call<ProfileResponse> call, @NonNull Response<ProfileResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     User user = response.body().getData();
-                    if (user != null) {
-                        tvPassengerName.setText(user.getFullname());
-                        tvPassengerPhone.setText(user.getPhoneNumber());
-                        tvPassengerEmail.setText(user.getEmail());
-                    }
+                    tvPassengerName.setText(user.getFullname());
+                    tvPassengerPhone.setText(user.getPhoneNumber());
+                    tvPassengerEmail.setText(user.getEmail());
                 } else {
-                    Toast.makeText(getContext(), "Failed to load user info", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to load user info.", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ProfileResponse> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Network error loading user info.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -162,11 +168,10 @@ public class PaymentFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Choose Payment Method")
                 .setItems(paymentMethods, (dialog, which) -> {
-                    String selectedMethod = paymentMethodKeys[which];
-                    payButton.setEnabled(false);
-                    Toast.makeText(getContext(), "Processing booking...", Toast.LENGTH_SHORT).show();
-                    confirmBooking(selectedMethod);
-                });
+                    Toast.makeText(getContext(), "Creating booking...", Toast.LENGTH_SHORT).show();
+                    confirmBooking(paymentMethodKeys[which]);
+                })
+                .setOnCancelListener(dialog -> payButton.setEnabled(true));
         builder.create().show();
     }
 
@@ -187,11 +192,22 @@ public class PaymentFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<ConfirmBookingResponse> call, @NonNull Response<ConfirmBookingResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     String bookingId = response.body().getData().getBookingId();
-                    Toast.makeText(getContext(), "Booking created. Generating payment link...", Toast.LENGTH_SHORT).show();
-                    createPaymentUrl(bookingId);
+                    if ("bank_transfer".equals(paymentMethod)) {
+                        createPaymentUrl(bookingId);
+                    } else {
+                        Toast.makeText(getContext(), "Booking successful! Please pay in cash.", Toast.LENGTH_LONG).show();
+                        payButton.setEnabled(true);
+                        if (getView() != null) {
+                            Navigation.findNavController(getView()).popBackStack(R.id.buyTicketFragment, false);
+                        }
+                    }
                 } else {
-                    String errorMsg = "Booking failed: " + (response.body() != null ? response.body().getMessage() : "Unknown error");
+                    String errorMsg = "Booking failed.";
+                    if (response.body() != null) {
+                        errorMsg += " " + response.body().getMessage();
+                    }
                     Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
                     payButton.setEnabled(true);
                 }
@@ -212,32 +228,108 @@ public class PaymentFragment extends Fragment {
             public void onResponse(@NonNull Call<CreatePaymentUrlResponse> call, @NonNull Response<CreatePaymentUrlResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     String paymentUrl = response.body().getPaymentUrl();
-                    openPaymentUrlInBrowser(paymentUrl);
+                    if (paymentUrl != null && !paymentUrl.isEmpty()) {
+                        openVnpaySdk(paymentUrl,bookingId);
+
+                    } else {
+                        Toast.makeText(getContext(), "Received an empty payment URL.", Toast.LENGTH_LONG).show();
+                        payButton.setEnabled(true);
+                    }
                 } else {
-                    String errorMsg = "Failed to create payment URL: " + (response.body() != null ? response.body().getMessage() : "Unknown error");
+                    String errorMsg = "Failed to create payment URL.";
+                    if (response.body() != null) {
+                        errorMsg += " " + response.body().getMessage();
+                    }
                     Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    payButton.setEnabled(true);
                 }
-                payButton.setEnabled(true);
             }
 
             @Override
             public void onFailure(@NonNull Call<CreatePaymentUrlResponse> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Network Error creating payment URL.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Network Error while creating payment URL.", Toast.LENGTH_SHORT).show();
                 payButton.setEnabled(true);
             }
         });
     }
+//EX6ATLAM
+    private void openVnpaySdk(String paymentUrl, String bookingId) {
+        Intent intent = new Intent(requireActivity(), VNP_AuthenticationActivity.class);
+        intent.putExtra("url", paymentUrl);
+        intent.putExtra("tmn_code", "EX6ATLAM");
+        intent.putExtra("scheme", "paymentresult");
+        intent.putExtra("is_sandbox", true);
 
-    private void openPaymentUrlInBrowser(String url) {
-        if (url == null || url.isEmpty()) {
-            Toast.makeText(getContext(), "Invalid payment URL received.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(browserIntent);
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Could not open browser for payment.", Toast.LENGTH_LONG).show();
+        VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+            @Override
+            public void sdkAction(String action) {
+                if (action == null) return;
+
+                // Replace the existing Toast message with proper SDK action handling
+                switch (action) {
+                    case "AppBackAction":
+                        // User pressed back from SDK
+                        Toast.makeText(getActivity(), "Payment process canceled", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(requireView()).popBackStack();
+                        break;
+
+                    case "CallMobileBankingApp":
+                        // User selected payment via mobile banking app
+                        // Save PNR to check payment status later when app is reopened
+                        savePendingTransaction(bookingId);
+                        Toast.makeText(getActivity(), "Redirecting to banking app", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case "WebBackAction":
+                        // User pressed back from successful payment page
+                        Toast.makeText(getActivity(), "Payment succed", Toast.LENGTH_SHORT).show();
+                        Intent successBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        // Creating a URI with success response code
+                        Uri successBackData = Uri.parse("paymentresult://payment?vnp_ResponseCode=00");
+                        successBackIntent.setData(successBackData);
+                        startActivity(successBackIntent);
+                        getActivity().finish();
+
+                        break;
+
+                    case "FaildBackAction":
+                        // Payment transaction failed
+                        Intent failIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        // Creating a URI with failure response code
+                        Uri failData = Uri.parse("paymentresult://payment?vnp_ResponseCode=99");
+                        failIntent.setData(failData);
+                        startActivity(failIntent);
+                        getActivity().finish();
+                        break;
+
+                    case "SuccessBackAction":
+                        // Payment succeeded in webview
+                        Intent successIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        // Creating a URI with success response code
+                        Uri successData = Uri.parse("paymentresult://payment?vnp_ResponseCode=00");
+                        successIntent.setData(successData);
+                        startActivity(successIntent);
+                        getActivity().finish();
+                        break;
+
+                    default:
+                        Toast.makeText(getActivity(), "Unknown payment action", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+        startActivity(intent);
+    }
+
+    private void savePendingTransaction(String transactionId) {
+        // Save the transaction ID to SharedPreferences
+        if (getContext() != null && transactionId != null) {
+            getContext().getSharedPreferences("PaymentPrefs", Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("PENDING_TRANSACTION_ID", transactionId)
+                    .apply();
         }
     }
+
+
 }

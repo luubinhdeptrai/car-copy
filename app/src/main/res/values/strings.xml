@@ -3,4 +3,10 @@
 
     <string name="no_data_found_image_description">Hình ảnh biểu thị không tìm thấy dữ liệu</string>
 
+    <string name="payment_status_icon">Payment status icon</string>
+    <string name="back_to_home">Back to Home</string>
+    <string name="payment_successful">Payment Successful</string>
+    <string name="payment_successful_message">Your payment was successful. Thank you for your purchase!</string>
+    <string name="payment_failed">Payment Failed</string>
+    <string name="payment_failed_message">Payment failed. (Code: %1$s) Please try again or contact support.</string>
 </resources>
