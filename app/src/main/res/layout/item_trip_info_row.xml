@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Route" />
+        <TextView android:id="@+id/tv_payment_route" style="@style/PaymentValue" tools:text="Mien Tay - Vung Tau" />
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Departure time" />
+        <TextView android:id="@+id/tv_payment_departure_time" style="@style/PaymentValue" tools:text="17:30 25/06/2025" />
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Number of tickets" />
+        <TextView android:id="@+id/tv_payment_ticket_count" style="@style/PaymentValue" tools:text="2 tickets" />
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Seat position" />
+        <TextView android:id="@+id/tv_payment_seat_position" style="@style/PaymentValue" tools:text="14, 16" />
+    </RelativeLayout>
+</LinearLayout>

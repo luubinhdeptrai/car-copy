@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Ticket Price"/>
+        <TextView android:id="@+id/tv_payment_ticket_price" style="@style/PaymentValue" tools:text="280,000đ"/>
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:text="Payment Fee"/>
+        <TextView android:id="@+id/tv_payment_fee" style="@style/PaymentValue" tools:text="0đ"/>
+    </RelativeLayout>
+    <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <RelativeLayout style="@style/PaymentRow">
+        <TextView style="@style/PaymentLabel" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" android:text="Total"/>
+        <TextView android:id="@+id/tv_payment_total_price" style="@style/PaymentValue" android:textSize="18sp" android:textColor="@color/orange_primary" tools:text="280,000đ"/>
+    </RelativeLayout>
+</LinearLayout>

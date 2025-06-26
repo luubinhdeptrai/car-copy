@@ -39,6 +39,18 @@
         android:id="@+id/confirmationFragment"
         android:name="com.example.login.VIEW.ConfirmationFragment"
         android:label="Confirmation"
-        tools:layout="@layout/fragment_confirmation" />
+        tools:layout="@layout/fragment_confirmation" >
+        <!-- SỬA: Thêm action để điều hướng sang màn hình thanh toán -->
+        <action
+            android:id="@+id/action_confirmation_to_payment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+
+    <!-- THÊM: Khai báo Fragment mới cho màn hình thanh toán -->
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.example.login.VIEW.PaymentFragment"
+        android:label="Payment"
+        tools:layout="@layout/fragment_payment" />
 
 </navigation>
