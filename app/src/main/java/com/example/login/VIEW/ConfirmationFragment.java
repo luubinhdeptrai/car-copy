@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
-import com.example.login.MODELS.LockSeatRequest;
+import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,6 @@ public class ConfirmationFragment extends Fragment {
     private ArrayList<Seat> selectedSeats;
     private ApiService apiService;
     private Button continueButton;
-    private int lockedTicketsCount = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,43 +78,37 @@ public class ConfirmationFragment extends Fragment {
     }
 
     private void lockAllSelectedTickets() {
-        lockedTicketsCount = 0;
         if (selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "No seats selected.", Toast.LENGTH_SHORT).show();
             continueButton.setEnabled(true);
             return;
         }
-        lockTicketAtIndex(0);
-    }
 
-    private void lockTicketAtIndex(int index) {
-        if (index >= selectedSeats.size()) {
-            if (lockedTicketsCount == selectedSeats.size()) {
-                navigateToPayment();
+        List<String> ticketIds = new ArrayList<>();
+        for (Seat seat : selectedSeats) {
+            if (seat.getId() != null && !seat.getId().isEmpty()) {
+                ticketIds.add(seat.getId());
             } else {
-                Toast.makeText(getContext(), "Failed to lock all seats. Please try again.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Error: Ticket ID missing for seat " + seat.getSeatNumber(), Toast.LENGTH_SHORT).show();
                 continueButton.setEnabled(true);
+                return;
             }
-            return;
         }
 
-        Seat seat = selectedSeats.get(index);
-        String ticketId = seat.getId();
-
-        if (ticketId == null || ticketId.isEmpty()) {
-            Toast.makeText(getContext(), "Error: Ticket ID missing for seat " + seat.getSeatNumber(), Toast.LENGTH_SHORT).show();
+        if (ticketIds.isEmpty()) {
+            Toast.makeText(getContext(), "No valid ticket IDs to lock.", Toast.LENGTH_SHORT).show();
             continueButton.setEnabled(true);
             return;
         }
 
-        apiService.lockSeat(new LockSeatRequest(ticketId)).enqueue(new Callback<LockSeatResponse>() {
+        LockManySeatsRequest request = new LockManySeatsRequest(ticketIds);
+        apiService.lockManySeats(request).enqueue(new Callback<LockSeatResponse>() {
             @Override
             public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    lockedTicketsCount++;
-                    lockTicketAtIndex(index + 1);
+                    navigateToPayment();
                 } else {
-                    String errorMsg = "Failed to lock seat " + seat.getSeatNumber() + ".";
+                    String errorMsg = "Failed to lock seats.";
                     if (response.body() != null) {
                         errorMsg += " " + response.body().getMessage();
                     }

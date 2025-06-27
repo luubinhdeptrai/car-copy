@@ -24,6 +24,7 @@ import com.example.login.MODELS.ConfirmBookingResponse;
 import com.example.login.MODELS.CreatePaymentUrlRequest;
 import com.example.login.MODELS.CreatePaymentUrlResponse;
 import com.example.login.MODELS.LockSeatRequest;
+import com.example.login.MODELS.LockManySeatsRequest;
 import java.util.List;
 
 import retrofit2.Call;
@@ -77,6 +78,9 @@ public interface ApiService {
     //Booking & Payment
     @POST("/api/booking/lock")
     Call<LockSeatResponse> lockSeat(@Body LockSeatRequest request);
+
+    @POST("/api/booking/lock-many")
+    Call<LockSeatResponse> lockManySeats(@Body LockManySeatsRequest request);
 
     @POST("/api/booking/confirm")
     Call<ConfirmBookingResponse> confirmBooking(@Body ConfirmBookingRequest request);

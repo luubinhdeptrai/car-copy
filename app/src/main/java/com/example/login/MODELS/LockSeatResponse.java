@@ -1,6 +1,7 @@
 package com.example.login.MODELS;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 public class LockSeatResponse {
     @SerializedName("success")
@@ -10,7 +11,7 @@ public class LockSeatResponse {
     private String message;
 
     @SerializedName("data")
-    private Seat data;
+    private List<Seat> data;
 
     public boolean isSuccess() {
         return success;
@@ -20,7 +21,7 @@ public class LockSeatResponse {
         return message;
     }
 
-    public Seat getData() {
+    public List<Seat> getData() {
         return data;
     }
 }
