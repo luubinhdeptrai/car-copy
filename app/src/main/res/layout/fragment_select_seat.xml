@@ -1,6 +1,5 @@
-<!-- res/layout/fragment_select_seat.xml -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,7 +8,6 @@
     tools:context=".VIEW.SelectSeatFragment">
 
     <!-- 1. PHẦN CUỐI CÙNG (BOTTOM) - CỐ ĐỊNH -->
-    <!-- Phần này được đặt ở đây để ScrollView có thể tham chiếu đến nó -->
     <LinearLayout
         android:id="@+id/bottom_summary_layout"
         android:layout_width="match_parent"
@@ -31,19 +29,19 @@
             android:id="@+id/selected_seats_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1 ticket(s)\n15"
             android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="1 ticket(s)\n15" />
 
         <TextView
             android:id="@+id/price_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Price: 140,000đ"
             android:textColor="@color/orange_primary"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Price: 140,000đ" />
 
         <Button
             android:id="@+id/continue_button"
@@ -69,27 +67,28 @@
             android:gravity="center"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/tv_toolbar_route"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vũng Tàu -> TP. Hồ Chí Minh"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="Vung Tau → Ho Chi Minh City" />
             <TextView
+                android:id="@+id/tv_toolbar_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Friday, 20/06/2025"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@color/text_secondary"
+                tools:text="Friday, 20/06/2025" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <!-- 3. NỘI DUNG CUỘN (NẰM GIỮA) -->
-    <!-- Layout này sẽ tự động co giãn để lấp đầy không gian giữa Toolbar và phần cuối -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_select_seat"
-        android:layout_above="@id/bottom_summary_layout">
+        android:layout_above="@id/bottom_summary_layout"
+        android:layout_below="@id/toolbar_select_seat">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -108,11 +107,11 @@
                 android:textColor="@color/text_primary"
                 android:textStyle="bold" />
             <TextView
-                android:id="@+id/departure_date_value"
+                android:id="@+id/tv_departure_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="17:30 Friday, 20/06/2025"
-                android:textColor="@color/text_secondary" />
+                android:textColor="@color/text_secondary"
+                tools:text="17:30 Friday, 20/06/2025" />
 
             <!-- Bus Layout Container -->
             <LinearLayout
@@ -186,3 +185,4 @@
     </ScrollView>
 
 </RelativeLayout>
+    
