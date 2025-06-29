@@ -22,20 +22,22 @@ import com.example.login.MODELS.SeatStatus;
 import com.example.login.MODELS.Trip;
 import com.example.login.R;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class SelectSeatFragment extends Fragment {
 
-    // Views
     private GridLayout seatGridLeft, seatGridRight;
     private TextView selectedSeatsInfo, priceText;
     private Button continueButton;
     private Toolbar toolbar;
-
-    // Data & ViewModel
+    private TextView tvToolbarRoute, tvToolbarDate, tvDepartureDetails;
     private Trip selectedTrip;
     private ApiService apiService;
     private SelectSeatViewModel viewModel;
@@ -68,6 +70,7 @@ public class SelectSeatFragment extends Fragment {
         }
 
         bindViews(view);
+        populateTripInfo();
         setupClickListeners(view);
         observeViewModel();
 
@@ -81,6 +84,30 @@ public class SelectSeatFragment extends Fragment {
         priceText = view.findViewById(R.id.price_text);
         continueButton = view.findViewById(R.id.continue_button);
         toolbar = view.findViewById(R.id.toolbar_select_seat);
+        tvToolbarRoute = view.findViewById(R.id.tv_toolbar_route);
+        tvToolbarDate = view.findViewById(R.id.tv_toolbar_date);
+        tvDepartureDetails = view.findViewById(R.id.tv_departure_details);
+    }
+
+    private void populateTripInfo() {
+        String routeTitle = selectedTrip.getRoute().getOriginStation().getName() + " → " + selectedTrip.getRoute().getDestinationStation().getName();
+        tvToolbarRoute.setText(routeTitle);
+
+        try {
+            SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date departureDateObj = utcFormat.parse(selectedTrip.getDepartureTime());
+
+            SimpleDateFormat toolbarDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", Locale.US);
+            SimpleDateFormat detailsDateFormat = new SimpleDateFormat("HH:mm EEEE, dd/MM/yyyy", Locale.US);
+
+            tvToolbarDate.setText(toolbarDateFormat.format(departureDateObj));
+            tvDepartureDetails.setText(detailsDateFormat.format(departureDateObj));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            tvToolbarDate.setText("N/A");
+            tvDepartureDetails.setText("N/A");
+        }
     }
 
     private void observeViewModel() {
@@ -196,4 +223,3 @@ public class SelectSeatFragment extends Fragment {
         return selected;
     }
 }
-    
