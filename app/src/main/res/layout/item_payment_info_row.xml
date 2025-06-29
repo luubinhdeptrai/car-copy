@@ -6,16 +6,16 @@
     android:orientation="vertical">
     <RelativeLayout style="@style/PaymentRow">
         <TextView style="@style/PaymentLabel" android:text="Full name" />
-        <TextView android:id="@+id/tv_payment_fullname" style="@style/PaymentValue" tools:text="Luu Binh" />
+        <TextView android:id="@+id/tv_payment_fullname" style="@style/PaymentValue"  />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
         <TextView style="@style/PaymentLabel" android:text="Phone number" />
-        <TextView android:id="@+id/tv_payment_phone" style="@style/PaymentValue" tools:text="0823632539" />
+        <TextView android:id="@+id/tv_payment_phone" style="@style/PaymentValue"  />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
         <TextView style="@style/PaymentLabel" android:text="Email" />
-        <TextView android:id="@+id/tv_payment_email" style="@style/PaymentValue" tools:text="email@example.com" />
+        <TextView android:id="@+id/tv_payment_email" style="@style/PaymentValue"  />
     </RelativeLayout>
 </LinearLayout>
