@@ -3,7 +3,7 @@ package com.example.login.MODELS;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
-    @SerializedName("fullname")
+    @SerializedName("name")
     private String fullname;
     @SerializedName("email")
     private String email;
