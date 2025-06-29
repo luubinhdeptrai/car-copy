@@ -71,7 +71,7 @@ public interface ApiService {
     // THÊM MỚI: API để xoá tài khoản người dùng hiện tại
     @DELETE("api/users/deleteMe")
     Call<DeleteAccountResponse> deleteAccount();
-    @GET("api/users/profile")
+    @GET("api/users/me")
     Call<ProfileResponse> getUserProfile();
 
 
