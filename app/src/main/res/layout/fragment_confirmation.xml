@@ -58,7 +58,6 @@
                     android:layout_below="@id/passenger_info_title"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="16dp"
-                    android:text="Nguyen Dai Truong Danh"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
                 <TextView
@@ -76,7 +75,6 @@
                     android:layout_below="@id/fullname_value"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="8dp"
-                    android:text="0968411942"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
             </RelativeLayout>

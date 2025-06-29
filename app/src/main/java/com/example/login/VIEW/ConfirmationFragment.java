@@ -15,9 +15,10 @@ import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
 import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.LockSeatResponse;
+import com.example.login.MODELS.ProfileResponse; // Import a class
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
-import com.example.login.MODELS.Route;
+import com.example.login.MODELS.User; // Import a class
 import com.example.login.R;
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -40,6 +41,10 @@ public class ConfirmationFragment extends Fragment {
     private ApiService apiService;
     private Button continueButton;
 
+    // Add TextViews for user information
+    private TextView fullnameValue;
+    private TextView phoneValue;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,11 @@ public class ConfirmationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Bind the user info TextViews
+        fullnameValue = view.findViewById(R.id.fullname_value);
+        phoneValue = view.findViewById(R.id.phone_value);
+
+
         if (tripToShow == null || selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "Error: Confirmation data is missing.", Toast.LENGTH_LONG).show();
             Navigation.findNavController(view).popBackStack();
@@ -68,6 +78,9 @@ public class ConfirmationFragment extends Fragment {
         }
 
         populateViews(view);
+        // Fetch and display user information
+        fetchAndDisplayUserInfo();
+
 
         continueButton = view.findViewById(R.id.continue_button);
         continueButton.setOnClickListener(v -> {
@@ -76,6 +89,31 @@ public class ConfirmationFragment extends Fragment {
             lockAllSelectedTickets();
         });
     }
+
+    private void fetchAndDisplayUserInfo() {
+        apiService.getUserProfile().enqueue(new Callback<ProfileResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProfileResponse> call, @NonNull Response<ProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    User user = response.body().getData();
+                    fullnameValue.setText(user.getFullname());
+                    phoneValue.setText(user.getPhoneNumber());
+                } else {
+                    Toast.makeText(getContext(), "Failed to load user info.", Toast.LENGTH_SHORT).show();
+                    fullnameValue.setText("N/A");
+                    phoneValue.setText("N/A");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ProfileResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Network error loading user info.", Toast.LENGTH_SHORT).show();
+                fullnameValue.setText("N/A");
+                phoneValue.setText("N/A");
+            }
+        });
+    }
+
 
     private void lockAllSelectedTickets() {
         if (selectedSeats == null || selectedSeats.isEmpty()) {
