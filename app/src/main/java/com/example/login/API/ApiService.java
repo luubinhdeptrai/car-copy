@@ -25,6 +25,8 @@ import com.example.login.MODELS.CreatePaymentUrlRequest;
 import com.example.login.MODELS.CreatePaymentUrlResponse;
 import com.example.login.MODELS.LockSeatRequest;
 import com.example.login.MODELS.LockManySeatsRequest;
+import com.example.login.MODELS.PaymentStatusResponse;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -87,4 +89,8 @@ public interface ApiService {
 
     @POST("/api/booking/create-payment-url")
     Call<CreatePaymentUrlResponse> createPaymentUrl(@Body CreatePaymentUrlRequest request);
+
+    @GET("/api/booking/{bookingId}/payment-status")
+    Call<PaymentStatusResponse> getPaymentStatus(@Path("bookingId") String bookingId);
+
 }

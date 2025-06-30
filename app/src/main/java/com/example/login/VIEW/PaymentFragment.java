@@ -229,7 +229,7 @@ public class PaymentFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     String paymentUrl = response.body().getPaymentUrl();
                     if (paymentUrl != null && !paymentUrl.isEmpty()) {
-                        openVnpaySdk(paymentUrl,bookingId);
+                        openVnpaySdk(paymentUrl, bookingId);
 
                     } else {
                         Toast.makeText(getContext(), "Received an empty payment URL.", Toast.LENGTH_LONG).show();
@@ -252,7 +252,7 @@ public class PaymentFragment extends Fragment {
             }
         });
     }
-//EX6ATLAM
+
     private void openVnpaySdk(String paymentUrl, String bookingId) {
         Intent intent = new Intent(requireActivity(), VNP_AuthenticationActivity.class);
         intent.putExtra("url", paymentUrl);
@@ -264,13 +264,19 @@ public class PaymentFragment extends Fragment {
             @Override
             public void sdkAction(String action) {
                 if (action == null) return;
-
+                Toast.makeText(getActivity(), "VNPAY ACTION: " + action, Toast.LENGTH_SHORT).show();
                 // Replace the existing Toast message with proper SDK action handling
                 switch (action) {
                     case "AppBackAction":
-                        // User pressed back from SDK
-                        Toast.makeText(getActivity(), "Payment process canceled", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).popBackStack();
+                        // User pressed back from SDK, treat as a failed payment.
+                        Intent appBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        // Using response code for user cancellation
+                        Uri appBackData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
+                        appBackIntent.setData(appBackData);
+                        startActivity(appBackIntent);
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                        }
                         break;
 
                     case "CallMobileBankingApp":
@@ -282,21 +288,21 @@ public class PaymentFragment extends Fragment {
 
                     case "WebBackAction":
                         // User pressed back from successful payment page
-                        Toast.makeText(getActivity(), "Payment succed", Toast.LENGTH_SHORT).show();
-                        Intent successBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        Toast.makeText(getActivity(), "Payment failed", Toast.LENGTH_SHORT).show();
+                        Intent failedBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
                         // Creating a URI with success response code
-                        Uri successBackData = Uri.parse("paymentresult://payment?vnp_ResponseCode=00");
-                        successBackIntent.setData(successBackData);
-                        startActivity(successBackIntent);
+                        Uri successBackData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
+                        failedBackIntent.setData(successBackData);
+                        startActivity(failedBackIntent);
                         getActivity().finish();
 
                         break;
 
-                    case "FaildBackAction":
+                    case "FailedBackAction":
                         // Payment transaction failed
                         Intent failIntent = new Intent(getActivity(), PaymentResultActivity.class);
                         // Creating a URI with failure response code
-                        Uri failData = Uri.parse("paymentresult://payment?vnp_ResponseCode=99");
+                        Uri failData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
                         failIntent.setData(failData);
                         startActivity(failIntent);
                         getActivity().finish();
@@ -306,7 +312,7 @@ public class PaymentFragment extends Fragment {
                         // Payment succeeded in webview
                         Intent successIntent = new Intent(getActivity(), PaymentResultActivity.class);
                         // Creating a URI with success response code
-                        Uri successData = Uri.parse("paymentresult://payment?vnp_ResponseCode=00");
+                        Uri successData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
                         successIntent.setData(successData);
                         startActivity(successIntent);
                         getActivity().finish();
@@ -330,6 +336,4 @@ public class PaymentFragment extends Fragment {
                     .apply();
         }
     }
-
-
 }
