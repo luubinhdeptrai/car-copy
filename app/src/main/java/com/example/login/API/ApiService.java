@@ -79,21 +79,21 @@ public interface ApiService {
 
 
     //Booking & Payment
-    @POST("/api/booking/lock")
+    @POST("api/booking/lock")
     Call<LockSeatResponse> lockSeat(@Body LockSeatRequest request);
 
-    @POST("/api/booking/lock-many")
+    @POST("api/booking/lock-many")
     Call<LockSeatResponse> lockManySeats(@Body LockManySeatsRequest request);
 
-    @POST("/api/booking/confirm")
+    @POST("api/booking/confirm")
     Call<ConfirmBookingResponse> confirmBooking(@Body ConfirmBookingRequest request);
 
-    @POST("/api/booking/create-payment-url")
+    @POST("api/booking/create-payment-url")
     Call<CreatePaymentUrlResponse> createPaymentUrl(@Body CreatePaymentUrlRequest request);
 
-    @GET("/api/booking/{bookingId}/payment-status")
+    @GET("api/booking/{bookingId}/payment-status")
     Call<PaymentStatusResponse> getPaymentStatus(@Path("bookingId") String bookingId);
 
-    @GET("/api/booking/my-history")
+    @GET("api/booking/my-history")
     Call<BookingHistoryResponse> getMyBookingHistory();
 }
