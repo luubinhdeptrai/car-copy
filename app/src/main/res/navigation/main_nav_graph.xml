@@ -15,7 +15,11 @@
         android:id="@+id/navigation_history"
         android:name="com.example.login.VIEW.HistoryFragment"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_history_to_bookingDetails"
+            app:destination="@id/bookingDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notification"
@@ -29,7 +33,10 @@
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 
-    <!-- SỬA: Chúng ta không cần các action ở đây nữa -->
-    <!-- Việc điều hướng sẽ được xử lý bằng cách khởi chạy Activity mới -->
+    <fragment
+        android:id="@+id/bookingDetailsFragment"
+        android:name="com.example.login.VIEW.BookingDetailsFragment"
+        android:label="Booking Details"
+        tools:layout="@layout/fragment_booking_details" />
 
 </navigation>

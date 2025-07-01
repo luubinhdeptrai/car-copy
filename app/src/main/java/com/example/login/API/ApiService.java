@@ -26,6 +26,7 @@ import com.example.login.MODELS.CreatePaymentUrlResponse;
 import com.example.login.MODELS.LockSeatRequest;
 import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.PaymentStatusResponse;
+import com.example.login.MODELS.BookingHistoryResponse;
 
 import java.util.List;
 
@@ -93,4 +94,6 @@ public interface ApiService {
     @GET("/api/booking/{bookingId}/payment-status")
     Call<PaymentStatusResponse> getPaymentStatus(@Path("bookingId") String bookingId);
 
+    @GET("/api/booking/my-history")
+    Call<BookingHistoryResponse> getMyBookingHistory();
 }

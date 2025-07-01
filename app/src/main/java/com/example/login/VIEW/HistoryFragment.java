@@ -57,11 +57,11 @@ public class HistoryFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            // Trả về Fragment tương ứng với mỗi tab
-            // Ở đây, chúng ta có thể tạo các Fragment riêng như
-            // PastTripsFragment và UpcomingTripsFragment
-            // Để đơn giản, tôi sẽ dùng một Fragment trống
-            return new Fragment(); // TODO: Thay thế bằng Fragment thực tế
+            if (position == 0) {
+                return new HistoryTabFragment();
+            } else {
+                return new DepartingSoonTabFragment();
+            }
         }
 
         @Override

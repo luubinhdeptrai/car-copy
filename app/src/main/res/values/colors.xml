@@ -10,12 +10,18 @@
     <!-- Custom colors for payment status -->
     <color name="orange_primary">#F4511E</color>
     <color name="orange_dark">#D84315</color>
-    <color name="orange_light">#FF7043</color>
+
     <color name="grey_background">#F5F5F5</color>
-    <color name="text_primary">#212121</color>
+
     <color name="text_secondary">#757575</color>
     <color name="divider">#BDBDBD</color>
     <color name="success_green">#4CAF50</color>
     <color name="error_red">#F44336</color>
     <color name="pending_yellow">#FFC107</color>
+    <!-- Additional colors for history feature -->
+    <color name="orange_light">#FFF3E0</color>
+    <color name="gray_light">#E0E0E0</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="text_primary">#212121</color>
+
 </resources>
