@@ -9,6 +9,7 @@ import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
+import com.example.login.MODELS.UpdateProfileRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeResponse;
 import com.example.login.SEND_VERIFICATION.EmailRequest;
@@ -96,4 +97,7 @@ public interface ApiService {
 
     @GET("api/booking/my-history")
     Call<BookingHistoryResponse> getMyBookingHistory();
+
+    @PATCH("api/users/updateMe")
+    Call<ProfileResponse> updateUserProfile(@Body UpdateProfileRequest request);
 }
