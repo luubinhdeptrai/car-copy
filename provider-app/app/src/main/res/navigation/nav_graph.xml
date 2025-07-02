@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.providerapp.features.home.ui.HomeFragment"
+        android:label="Trang chủ"
+        tools:layout="@layout/fragment_home" >
+
+        <action
+            android:id="@+id/action_homeFragment_to_vehicleFragment"
+            app:destination="@id/vehicleFragment" />
+
+        <action
+            android:id="@+id/action_homeFragment_to_driverListFragment"
+            app:destination="@id/driverListFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/tripListFragment"
+        android:name="com.example.providerapp.features.trip.ui.TripListFragment"
+        android:label="Danh sách chuyến đi"
+        tools:layout="@layout/fragment_trip_list" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.providerapp.features.notification.ui.NotificationFragment"
+        android:label="Thông báo"
+        tools:layout="@layout/fragment_notification" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.providerapp.features.profile.ui.ProfileFragment"
+        android:label="Tài khoản"
+        tools:layout="@layout/fragment_profile" />
+
+
+    <fragment
+        android:id="@+id/vehicleFragment"
+        android:name="com.example.providerapp.features.vehicle.ui.VehicleFragment"
+        android:label="Quản lý xe"
+        tools:layout="@layout/fragment_vehicle_list" >
+        <action
+            android:id="@+id/action_vehicleFragment_to_addVehicleFragment"
+            app:destination="@id/addVehicleFragment" />
+        <action
+            android:id="@+id/action_vehicleFragment_to_editVehicleFragment"
+            app:destination="@id/editVehicleFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addVehicleFragment"
+        android:name="com.example.providerapp.features.vehicle.ui.AddVehicleFragment"
+        android:label="Thêm xe mới"
+        tools:layout="@layout/fragment_add_vehicle" />
+
+    <fragment
+        android:id="@+id/editVehicleFragment"
+        android:name="com.example.providerapp.features.vehicle.ui.EditVehicleFragment"
+        android:label="Chỉnh sửa xe"
+        tools:layout="@layout/fragment_edit_vehicle">
+        <argument
+            android:name="vehicle"
+            app:argType="com.example.providerapp.data.model.Vehicle" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/driverListFragment"
+        android:name="com.example.providerapp.features.driver.ui.DriverListFragment"
+        android:label="Quản lý tài xế"
+        tools:layout="@layout/fragment_driver_list">
+        <action
+            android:id="@+id/action_driverListFragment_to_addDriverFragment"
+            app:destination="@id/addDriverFragment" />
+        <action
+            android:id="@+id/action_driverListFragment_to_editDriverFragment"
+            app:destination="@id/editDriverFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addDriverFragment"
+        android:name="com.example.providerapp.features.driver.ui.AddDriverFragment"
+        android:label="Thêm tài xế"
+        tools:layout="@layout/fragment_add_driver" />
+
+    <fragment
+        android:id="@+id/editDriverFragment"
+        android:name="com.example.providerapp.features.driver.ui.EditDriverFragment"
+        android:label="Sửa thông tin tài xế"
+        tools:layout="@layout/fragment_edit_driver">
+        <argument
+            android:name="driver"
+            app:argType="com.example.providerapp.data.model.Driver" />
+    </fragment>
+
+</navigation>
