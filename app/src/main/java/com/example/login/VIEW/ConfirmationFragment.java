@@ -1,23 +1,27 @@
 package com.example.login.VIEW;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
-import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
+import com.example.login.MODELS.UnlockSeatsRequest;
 import com.example.login.MODELS.User;
 import com.example.login.R;
 import java.io.Serializable;
@@ -40,6 +44,7 @@ public class ConfirmationFragment extends Fragment {
     private ArrayList<Seat> selectedSeats;
     private ApiService apiService;
     private Button continueButton;
+    private Toolbar toolbar;
 
     private TextView fullnameValue;
     private TextView phoneValue;
@@ -65,9 +70,11 @@ public class ConfirmationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Ánh xạ các views
         fullnameValue = view.findViewById(R.id.fullname_value);
         phoneValue = view.findViewById(R.id.phone_value);
-
+        continueButton = view.findViewById(R.id.continue_button);
+        toolbar = view.findViewById(R.id.toolbar_confirmation);
 
         if (tripToShow == null || selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "Error: Confirmation data is missing.", Toast.LENGTH_LONG).show();
@@ -78,19 +85,58 @@ public class ConfirmationFragment extends Fragment {
         populateViews(view);
         fetchAndDisplayUserInfo();
 
-        continueButton = view.findViewById(R.id.continue_button);
+        // Xử lý nút back -> Sẽ gọi API unlock ghế
+        toolbar.setNavigationOnClickListener(v -> handleBackPressWithUnlock());
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleBackPressWithUnlock();
+            }
+        });
 
-        // << SỬA ĐỔI LOGIC >>
-        // 1. Vô hiệu hóa nút Continue ngay từ đầu
-        continueButton.setEnabled(false);
-
-        // 2. Gán sự kiện click cho nút Continue chỉ để chuyển màn hình
+        // Nút continue bây giờ chỉ có nhiệm vụ điều hướng, mặc định là bật
+        continueButton.setEnabled(true);
         continueButton.setOnClickListener(v -> navigateToPayment());
-
-        // 3. Tự động khóa vé ngay khi màn hình được tạo
-        Toast.makeText(getContext(), "Locking selected tickets...", Toast.LENGTH_SHORT).show();
-        lockAllSelectedTickets();
     }
+
+    private void handleBackPressWithUnlock() {
+        toolbar.setNavigationOnClickListener(null); // Vô hiệu hóa để tránh click nhiều lần
+
+        Toast.makeText(getContext(), "Cancelling...", Toast.LENGTH_SHORT).show();
+
+        List<String> ticketIds = new ArrayList<>();
+        for (Seat seat : selectedSeats) {
+            ticketIds.add(seat.getId());
+        }
+
+        UnlockSeatsRequest request = new UnlockSeatsRequest(ticketIds);
+        apiService.unlockSeats(request).enqueue(new Callback<LockSeatResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
+                // << THÊM TOAST TẠI ĐÂY >>
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Seats have been unlocked.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Failed to unlock seats.", Toast.LENGTH_SHORT).show();
+                }
+
+                Log.d("ConfirmationFragment", "Unlock seats completed, navigating back.");
+                if (getView() != null) {
+                    Navigation.findNavController(getView()).popBackStack();
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
+                // << THÊM TOAST TẠI ĐÂY >>
+                Toast.makeText(getContext(), "Failed to unlock seats due to network error.", Toast.LENGTH_SHORT).show();
+                Log.e("ConfirmationFragment", "Unlock seats failed: " + t.getMessage());
+                if (getView() != null) {
+                    Navigation.findNavController(getView()).popBackStack();
+                }
+            }
+        });
+    }
+
 
     private void fetchAndDisplayUserInfo() {
         apiService.getUserProfile().enqueue(new Callback<ProfileResponse>() {
@@ -112,57 +158,6 @@ public class ConfirmationFragment extends Fragment {
                 Toast.makeText(getContext(), "Network error loading user info.", Toast.LENGTH_SHORT).show();
                 fullnameValue.setText("N/A");
                 phoneValue.setText("N/A");
-            }
-        });
-    }
-
-
-    private void lockAllSelectedTickets() {
-        if (selectedSeats == null || selectedSeats.isEmpty()) {
-            Toast.makeText(getContext(), "No seats selected.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        List<String> ticketIds = new ArrayList<>();
-        for (Seat seat : selectedSeats) {
-            if (seat.getId() != null && !seat.getId().isEmpty()) {
-                ticketIds.add(seat.getId());
-            } else {
-                Toast.makeText(getContext(), "Error: Ticket ID missing for seat " + seat.getSeatNumber(), Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
-        if (ticketIds.isEmpty()) {
-            Toast.makeText(getContext(), "No valid ticket IDs to lock.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        LockManySeatsRequest request = new LockManySeatsRequest(ticketIds);
-        apiService.lockManySeats(request).enqueue(new Callback<LockSeatResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    // << SỬA ĐỔI LOGIC >>
-                    // Nếu khóa vé thành công, chỉ hiển thị thông báo và KÍCH HOẠT nút Continue
-                    Toast.makeText(getContext(), "All seats locked successfully!", Toast.LENGTH_SHORT).show();
-                    if (continueButton != null) {
-                        continueButton.setEnabled(true);
-                    }
-                } else {
-                    String errorMsg = "Failed to lock seats.";
-                    if (response.body() != null) {
-                        errorMsg += " " + response.body().getMessage();
-                    }
-                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
-                    // Nếu thất bại, nút Continue vẫn bị vô hiệu hóa, người dùng phải quay lại
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Network Error while locking seats.", Toast.LENGTH_SHORT).show();
-                // Nếu thất bại, nút Continue vẫn bị vô hiệu hóa, người dùng phải quay lại
             }
         });
     }
