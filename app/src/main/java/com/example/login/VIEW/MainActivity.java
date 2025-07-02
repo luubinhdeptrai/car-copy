@@ -1,13 +1,12 @@
 package com.example.login.VIEW;
-
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.example.login.R; // Thay bằng package của bạn
+import com.example.login.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Tìm NavHostFragment và lấy NavController
+        // Tìm NavController từ NavHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.main_nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
@@ -25,25 +24,10 @@ public class MainActivity extends AppCompatActivity {
         // Tìm BottomNavigationView
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation_view);
 
-        // --- SỬA LỖI: Thay thế setupWithNavController bằng listener tùy chỉnh ---
-        bottomNav.setOnItemSelectedListener(item -> {
-            // Tạo các tùy chọn điều hướng
-            NavOptions.Builder navOptionsBuilder = new NavOptions.Builder();
+        // Kết nối BottomNavigationView với NavController
+        // Việc này sẽ tự động xử lý việc chuyển đổi fragment khi nhấn vào menu
+        NavigationUI.setupWithNavController(bottomNav, navController);
 
-            // Tránh tạo lại màn hình nếu đã ở trên cùng
-            navOptionsBuilder.setLaunchSingleTop(true);
-
-            // Xóa tất cả các màn hình con trên stack khi chuyển tab
-            // để luôn quay về màn hình gốc của tab đó.
-            navOptionsBuilder.setPopUpTo(item.getItemId(), true);
-
-            NavOptions navOptions = navOptionsBuilder.build();
-
-            // Thực hiện điều hướng với các tùy chọn đã thiết lập
-            navController.navigate(item.getItemId(), null, navOptions);
-
-            return true;
-        });
+        // Không còn FloatingActionButton nên không cần listener nữa
     }
 }
-    
