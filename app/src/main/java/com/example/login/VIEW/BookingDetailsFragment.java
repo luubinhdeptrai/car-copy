@@ -157,7 +157,7 @@ public class BookingDetailsFragment extends Fragment {
             case "pending_approval":
                 approval = "Chờ xác nhận";
                 break;
-            case "rejected":
+            case "cancelled":
                 approval = "Từ chối";
                 break;
             default:
@@ -172,7 +172,7 @@ public class BookingDetailsFragment extends Fragment {
             case "cash":
                 return "Tiền mặt";
             case "bank_transfer":
-                return "Chuyển khoản";
+                return "Thanh toán VNPAY";
             case "vnpay":
                 return "VNPay";
             default:

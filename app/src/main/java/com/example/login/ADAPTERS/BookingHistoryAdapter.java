@@ -125,13 +125,13 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
             }
 
             switch (approvalStatus) {
-                case "approved":
+                case "confirmed_by_provider":
                     approval = "Đã duyệt";
                     break;
                 case "pending_approval":
                     approval = "Chờ duyệt";
                     break;
-                case "rejected":
+                case "cancelled":
                     approval = "Từ chối";
                     break;
                 default:
