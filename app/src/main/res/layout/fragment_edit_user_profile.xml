@@ -14,7 +14,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Toolbar -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +24,6 @@
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"/>
 
-        <!-- Ảnh đại diện với icon camera -->
         <FrameLayout
             android:layout_width="96dp"
             android:layout_height="96dp"
@@ -47,7 +45,6 @@
                 app:tint="@color/white" />
         </FrameLayout>
 
-        <!-- Các trường thông tin -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +56,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Phone Number (Read-only) -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView style="@style/UserInfoLabel" android:text="Phone number" />
                     <TextView
@@ -69,23 +65,21 @@
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Full Name (Editable) -->
                 <RelativeLayout android:id="@+id/edit_full_name_layout" style="@style/UserInfoRowClickable">
                     <TextView style="@style/UserInfoLabel" android:text="Full name *" />
-                    <!-- SỬA: Thêm app:drawableTint để đổi màu icon -->
                     <TextView android:id="@+id/tv_edit_full_name" style="@style/UserInfoValue.Editable" android:text="Nguyễn Đại Trường Danh" app:drawableTint="@color/text_secondary"/>
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Email (Editable) -->
-                <RelativeLayout android:id="@+id/edit_email_layout" style="@style/UserInfoRowClickable">
+                <RelativeLayout style="@style/UserInfoRow">
                     <TextView style="@style/UserInfoLabel" android:text="Email" />
-                    <!-- SỬA: Thêm app:drawableTint để đổi màu icon -->
-                    <TextView android:id="@+id/tv_edit_email" style="@style/UserInfoValue.Editable" android:text="Please update" app:drawableTint="@color/text_secondary"/>
+                    <TextView
+                        android:id="@+id/tv_edit_email"
+                        style="@style/UserInfoValue"
+                        android:text="Please update" />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Gender (Radio) -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView style="@style/UserInfoLabel" android:text="Gender" />
                     <RadioGroup
@@ -96,16 +90,13 @@
                         android:orientation="horizontal">
                         <RadioButton android:id="@+id/radio_male" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Male"/>
                         <RadioButton android:id="@+id/radio_female" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Female"/>
-                        <!-- SỬA: Thêm mục "Others" -->
                         <RadioButton android:id="@+id/radio_other" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Others"/>
                     </RadioGroup>
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Birthday (Editable) -->
                 <RelativeLayout android:id="@+id/edit_birthday_layout" style="@style/UserInfoRowClickable">
                     <TextView style="@style/UserInfoLabel" android:text="Birthday" />
-                    <!-- SỬA: Thêm app:drawableTint để đổi màu icon -->
                     <TextView android:id="@+id/tv_edit_birthday" style="@style/UserInfoValue.Editable" android:text="Please update" app:drawableTint="@color/text_secondary"/>
                 </RelativeLayout>
 
