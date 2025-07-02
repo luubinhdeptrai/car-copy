@@ -1,21 +1,32 @@
 package com.example.login.VIEW;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.login.VIEW.TicketDetailsAdapter;
+import com.example.login.API.ApiClient;
+import com.example.login.API.ApiService;
 import com.example.login.MODELS.BookingHistoryItem;
+import com.example.login.MODELS.CanReviewResponse;
 import com.example.login.R;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -24,18 +35,33 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BookingDetailsFragment extends Fragment {
 
     private BookingHistoryItem booking;
+    private ApiService apiService;
+
+    // Khai báo các View
     private Toolbar toolbar;
-    private TextView providerNameText, bookingIdText, statusText, paymentMethodText, 
-                     totalPriceText, createdAtText, routeText, departureTimeText,
-                     userNameText, userEmailText, userPhoneText;
+    private TextView providerNameText, bookingIdText, statusText, paymentMethodText,
+            totalPriceText, createdAtText, routeText, departureTimeText,
+            userNameText, userEmailText, userPhoneText;
     private RecyclerView ticketsRecyclerView;
+
+    // Khai báo các View cho phần đánh giá
+    private CardView reviewSection;
+    private RatingBar ratingBar;
+    private TextInputEditText commentEditText;
+    private Button submitReviewButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        apiService = ApiClient.getAuthAPI(getContext());
+
         if (getArguments() != null) {
             booking = (BookingHistoryItem) getArguments().getSerializable("BOOKING_DETAILS");
         }
@@ -52,6 +78,7 @@ public class BookingDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (booking == null) {
+            Toast.makeText(getContext(), "Không thể tải chi tiết đặt vé.", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(view).popBackStack();
             return;
         }
@@ -59,6 +86,7 @@ public class BookingDetailsFragment extends Fragment {
         initViews(view);
         setupToolbar();
         populateData();
+        checkCanReview();
     }
 
     private void initViews(View view) {
@@ -75,6 +103,11 @@ public class BookingDetailsFragment extends Fragment {
         userEmailText = view.findViewById(R.id.user_email_text);
         userPhoneText = view.findViewById(R.id.user_phone_text);
         ticketsRecyclerView = view.findViewById(R.id.tickets_recycler_view);
+
+        reviewSection = view.findViewById(R.id.review_section);
+        ratingBar = view.findViewById(R.id.rating_bar);
+        commentEditText = view.findViewById(R.id.comment_edit_text);
+        submitReviewButton = view.findViewById(R.id.submit_review_button);
     }
 
     private void setupToolbar() {
@@ -82,49 +115,63 @@ public class BookingDetailsFragment extends Fragment {
         toolbar.setTitle("Chi tiết đặt vé");
     }
 
+    private void checkCanReview() {
+        reviewSection.setVisibility(View.GONE); // Mặc định ẩn đi
+
+        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
+            return;
+        }
+
+        String tripId = booking.getTripInfo().getId();
+
+        apiService.canReview(tripId).enqueue(new Callback<CanReviewResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CanReviewResponse> call, @NonNull Response<CanReviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isCanReview()) {
+                    reviewSection.setVisibility(View.VISIBLE);
+                } else {
+                    reviewSection.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CanReviewResponse> call, @NonNull Throwable t) {
+                reviewSection.setVisibility(View.GONE);
+                Log.e("BookingDetails", "CanReview API call failed: " + t.getMessage());
+            }
+        });
+    }
+
     private void populateData() {
-        // Provider name
         if (booking.getProviderInfo() != null) {
             providerNameText.setText(booking.getProviderInfo().getName());
         }
 
-        // Booking ID
         bookingIdText.setText("Mã đặt vé: " + booking.getId());
 
-        // Status
-        String statusText = getStatusText(booking.getPaymentStatus(), booking.getApprovalStatus());
-        this.statusText.setText(statusText);
+        String statusString = getStatusText(booking.getPaymentStatus(), booking.getApprovalStatus());
+        statusText.setText(statusString);
 
-        // Payment method
-        String paymentMethod = getPaymentMethodText(booking.getPaymentMethod());
-        paymentMethodText.setText("Phương thức: " + paymentMethod);
+        String paymentMethodString = getPaymentMethodText(booking.getPaymentMethod());
+        paymentMethodText.setText("Phương thức: " + paymentMethodString);
 
-        // Total price
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
-        String formattedPrice = currencyFormat.format(booking.getTotalPrice());
-        totalPriceText.setText("Tổng tiền: " + formattedPrice);
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        totalPriceText.setText("Tổng tiền: " + currencyFormat.format(booking.getTotalPrice()));
 
-        // Created at
-        String createdAt = formatDateTime(booking.getCreatedAt());
-        createdAtText.setText("Ngày đặt: " + createdAt);
+        createdAtText.setText("Ngày đặt: " + formatDateTime(booking.getCreatedAt()));
 
-        // Trip info
         if (booking.getTripInfo() != null) {
             String route = booking.getTripInfo().getOrigin() + " → " + booking.getTripInfo().getDestination();
             routeText.setText(route);
-
-            String departureTime = formatDateTime(booking.getTripInfo().getDepartureTime());
-            departureTimeText.setText("Khởi hành: " + departureTime);
+            departureTimeText.setText("Khởi hành: " + formatDateTime(booking.getTripInfo().getDepartureTime()));
         }
 
-        // User info
         if (booking.getUserInfo() != null) {
             userNameText.setText("Họ tên: " + booking.getUserInfo().getName());
             userEmailText.setText("Email: " + booking.getUserInfo().getEmail());
             userPhoneText.setText("Số điện thoại: " + booking.getUserInfo().getPhoneNumber());
         }
 
-        // Setup tickets RecyclerView
         if (booking.getTickets() != null && !booking.getTickets().isEmpty()) {
             TicketDetailsAdapter adapter = new TicketDetailsAdapter(booking.getTickets());
             ticketsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -133,64 +180,46 @@ public class BookingDetailsFragment extends Fragment {
     }
 
     private String getStatusText(String paymentStatus, String approvalStatus) {
-        String payment = "";
-        String approval = "";
-        
-        switch (paymentStatus) {
-            case "completed":
-                payment = "Đã thanh toán";
-                break;
-            case "pending":
-                payment = "Chờ thanh toán";
-                break;
-            case "expired":
-                payment = "Hết hạn chuyển khoản";
-                break;
-            default:
-                payment = paymentStatus;
+        String payment = "N/A";
+        if (paymentStatus != null) {
+            switch (paymentStatus) {
+                case "completed": payment = "Đã thanh toán"; break;
+                case "pending": payment = "Chờ thanh toán"; break;
+                case "expired": payment = "Hết hạn"; break;
+                default: payment = paymentStatus;
+            }
         }
 
-        switch (approvalStatus) {
-            case "confirmed_by_provider":
-                approval = "Đã xác nhận";
-                break;
-            case "pending_approval":
-                approval = "Chờ xác nhận";
-                break;
-            case "cancelled":
-                approval = "Từ chối";
-                break;
-            default:
-                approval = approvalStatus;
+        String approval = "N/A";
+        if (approvalStatus != null) {
+            switch (approvalStatus) {
+                case "confirmed_by_provider": approval = "Đã xác nhận"; break;
+                case "pending_approval": approval = "Chờ xác nhận"; break;
+                case "cancelled": approval = "Đã hủy"; break;
+                default: approval = approvalStatus;
+            }
         }
-
         return payment + " • " + approval;
     }
 
     private String getPaymentMethodText(String paymentMethod) {
+        if (paymentMethod == null) return "N/A";
         switch (paymentMethod) {
-            case "cash":
-                return "Tiền mặt";
-            case "bank_transfer":
-                return "Thanh toán VNPAY";
-            case "vnpay":
-                return "VNPay";
-            default:
-                return paymentMethod;
+            case "cash": return "Tiền mặt";
+            case "bank_transfer": return "Chuyển khoản";
+            case "vnpay": return "VNPAY";
+            default: return paymentMethod;
         }
     }
 
     private String formatDateTime(String utcDateString) {
         if (utcDateString == null) return "N/A";
-        
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date utcDate = utcFormat.parse(utcDateString);
-
-            SimpleDateFormat localFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.US);
-            localFormat.setTimeZone(TimeZone.getDefault());
-            return localFormat.format(utcDate);
+            Date date = utcFormat.parse(utcDateString);
+            SimpleDateFormat localFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+            return localFormat.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
             return "N/A";

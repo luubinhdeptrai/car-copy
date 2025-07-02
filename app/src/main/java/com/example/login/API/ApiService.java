@@ -2,6 +2,7 @@ package com.example.login.API;
 
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
+import com.example.login.MODELS.CanReviewResponse;
 import com.example.login.MODELS.DeleteAccountResponse;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
@@ -106,4 +107,7 @@ public interface ApiService {
     // << THÊM PHƯƠNG THỨC MỚI DƯỚI ĐÂY >>
     @POST("api/bookings/unlock")
     Call<LockSeatResponse> unlockSeats(@Body UnlockSeatsRequest request);
+
+    @GET("api/reviews/can-review/{tripId}")
+    Call<CanReviewResponse> canReview(@Path("tripId") String tripId);
 }
