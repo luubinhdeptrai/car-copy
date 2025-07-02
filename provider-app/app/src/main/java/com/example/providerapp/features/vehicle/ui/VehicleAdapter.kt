@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.providerapp.R
 import com.example.providerapp.data.model.Vehicle
 import com.bumptech.glide.Glide
+import com.example.providerapp.di.NetworkModule
 
 
 class VehicleAdapter(
@@ -71,7 +72,7 @@ class VehicleAdapter(
             vehicle.imageUrl?.let { url ->
                 // Giả sử BASE_URL là http://192.168.1.8:3080/
                 // và url từ backend là /uploads/images/ten_anh.jpg
-                val fullUrl = "http://192.168.1.8:3000$url" // <-- Nối BASE_URL với URL tương đối
+                val fullUrl = NetworkModule.BASE_URL + url  // <-- Nối BASE_URL với URL tương đối
                 Glide.with(itemView.context)
                     .load(fullUrl)
                     .placeholder(R.drawable.ic_placeholder) // Ảnh hiển thị trong lúc tải

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.providerapp.R
 import com.example.providerapp.data.model.Driver
+import com.example.providerapp.di.NetworkModule
 
 class DriverAdapter(
     private val onItemClick: (Driver) -> Unit,
@@ -63,7 +64,7 @@ class DriverAdapter(
 
             // Load ảnh
             driver.photoUrl?.let { url ->
-                val fullUrl = "http://192.168.1.8:3000$url" // <-- Nhớ thay BASE_URL
+                val fullUrl = NetworkModule.BASE_URL + url // <-- Nhớ thay BASE_URL
                 Glide.with(itemView.context).load(fullUrl).into(photo)
             } ?: photo.setImageResource(R.mipmap.ic_launcher) // Ảnh mặc định
 

@@ -12,8 +12,7 @@ import com.example.providerapp.R
 import com.example.providerapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import com.example.providerapp.utils.EventObserver
-
-
+import com.example.providerapp.di.NetworkModule
 @AndroidEntryPoint
 class EditDriverFragment : BaseDriverFragment() {
 
@@ -34,7 +33,8 @@ class EditDriverFragment : BaseDriverFragment() {
         ageEditText.setText(driverToEdit.age.toString())
 
         driverToEdit.photoUrl?.let { url ->
-            val fullUrl = "http://192.168.1.8:3000$url" // Thay BASE_URL
+            val fullUrl = NetworkModule.BASE_URL +url // Thay BASE_URL
+            Toast.makeText(context, "Ảnh tải từ: $fullUrl", Toast.LENGTH_SHORT).show()
             Glide.with(this).load(fullUrl).into(imageViewPreview)
             imageViewPreview.visibility = View.VISIBLE
         }

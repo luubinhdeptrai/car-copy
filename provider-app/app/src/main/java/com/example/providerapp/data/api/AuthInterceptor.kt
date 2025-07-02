@@ -11,7 +11,7 @@ class AuthInterceptor @Inject constructor() : Interceptor {
         val requestBuilder = chain.request().newBuilder()
 
         // TẠM THỜI: Gắn cứng token để test
-        val hardcodedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODVkNTYxNjZhNmZlODhiZWZkMzdlZjMiLCJlbWFpbCI6InByb3ZpZGVyLmZ1dGFAbGltb2dvLmNvbSIsInJvbGUiOiJwcm92aWRlciIsInBob25lTnVtYmVyIjoiKzg0MjIyMjIyMjIyIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc1MTQ0NjUwMSwiZXhwIjoxNzUxNDc1MzAxfQ.1axi2mrF2f5LoZatf_d8GhRH4V-AJVS9oClBVwx8i24"
+        val hardcodedToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODY0ZWE1YjFjOWY4MjljZTM3NWU2MTMiLCJlbWFpbCI6InByb3ZpZGVyLmZ1dGFAbGltb2dvLmNvbSIsInJvbGUiOiJwcm92aWRlciIsInBob25lTnVtYmVyIjoiKzg0MjIyMjIyMjIyIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc1MTQ1NTI2NSwiZXhwIjoxNzUxNDg0MDY1fQ.lTgNI03823Qtq1KU7FTh9_C1k4J3EFHiF1glXXxo7Qw"
 
         requestBuilder.addHeader("Authorization", "Bearer $hardcodedToken")
 
