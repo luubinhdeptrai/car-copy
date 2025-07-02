@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
+import com.example.login.MODELS.LockManySeatsRequest;
+import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.SeatStatus;
 import com.example.login.MODELS.Trip;
@@ -30,6 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectSeatFragment extends Fragment {
 
@@ -121,15 +126,55 @@ public class SelectSeatFragment extends Fragment {
 
     private void setupClickListeners(View view) {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
+
+        // << SỬA ĐỔI: Thêm logic lock ghế vào nút Continue >>
         continueButton.setOnClickListener(v -> {
-            ArrayList<Seat> selectedSeats = getSelectedSeatsFromList(viewModel.getSeatList().getValue());
-            if (selectedSeats.isEmpty()) {
-                Toast.makeText(getContext(), "Please select at least one seat.", Toast.LENGTH_SHORT).show();
-            } else {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("CONFIRMATION_TRIP", selectedTrip);
-                bundle.putSerializable("CONFIRMATION_SEATS", selectedSeats);
-                Navigation.findNavController(view).navigate(R.id.action_selectSeat_to_confirmation, bundle);
+            lockSelectedSeatsAndNavigate();
+        });
+    }
+
+    // << THÊM HÀM MỚI: Dùng để lock ghế và điều hướng >>
+    private void lockSelectedSeatsAndNavigate() {
+        ArrayList<Seat> selectedSeats = getSelectedSeatsFromList(viewModel.getSeatList().getValue());
+        if (selectedSeats.isEmpty()) {
+            Toast.makeText(getContext(), "Please select at least one seat.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        continueButton.setEnabled(false);
+        Toast.makeText(getContext(), "Locking seats...", Toast.LENGTH_SHORT).show();
+
+        List<String> ticketIds = new ArrayList<>();
+        for (Seat seat : selectedSeats) {
+            ticketIds.add(seat.getId());
+        }
+
+        LockManySeatsRequest request = new LockManySeatsRequest(ticketIds);
+        apiService.lockManySeats(request).enqueue(new Callback<LockSeatResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Seats locked successfully!", Toast.LENGTH_SHORT).show();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("CONFIRMATION_TRIP", selectedTrip);
+                    bundle.putSerializable("CONFIRMATION_SEATS", selectedSeats);
+                    if (getView() != null) {
+                        Navigation.findNavController(getView()).navigate(R.id.action_selectSeat_to_confirmation, bundle);
+                    }
+                } else {
+                    String errorMsg = "Failed to lock seats.";
+                    if (response.body() != null) {
+                        errorMsg += " " + response.body().getMessage();
+                    }
+                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                }
+                continueButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                continueButton.setEnabled(true);
             }
         });
     }
