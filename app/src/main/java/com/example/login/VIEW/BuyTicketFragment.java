@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +25,11 @@ import com.example.login.API.ApiService;
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
 import com.example.login.R;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,15 +40,11 @@ import retrofit2.Response;
 public class BuyTicketFragment extends Fragment {
 
     private AutoCompleteTextView actvDeparture, actvDestination;
-    private TextView tvDepartureDate, tvDepartureDay, tvReturnDate, tvReturnDay;
+    private TextView tvDepartureDate, tvDepartureDay;
     private Spinner ticketNumberSpinner;
-    private SwitchMaterial roundTripSwitch;
-    private LinearLayout returnDateLayout;
     private Button searchButton;
     private Toolbar toolbar;
     private Calendar selectedCalendar;
-    private Calendar selectedReturnCalendar;
-    // THÊM: Khai báo ImageView cho nút swap
     private ImageView ivSwap;
 
     @Nullable
@@ -69,19 +62,13 @@ public class BuyTicketFragment extends Fragment {
         tvDepartureDate = view.findViewById(R.id.tv_departure_date);
         tvDepartureDay = view.findViewById(R.id.tv_departure_day);
         ticketNumberSpinner = view.findViewById(R.id.ticket_number_spinner);
-        roundTripSwitch = view.findViewById(R.id.round_trip_switch);
-        returnDateLayout = view.findViewById(R.id.return_date_layout);
         searchButton = view.findViewById(R.id.search_route_button);
         toolbar = view.findViewById(R.id.toolbar);
-        tvReturnDate = view.findViewById(R.id.tv_return_date);
-        tvReturnDay = view.findViewById(R.id.tv_return_day);
-        // THÊM: Ánh xạ nút swap
         ivSwap = view.findViewById(R.id.iv_swap);
 
         // Gọi các hàm thiết lập
         setupAutoCompleteTextViews();
         setupTicketNumberSpinner();
-        setupRoundTripSwitch();
         setupDatePicker();
         setupClickListeners(view);
     }
@@ -103,24 +90,12 @@ public class BuyTicketFragment extends Fragment {
         ticketNumberSpinner.setAdapter(adapter);
     }
 
-    private void setupRoundTripSwitch() {
-        roundTripSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            returnDateLayout.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
-    }
-
     private void setupDatePicker() {
         selectedCalendar = Calendar.getInstance();
-        selectedReturnCalendar = Calendar.getInstance();
-        selectedReturnCalendar.add(Calendar.DAY_OF_YEAR, 1);
-        updateDateViews(selectedCalendar, tvDepartureDate, tvDepartureDay);
-        updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
+        updateDateViews(selectedCalendar);
         View.OnClickListener departureClickListener = v -> showDepartureDatePickerDialog();
         tvDepartureDate.setOnClickListener(departureClickListener);
         tvDepartureDay.setOnClickListener(departureClickListener);
-        View.OnClickListener returnClickListener = v -> showReturnDatePickerDialog();
-        tvReturnDate.setOnClickListener(returnClickListener);
-        tvReturnDay.setOnClickListener(returnClickListener);
     }
 
     private void showDepartureDatePickerDialog() {
@@ -129,49 +104,28 @@ public class BuyTicketFragment extends Fragment {
         int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
             selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
-            updateDateViews(selectedCalendar, tvDepartureDate, tvDepartureDay);
-            if (selectedReturnCalendar.before(selectedCalendar)) {
-                selectedReturnCalendar.setTime(selectedCalendar.getTime());
-                selectedReturnCalendar.add(Calendar.DAY_OF_YEAR, 1);
-                updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
-            }
+            updateDateViews(selectedCalendar);
         }, year, month, day);
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
 
-    private void showReturnDatePickerDialog() {
-        int year = selectedReturnCalendar.get(Calendar.YEAR);
-        int month = selectedReturnCalendar.get(Calendar.MONTH);
-        int day = selectedReturnCalendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-            selectedReturnCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
-            updateDateViews(selectedReturnCalendar, tvReturnDate, tvReturnDay);
-        }, year, month, day);
-        datePickerDialog.getDatePicker().setMinDate(selectedCalendar.getTimeInMillis());
-        datePickerDialog.show();
-    }
-
-    private void updateDateViews(Calendar calendar, TextView dateTextView, TextView dayTextView) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM", Locale.US);
-        dateTextView.setText(dateFormat.format(calendar.getTime()));
+    private void updateDateViews(Calendar calendar) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        tvDepartureDate.setText(dateFormat.format(calendar.getTime()));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("vi", "VN"));
-        dayTextView.setText(dayFormat.format(calendar.getTime()));
+        tvDepartureDay.setText(dayFormat.format(calendar.getTime()));
     }
 
     private void setupClickListeners(View view) {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
         searchButton.setOnClickListener(v -> searchForTrips(view));
-        // THÊM: Gắn sự kiện click cho nút swap
         ivSwap.setOnClickListener(v -> swapLocations());
     }
 
-    // THÊM: Phương thức để hoán đổi địa điểm
     private void swapLocations() {
         String departure = actvDeparture.getText().toString();
         String destination = actvDestination.getText().toString();
-
-        // Hoán đổi nội dung của hai AutoCompleteTextView
         actvDeparture.setText(destination);
         actvDestination.setText(departure);
     }
@@ -180,12 +134,12 @@ public class BuyTicketFragment extends Fragment {
         String origin = actvDeparture.getText().toString().trim();
         String destination = actvDestination.getText().toString().trim();
         if (origin.isEmpty() || destination.isEmpty()) {
-            Toast.makeText(getContext(), "Vui lòng chọn điểm đi và điểm đến", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please select departure and destination points", Toast.LENGTH_SHORT).show();
             return;
         }
         SimpleDateFormat forApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String formattedDate = forApi.format(selectedCalendar.getTime());
-        Toast.makeText(getContext(), "Đang tìm kiếm chuyến đi...", Toast.LENGTH_SHORT).show();
+
         ApiService apiService = ApiClient.getNoAuthAPI();
         Call<TripSearchResponse> call = apiService.searchTrips(origin, destination, formattedDate);
         call.enqueue(new Callback<TripSearchResponse>() {
@@ -197,15 +151,15 @@ public class BuyTicketFragment extends Fragment {
                         trips = response.body().getData();
                     }
                 } else {
-                    String errorMessage = response.body() != null ? response.body().getMessage() : "Lỗi server: " + response.code();
-                   // Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                    String errorMessage = response.body() != null ? response.body().getMessage() : "Server error: " + response.code();
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
                 }
                 navigateToSelectTrip(view, origin, destination, trips);
             }
 
             @Override
             public void onFailure(Call<TripSearchResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Lỗi kết nối mạng. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Network connection error. Please try again!", Toast.LENGTH_SHORT).show();
                 Log.e("BuyTicketFragment", "API call failed", t);
                 navigateToSelectTrip(view, origin, destination, new ArrayList<>());
             }

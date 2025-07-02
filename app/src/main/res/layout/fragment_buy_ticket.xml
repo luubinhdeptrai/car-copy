@@ -1,5 +1,5 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sv_main"
@@ -42,7 +42,7 @@
             <LinearLayout
                 android:id="@+id/ll_search_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
 
@@ -51,21 +51,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
-
                     <LinearLayout
                         android:id="@+id/ll_departure"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_departure"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Departure">
-
                             <AutoCompleteTextView
                                 android:id="@+id/actv_departure"
                                 android:layout_width="match_parent"
@@ -73,29 +70,20 @@
                                 android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/iv_swap"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_margin="8dp"
-                        android:src="@drawable/ic_swap_horiz" />
-
+                    <ImageView android:id="@+id/iv_swap" android:src="@drawable/ic_swap_horiz" android:layout_width="32dp" android:layout_height="32dp" android:layout_margin="8dp"/>
                     <LinearLayout
                         android:id="@+id/ll_destination"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="end"
-                        android:orientation="vertical">
-
+                        android:orientation="vertical"
+                        android:gravity="end">
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_destination"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Destination">
-
                             <AutoCompleteTextView
                                 android:id="@+id/actv_destination"
                                 android:layout_width="match_parent"
@@ -105,19 +93,9 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/round_trip_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Round trip" />
+                <!-- ĐÃ XÓA SwitchMaterial round_trip_switch -->
 
-                <View
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@color/divider" />
+                <View android:id="@+id/divider" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="16dp"/>
 
                 <LinearLayout
                     android:id="@+id/ll_details"
@@ -126,71 +104,27 @@
                     android:layout_marginTop="16dp"
                     android:baselineAligned="false"
                     android:gravity="center_vertical">
-
                     <LinearLayout
                         android:id="@+id/ll_departure_date"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_departure_date_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Departure date"
-                            android:textColor="@color/text_secondary" />
-
+                        <TextView android:id="@+id/tv_departure_date_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Departure date" android:textColor="@color/text_secondary"/>
                         <TextView
                             android:id="@+id/tv_departure_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
                             android:text="25/06/2025"
-                            android:textColor="@color/text_primary"
                             android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_departure_day"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tuesday"
-                            android:textColor="@color/text_secondary" />
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"/>
+                        <TextView android:id="@+id/tv_departure_day" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tuesday" android:textColor="@color/text_secondary"/>
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/return_date_layout"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:id="@+id/tv_return_date_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Return date"
-                            android:textColor="@color/text_secondary" />
-
-                        <TextView
-                            android:id="@+id/tv_return_date"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="20/06"
-                            android:textColor="@color/text_primary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_return_day"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Friday"
-                            android:textColor="@color/text_secondary" />
-                    </LinearLayout>
+                    <!-- ĐÃ XÓA LinearLayout return_date_layout -->
 
                     <LinearLayout
                         android:id="@+id/ll_ticket_number"
@@ -198,18 +132,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_ticket_number_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ticket number"
-                            android:textColor="@color/text_secondary" />
-
+                        <TextView android:id="@+id/tv_ticket_number_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ticket number" android:textColor="@color/text_secondary"/>
                         <Spinner
                             android:id="@+id/ticket_number_spinner"
                             android:layout_width="wrap_content"
-                            android:layout_height="48dp" />
+                            android:layout_height="48dp"/>
                     </LinearLayout>
                 </LinearLayout>
 
@@ -217,35 +144,12 @@
                     android:id="@+id/search_route_button"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginTop="24dp"
                     android:text="Search route"
-                    android:textColor="@color/white"
-                    app:backgroundTint="@color/orange_primary" />
+                    android:layout_marginTop="24dp"
+                    app:backgroundTint="@color/orange_primary"
+                    android:textColor="@color/white"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-<!--        <RelativeLayout-->
-<!--            android:id="@+id/rl_recent_searches_header"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="24dp"-->
-<!--            android:paddingStart="16dp"-->
-<!--            android:paddingEnd="16dp">-->
-<!--            <TextView-->
-<!--                android:id="@+id/tv_recent_searches_title"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Recent searches"-->
-<!--                android:textSize="18sp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:textColor="@color/text_primary"/>-->
-<!--            <TextView-->
-<!--                android:id="@+id/tv_clear_history"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Clear history"-->
-<!--                android:layout_alignParentEnd="true"-->
-<!--                android:textColor="@color/orange_primary"/>-->
-<!--        </RelativeLayout>-->
     </LinearLayout>
 </ScrollView>
+    
