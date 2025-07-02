@@ -24,11 +24,9 @@ import com.example.login.MODELS.ConfirmBookingRequest;
 import com.example.login.MODELS.ConfirmBookingResponse;
 import com.example.login.MODELS.CreatePaymentUrlRequest;
 import com.example.login.MODELS.CreatePaymentUrlResponse;
-import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
-import com.example.login.MODELS.UnlockSeatsRequest;
 import com.example.login.MODELS.User;
 import com.example.login.R;
 import com.vnpay.authentication.VNP_AuthenticationActivity;
@@ -37,7 +35,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -84,51 +81,25 @@ public class PaymentFragment extends Fragment {
         bindViews(view);
         populateData();
 
-        // Bắt sự kiện cho cả mũi tên trên toolbar và nút back của hệ thống
-        toolbar.setNavigationOnClickListener(v -> handleBackPressWithUnlock());
+        // Bây giờ chỉ cần quay lại, không cần gọi API
+        toolbar.setNavigationOnClickListener(v -> {
+            if (getView() != null) {
+                Navigation.findNavController(getView()).popBackStack();
+            }
+        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                handleBackPressWithUnlock();
+                if(getView() != null) {
+                    Navigation.findNavController(getView()).popBackStack();
+                }
             }
         });
 
         payButton.setOnClickListener(v -> {
             payButton.setEnabled(false);
             showPaymentMethodDialog();
-        });
-    }
-
-    private void handleBackPressWithUnlock() {
-        // Vô hiệu hóa nút back để tránh gọi nhiều lần
-        toolbar.setNavigationOnClickListener(null);
-
-        Toast.makeText(getContext(), "Hủy giữ vé...", Toast.LENGTH_SHORT).show();
-
-        List<String> ticketIds = new ArrayList<>();
-        for (Seat seat : seats) {
-            ticketIds.add(seat.getId());
-        }
-
-        UnlockSeatsRequest request = new UnlockSeatsRequest(ticketIds);
-        apiService.unlockSeats(request).enqueue(new Callback<LockSeatResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
-                // Dù API có thành công hay thất bại, vẫn cho người dùng quay lại
-                Log.d("PaymentFragment", "Unlock seats completed, navigating back.");
-                if (getView() != null) {
-                    Navigation.findNavController(getView()).popBackStack();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
-                Log.e("PaymentFragment", "Unlock seats failed: " + t.getMessage());
-                if (getView() != null) {
-                    Navigation.findNavController(getView()).popBackStack();
-                }
-            }
         });
     }
 
@@ -313,9 +284,10 @@ public class PaymentFragment extends Fragment {
 
                 switch (action) {
                     case "AppBackAction":
-                        // User pressed back from SDK, treat as a failed/cancelled payment.
-                        handleBackPressWithUnlock(); // Unlock seats
                         Toast.makeText(getActivity(), "Payment cancelled.", Toast.LENGTH_SHORT).show();
+                        if (getView() != null) {
+                            Navigation.findNavController(getView()).popBackStack();
+                        }
                         break;
                     case "CallMobileBankingApp":
                         savePendingTransaction(bookingId);
@@ -324,8 +296,6 @@ public class PaymentFragment extends Fragment {
                     case "WebBackAction":
                     case "FailedBackAction":
                     case "SuccessBackAction":
-                        // All these actions indicate the SDK flow is complete.
-                        // Navigate to a result screen to check the final status.
                         Intent resultIntent = new Intent(getActivity(), PaymentResultActivity.class);
                         Uri resultData = Uri.parse("paymentresult://payment?bookingId=" + bookingId + "&action=" + action);
                         resultIntent.setData(resultData);
