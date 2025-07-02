@@ -15,10 +15,10 @@ import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
 import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.LockSeatResponse;
-import com.example.login.MODELS.ProfileResponse; // Import a class
+import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
-import com.example.login.MODELS.User; // Import a class
+import com.example.login.MODELS.User;
 import com.example.login.R;
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -41,7 +41,6 @@ public class ConfirmationFragment extends Fragment {
     private ApiService apiService;
     private Button continueButton;
 
-    // Add TextViews for user information
     private TextView fullnameValue;
     private TextView phoneValue;
 
@@ -66,7 +65,6 @@ public class ConfirmationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Bind the user info TextViews
         fullnameValue = view.findViewById(R.id.fullname_value);
         phoneValue = view.findViewById(R.id.phone_value);
 
@@ -78,16 +76,20 @@ public class ConfirmationFragment extends Fragment {
         }
 
         populateViews(view);
-        // Fetch and display user information
         fetchAndDisplayUserInfo();
 
-
         continueButton = view.findViewById(R.id.continue_button);
-        continueButton.setOnClickListener(v -> {
-            continueButton.setEnabled(false);
-            Toast.makeText(getContext(), "Locking selected tickets...", Toast.LENGTH_SHORT).show();
-            lockAllSelectedTickets();
-        });
+
+        // << SỬA ĐỔI LOGIC >>
+        // 1. Vô hiệu hóa nút Continue ngay từ đầu
+        continueButton.setEnabled(false);
+
+        // 2. Gán sự kiện click cho nút Continue chỉ để chuyển màn hình
+        continueButton.setOnClickListener(v -> navigateToPayment());
+
+        // 3. Tự động khóa vé ngay khi màn hình được tạo
+        Toast.makeText(getContext(), "Locking selected tickets...", Toast.LENGTH_SHORT).show();
+        lockAllSelectedTickets();
     }
 
     private void fetchAndDisplayUserInfo() {
@@ -118,7 +120,6 @@ public class ConfirmationFragment extends Fragment {
     private void lockAllSelectedTickets() {
         if (selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "No seats selected.", Toast.LENGTH_SHORT).show();
-            continueButton.setEnabled(true);
             return;
         }
 
@@ -128,14 +129,12 @@ public class ConfirmationFragment extends Fragment {
                 ticketIds.add(seat.getId());
             } else {
                 Toast.makeText(getContext(), "Error: Ticket ID missing for seat " + seat.getSeatNumber(), Toast.LENGTH_SHORT).show();
-                continueButton.setEnabled(true);
                 return;
             }
         }
 
         if (ticketIds.isEmpty()) {
             Toast.makeText(getContext(), "No valid ticket IDs to lock.", Toast.LENGTH_SHORT).show();
-            continueButton.setEnabled(true);
             return;
         }
 
@@ -144,31 +143,37 @@ public class ConfirmationFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    navigateToPayment();
+                    // << SỬA ĐỔI LOGIC >>
+                    // Nếu khóa vé thành công, chỉ hiển thị thông báo và KÍCH HOẠT nút Continue
+                    Toast.makeText(getContext(), "All seats locked successfully!", Toast.LENGTH_SHORT).show();
+                    if (continueButton != null) {
+                        continueButton.setEnabled(true);
+                    }
                 } else {
                     String errorMsg = "Failed to lock seats.";
                     if (response.body() != null) {
                         errorMsg += " " + response.body().getMessage();
                     }
                     Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
-                    continueButton.setEnabled(true);
+                    // Nếu thất bại, nút Continue vẫn bị vô hiệu hóa, người dùng phải quay lại
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), "Network Error while locking seats.", Toast.LENGTH_SHORT).show();
-                continueButton.setEnabled(true);
+                // Nếu thất bại, nút Continue vẫn bị vô hiệu hóa, người dùng phải quay lại
             }
         });
     }
 
     private void navigateToPayment() {
-        Toast.makeText(getContext(), "All seats locked successfully!", Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putSerializable("PAYMENT_TRIP", tripToShow);
         bundle.putSerializable("PAYMENT_SEATS", selectedSeats);
-        Navigation.findNavController(requireView()).navigate(R.id.action_confirmation_to_payment, bundle);
+        if(getView() != null) {
+            Navigation.findNavController(getView()).navigate(R.id.action_confirmation_to_payment, bundle);
+        }
     }
 
     private void populateViews(View view) {
