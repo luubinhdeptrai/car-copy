@@ -60,16 +60,16 @@
                         android:layout_marginStart="16dp"
                         android:orientation="vertical">
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/profile_name_textview"  android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Nguyễn Đại Trường Danh"
+                            android:text="Đang tải..."
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:id="@+id/profile_phone_textview" android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0968411942"
+                            android:text="Đang tải..."
                             android:textColor="@color/text_secondary"/>
                     </LinearLayout>
                     <ImageView

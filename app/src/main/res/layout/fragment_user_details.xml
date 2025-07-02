@@ -14,7 +14,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Toolbar or Header -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,7 +24,6 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- Profile Picture -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image_details"
             android:layout_width="96dp"
@@ -35,7 +33,6 @@
             app:civ_border_color="@color/orange_primary"
             app:civ_border_width="2dp" />
 
-        <!-- User Information Fields -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,11 +46,11 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Full Name -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
                         android:text="Full name" />
+
                     <TextView
                         android:id="@+id/tv_full_name"
                         style="@style/UserInfoValue"
@@ -61,7 +58,6 @@
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Phone Number -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
@@ -73,7 +69,6 @@
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Email -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
@@ -85,19 +80,41 @@
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
-                <!-- Gender -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
                         android:text="Gender" />
-                    <TextView
-                        android:id="@+id/tv_gender"
-                        style="@style/UserInfoValue"
-                        android:text="Please update." />
+
+                    <RadioGroup
+                        android:id="@+id/gender_radio_group_details"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/radio_male_details"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Male"
+                            android:clickable="false"/> <RadioButton
+                        android:id="@+id/radio_female_details"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Female"
+                        android:clickable="false"/>
+
+                        <RadioButton
+                            android:id="@+id/radio_other_details"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Others"
+                            android:clickable="false"/>
+                    </RadioGroup>
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
-
-                <!-- Birthday -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
@@ -112,7 +129,6 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Buttons -->
         <Button
             android:id="@+id/btn_update_profile"
             android:layout_width="match_parent"
@@ -134,4 +150,3 @@
 
     </LinearLayout>
 </ScrollView>
-    

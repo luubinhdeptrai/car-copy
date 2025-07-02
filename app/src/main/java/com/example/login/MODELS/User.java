@@ -20,6 +20,14 @@ public class User {
     @SerializedName("updatedAt")
     private String updatedAt;
 
+    // Thuộc tính mới được thêm vào
+    @SerializedName("dateOfBirth")
+    private String dateOfBirth;
+
+    // Thuộc tính mới được thêm vào
+    @SerializedName("gender")
+    private String gender;
+
     public String getEmail() {
         return email;
     }
@@ -54,5 +62,23 @@ public class User {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
+    }
+
+    // Getter và Setter cho dateOfBirth
+    public String getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    // Getter và Setter cho gender
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
