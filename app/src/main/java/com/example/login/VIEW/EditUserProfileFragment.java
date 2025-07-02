@@ -66,7 +66,7 @@ public class EditUserProfileFragment extends Fragment {
         tvEditFullName = view.findViewById(R.id.tv_edit_full_name);
         tvEditEmail = view.findViewById(R.id.tv_edit_email);
         tvEditBirthday = view.findViewById(R.id.tv_edit_birthday);
-        radioGroupGender = view.findViewById(R.id.gender_radio_group_details); // Giả sử RadioGroup có id này
+        radioGroupGender = view.findViewById(R.id.gender_radio_group); // Giả sử RadioGroup có id này
         // ----------------------------------------
 
         RelativeLayout editFullNameLayout = view.findViewById(R.id.edit_full_name_layout);
