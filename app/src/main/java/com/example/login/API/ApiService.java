@@ -9,6 +9,7 @@ import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
+import com.example.login.MODELS.UnlockSeatsRequest;
 import com.example.login.MODELS.UpdateProfileRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeResponse;
@@ -101,4 +102,8 @@ public interface ApiService {
 
     @PATCH("api/users/updateMe")
     Call<ProfileResponse> updateUserProfile(@Body UpdateProfileRequest request);
+
+    // << THÊM PHƯƠNG THỨC MỚI DƯỚI ĐÂY >>
+    @POST("api/bookings/unlock")
+    Call<LockSeatResponse> unlockSeats(@Body UnlockSeatsRequest request);
 }
