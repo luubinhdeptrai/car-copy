@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -23,9 +24,11 @@ import com.example.login.MODELS.ConfirmBookingRequest;
 import com.example.login.MODELS.ConfirmBookingResponse;
 import com.example.login.MODELS.CreatePaymentUrlRequest;
 import com.example.login.MODELS.CreatePaymentUrlResponse;
+import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.Seat;
 import com.example.login.MODELS.Trip;
+import com.example.login.MODELS.UnlockSeatsRequest;
 import com.example.login.MODELS.User;
 import com.example.login.R;
 import com.vnpay.authentication.VNP_AuthenticationActivity;
@@ -34,6 +37,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,10 +84,51 @@ public class PaymentFragment extends Fragment {
         bindViews(view);
         populateData();
 
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        // Bắt sự kiện cho cả mũi tên trên toolbar và nút back của hệ thống
+        toolbar.setNavigationOnClickListener(v -> handleBackPressWithUnlock());
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleBackPressWithUnlock();
+            }
+        });
+
         payButton.setOnClickListener(v -> {
             payButton.setEnabled(false);
             showPaymentMethodDialog();
+        });
+    }
+
+    private void handleBackPressWithUnlock() {
+        // Vô hiệu hóa nút back để tránh gọi nhiều lần
+        toolbar.setNavigationOnClickListener(null);
+
+        Toast.makeText(getContext(), "Hủy giữ vé...", Toast.LENGTH_SHORT).show();
+
+        List<String> ticketIds = new ArrayList<>();
+        for (Seat seat : seats) {
+            ticketIds.add(seat.getId());
+        }
+
+        UnlockSeatsRequest request = new UnlockSeatsRequest(ticketIds);
+        apiService.unlockSeats(request).enqueue(new Callback<LockSeatResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
+                // Dù API có thành công hay thất bại, vẫn cho người dùng quay lại
+                Log.d("PaymentFragment", "Unlock seats completed, navigating back.");
+                if (getView() != null) {
+                    Navigation.findNavController(getView()).popBackStack();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
+                Log.e("PaymentFragment", "Unlock seats failed: " + t.getMessage());
+                if (getView() != null) {
+                    Navigation.findNavController(getView()).popBackStack();
+                }
+            }
         });
     }
 
@@ -264,62 +309,33 @@ public class PaymentFragment extends Fragment {
             @Override
             public void sdkAction(String action) {
                 if (action == null) return;
-                Toast.makeText(getActivity(), "VNPAY ACTION: " + action, Toast.LENGTH_SHORT).show();
-                // Replace the existing Toast message with proper SDK action handling
+                Log.d("VNPAY_SDK", "SDK Action: " + action);
+
                 switch (action) {
                     case "AppBackAction":
-                        // User pressed back from SDK, treat as a failed payment.
-                        Intent appBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
-                        // Using response code for user cancellation
-                        Uri appBackData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
-                        appBackIntent.setData(appBackData);
-                        startActivity(appBackIntent);
+                        // User pressed back from SDK, treat as a failed/cancelled payment.
+                        handleBackPressWithUnlock(); // Unlock seats
+                        Toast.makeText(getActivity(), "Payment cancelled.", Toast.LENGTH_SHORT).show();
+                        break;
+                    case "CallMobileBankingApp":
+                        savePendingTransaction(bookingId);
+                        Toast.makeText(getActivity(), "Redirecting to banking app...", Toast.LENGTH_SHORT).show();
+                        break;
+                    case "WebBackAction":
+                    case "FailedBackAction":
+                    case "SuccessBackAction":
+                        // All these actions indicate the SDK flow is complete.
+                        // Navigate to a result screen to check the final status.
+                        Intent resultIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        Uri resultData = Uri.parse("paymentresult://payment?bookingId=" + bookingId + "&action=" + action);
+                        resultIntent.setData(resultData);
+                        startActivity(resultIntent);
                         if (getActivity() != null) {
                             getActivity().finish();
                         }
                         break;
-
-                    case "CallMobileBankingApp":
-                        // User selected payment via mobile banking app
-                        // Save PNR to check payment status later when app is reopened
-                        savePendingTransaction(bookingId);
-                        Toast.makeText(getActivity(), "Redirecting to banking app", Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case "WebBackAction":
-                        // User pressed back from successful payment page
-                        Toast.makeText(getActivity(), "Payment failed", Toast.LENGTH_SHORT).show();
-                        Intent failedBackIntent = new Intent(getActivity(), PaymentResultActivity.class);
-                        // Creating a URI with success response code
-                        Uri successBackData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
-                        failedBackIntent.setData(successBackData);
-                        startActivity(failedBackIntent);
-                        getActivity().finish();
-
-                        break;
-
-                    case "FailedBackAction":
-                        // Payment transaction failed
-                        Intent failIntent = new Intent(getActivity(), PaymentResultActivity.class);
-                        // Creating a URI with failure response code
-                        Uri failData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
-                        failIntent.setData(failData);
-                        startActivity(failIntent);
-                        getActivity().finish();
-                        break;
-
-                    case "SuccessBackAction":
-                        // Payment succeeded in webview
-                        Intent successIntent = new Intent(getActivity(), PaymentResultActivity.class);
-                        // Creating a URI with success response code
-                        Uri successData = Uri.parse("paymentresult://payment?bookingId=" + bookingId);
-                        successIntent.setData(successData);
-                        startActivity(successIntent);
-                        getActivity().finish();
-                        break;
-
                     default:
-                        Toast.makeText(getActivity(), "Unknown payment action", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Unknown VNPAY action", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -328,7 +344,6 @@ public class PaymentFragment extends Fragment {
     }
 
     private void savePendingTransaction(String transactionId) {
-        // Save the transaction ID to SharedPreferences
         if (getContext() != null && transactionId != null) {
             getContext().getSharedPreferences("PaymentPrefs", Context.MODE_PRIVATE)
                     .edit()
