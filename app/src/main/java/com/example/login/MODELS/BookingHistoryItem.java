@@ -51,12 +51,19 @@ public class BookingHistoryItem implements Serializable {
     }
 
     public static class ProviderInfo implements Serializable {
+        @SerializedName("_id")
+        private String id;
+        @SerializedName("phone")
+        private String phone;
+
         @SerializedName("name")
         private String name;
         public String getName() { return name; }
     }
 
     public static class TripInfo implements Serializable {
+        @SerializedName("_id")
+        private String id;
         @SerializedName("origin")
         private String origin;
         @SerializedName("destination")
@@ -66,9 +73,12 @@ public class BookingHistoryItem implements Serializable {
         public String getOrigin() { return origin; }
         public String getDestination() { return destination; }
         public String getDepartureTime() { return departureTime; }
+        public String getId() { return id; }
     }
 
     public static class TicketInfo implements Serializable {
+        @SerializedName("_id")
+        private String id;
         @SerializedName("seatNumber")
         private String seatNumber;
         @SerializedName("price")
@@ -78,5 +88,6 @@ public class BookingHistoryItem implements Serializable {
         public String getSeatNumber() { return seatNumber; }
         public double getPrice() { return price; }
         public String getAccessId() { return accessId; }
+        public String getId() { return id; }
     }
 }
