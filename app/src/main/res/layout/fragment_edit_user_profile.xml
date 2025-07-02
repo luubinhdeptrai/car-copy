@@ -62,7 +62,10 @@
                 <!-- Phone Number (Read-only) -->
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView style="@style/UserInfoLabel" android:text="Phone number" />
-                    <TextView style="@style/UserInfoValue" android:text="0968411942" />
+                    <TextView
+                        android:id="@+id/tv_phone_number_readonly"
+                        style="@style/UserInfoValue"
+                        android:text="Đang tải..." />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
