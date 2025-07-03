@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone; // SỬA: Thêm import TimeZone
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,10 +48,13 @@ public class PaymentFragment extends Fragment {
     private Trip trip;
     private ArrayList<Seat> seats;
     private ApiService apiService;
+    private long lockExpirationTime;
+    private CountDownTimer countDownTimer;
 
     private TextView tvRouteTitle, tvDate, tvPaymentRoute, tvPaymentDepartureTime,
             tvTicketCount, tvSeatPosition, tvPickup, tvDropoff, tvPassengerName,
-            tvPassengerPhone, tvPassengerEmail, tvTicketPrice, tvPaymentFee, tvTotalPrice;
+            tvPassengerPhone, tvPassengerEmail, tvTicketPrice, tvPaymentFee, tvTotalPrice,
+            tvCountdownTimer;
     private Button payButton;
     private Toolbar toolbar;
 
@@ -60,6 +65,7 @@ public class PaymentFragment extends Fragment {
         if (getArguments() != null) {
             trip = (Trip) getArguments().getSerializable("PAYMENT_TRIP");
             seats = (ArrayList<Seat>) getArguments().getSerializable("PAYMENT_SEATS");
+            lockExpirationTime = getArguments().getLong("LOCK_EXPIRATION_TIME", 0);
         }
     }
 
@@ -81,6 +87,7 @@ public class PaymentFragment extends Fragment {
 
         bindViews(view);
         populateData();
+        startCountdownTimer();
 
         toolbar.setNavigationOnClickListener(v -> {
             if (getView() != null) {
@@ -103,6 +110,14 @@ public class PaymentFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+    }
+
     private void bindViews(View view) {
         toolbar = view.findViewById(R.id.toolbar_payment);
         tvRouteTitle = view.findViewById(R.id.tv_route_title_payment);
@@ -120,6 +135,49 @@ public class PaymentFragment extends Fragment {
         tvPaymentFee = view.findViewById(R.id.tv_payment_fee);
         tvTotalPrice = view.findViewById(R.id.tv_payment_total_price);
         payButton = view.findViewById(R.id.btn_pay);
+        tvCountdownTimer = view.findViewById(R.id.tv_countdown_timer);
+    }
+
+    private void startCountdownTimer() {
+        long remainingMillis = lockExpirationTime - System.currentTimeMillis();
+
+        if (remainingMillis <= 0) {
+            handleTimerFinish();
+            return;
+        }
+
+        countDownTimer = new CountDownTimer(remainingMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished);
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60;
+                String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                tvCountdownTimer.setText("Thời gian giữ vé còn lại: " + timeLeftFormatted);
+            }
+
+            @Override
+            public void onFinish() {
+                handleTimerFinish();
+            }
+        }.start();
+    }
+
+    private void handleTimerFinish() {
+        tvCountdownTimer.setText("Time expired!");
+        payButton.setEnabled(false);
+        payButton.setText("Expired");
+        if (getContext() != null) {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Session Expired")
+                    .setMessage("Your seat lock has expired. Please select seats again.")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        if (getView() != null) {
+                            Navigation.findNavController(getView()).popBackStack(R.id.selectTripFragment, false);
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
     }
 
     private void populateData() {
@@ -128,7 +186,6 @@ public class PaymentFragment extends Fragment {
         tvPaymentRoute.setText(routeTitleText);
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-            // SỬA LỖI: Thêm dòng này để xử lý đúng múi giờ UTC
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date departureDate = utcFormat.parse(trip.getDepartureTime());
 
@@ -142,7 +199,7 @@ public class PaymentFragment extends Fragment {
             tvDate.setText("N/A");
             tvPaymentDepartureTime.setText("N/A");
         }
-        tvTicketCount.setText(String.format(Locale.US, "%d ticket(s)", seats.size()));
+        tvTicketCount.setText(String.format(Locale.US, "%d vé", seats.size()));
         ArrayList<String> seatNumbers = new ArrayList<>();
         for (Seat seat : seats) {
             seatNumbers.add(seat.getSeatNumber());
@@ -183,11 +240,11 @@ public class PaymentFragment extends Fragment {
     }
 
     private void showPaymentMethodDialog() {
-        final String[] paymentMethods = {"Bank Transfer", "Cash"};
+        final String[] paymentMethods = {"Chuyển khoản ngân hàng", "Tiền mặt"};
         final String[] paymentMethodKeys = {"bank_transfer", "cash"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Choose Payment Method")
+        builder.setTitle("Chọn phương thức thanh toán")
                 .setItems(paymentMethods, (dialog, which) -> {
                     Toast.makeText(getContext(), "Creating booking...", Toast.LENGTH_SHORT).show();
                     confirmBooking(paymentMethodKeys[which]);
