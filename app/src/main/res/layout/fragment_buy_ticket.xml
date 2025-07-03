@@ -115,7 +115,7 @@
                             android:id="@+id/tv_departure_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="25/06/2025"
+                            android:text="25/06"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
