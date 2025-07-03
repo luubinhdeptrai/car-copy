@@ -3,6 +3,8 @@ package com.example.login.API;
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
 import com.example.login.MODELS.CanReviewResponse;
+import com.example.login.MODELS.CreateReviewRequest;
+import com.example.login.MODELS.CreateReviewResponse;
 import com.example.login.MODELS.DeleteAccountResponse;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
@@ -110,4 +112,7 @@ public interface ApiService {
 
     @GET("api/reviews/can-review/{tripId}")
     Call<CanReviewResponse> canReview(@Path("tripId") String tripId);
+
+    @POST("api/reviews")
+    Call<CreateReviewResponse> createReview(@Body CreateReviewRequest request);
 }

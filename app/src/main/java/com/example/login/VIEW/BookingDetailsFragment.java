@@ -1,6 +1,7 @@
 package com.example.login.VIEW;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +21,13 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.login.VIEW.TicketDetailsAdapter;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
+import com.example.login.VIEW.TicketDetailsAdapter;
 import com.example.login.MODELS.BookingHistoryItem;
 import com.example.login.MODELS.CanReviewResponse;
+import com.example.login.MODELS.CreateReviewRequest;
+import com.example.login.MODELS.CreateReviewResponse;
 import com.example.login.R;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -87,6 +90,8 @@ public class BookingDetailsFragment extends Fragment {
         setupToolbar();
         populateData();
         checkCanReview();
+
+        submitReviewButton.setOnClickListener(v -> submitReview());
     }
 
     private void initViews(View view) {
@@ -116,7 +121,7 @@ public class BookingDetailsFragment extends Fragment {
     }
 
     private void checkCanReview() {
-        reviewSection.setVisibility(View.GONE); // Mặc định ẩn đi
+        reviewSection.setVisibility(View.GONE); // Mặc định ẩn
 
         if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
             return;
@@ -138,6 +143,48 @@ public class BookingDetailsFragment extends Fragment {
             public void onFailure(@NonNull Call<CanReviewResponse> call, @NonNull Throwable t) {
                 reviewSection.setVisibility(View.GONE);
                 Log.e("BookingDetails", "CanReview API call failed: " + t.getMessage());
+            }
+        });
+    }
+
+    private void submitReview() {
+        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
+            Toast.makeText(getContext(), "Lỗi: Không tìm thấy thông tin chuyến đi.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String tripId = booking.getTripInfo().getId();
+        float rating = ratingBar.getRating();
+        String comment = commentEditText.getText().toString().trim();
+
+        if (rating == 0) {
+            Toast.makeText(getContext(), "Vui lòng chọn số sao đánh giá.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        submitReviewButton.setEnabled(false);
+        Toast.makeText(getContext(), "Đang gửi đánh giá...", Toast.LENGTH_SHORT).show();
+
+        CreateReviewRequest request = new CreateReviewRequest(tripId, (int) rating, comment);
+
+        apiService.createReview(request).enqueue(new Callback<CreateReviewResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreateReviewResponse> call, @NonNull Response<CreateReviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Gửi đánh giá thành công!", Toast.LENGTH_LONG).show();
+                    ratingBar.setIsIndicator(true);
+                    commentEditText.setEnabled(false);
+                    submitReviewButton.setText("Đã gửi đánh giá");
+                } else {
+                    Toast.makeText(getContext(), "Gửi đánh giá thất bại. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
+                    submitReviewButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreateReviewResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                submitReviewButton.setEnabled(true);
             }
         });
     }
