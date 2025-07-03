@@ -9,17 +9,31 @@
     android:background="@color/white"
     tools:context=".VIEW.SelectTripFragment">
 
-    <TextView
-        android:id="@+id/tv_route_title"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textSize="20sp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        tools:text="Ba Ria - Vung Tau → Ho Chi Minh City"/>
+        android:background="@color/white"
+        app:elevation="0dp">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_select_trip"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:title="">
+
+            <TextView
+                android:id="@+id/tv_route_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="Ba Ria - Vung Tau → Ho Chi Minh City" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/date_recycler_view"
         android:layout_width="match_parent"
@@ -87,4 +101,3 @@
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>
-    
