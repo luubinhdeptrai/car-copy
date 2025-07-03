@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@color/text_primary"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="Vung Tau -> Ho Chi Minh City" />
 
@@ -52,7 +52,7 @@
                         android:id="@+id/passenger_info_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Passenger Information"
+                        android:text="Thông tin hành khách"
                         android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/passenger_info_title"
                         android:layout_marginTop="16dp"
-                        android:text="Fullname"
+                        android:text="Họ tên"
                         android:textColor="@color/text_secondary" />
                     <TextView
                         android:id="@+id/fullname_value"
@@ -79,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/fullname_label"
                         android:layout_marginTop="8dp"
-                        android:text="Phone"
+                        android:text="SĐT"
                         android:textColor="@color/text_secondary" />
                     <TextView
                         android:id="@+id/phone_value"
