@@ -13,10 +13,11 @@
         android:id="@+id/toolbar_customer_support"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/orange_primary"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:title="Hỗ trợ khách hàng"
-        app:titleTextColor="@android:color/black"
+        app:tint="@color/white"
+        app:title="            Hỗ trợ khách hàng"
+        app:titleTextColor="@color/white"
         app:contentInsetStartWithNavigation="0dp" />
 
     <ScrollView
@@ -110,15 +111,18 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="4dp"
                             app:backgroundTint="@color/blue_primary"
-                            android:visibility="gone" /> <Button
-                        android:id="@+id/btn_delete_issue"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="Xóa"
-                        android:layout_marginStart="4dp"
-                        app:backgroundTint="@color/red_primary"
-                        android:visibility="gone" /> </LinearLayout>
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/btn_delete_issue"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="Xóa"
+                            android:layout_marginStart="4dp"
+                            app:backgroundTint="@color/red_primary"
+                            android:visibility="gone" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -146,6 +150,7 @@
                 android:text="Bạn chưa gửi vấn đề nào."
                 android:gravity="center"
                 android:padding="16dp"
-                android:visibility="gone" /> </LinearLayout>
+                android:visibility="gone" />
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>
