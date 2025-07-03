@@ -11,7 +11,7 @@ public class UpdateIssueRequest {
     @SerializedName("description")
     private String description;
 
-    @SerializedName("type")
+    @SerializedName("category")
     private String type;
 
     @SerializedName("status") // Có thể cập nhật trạng thái nếu cần

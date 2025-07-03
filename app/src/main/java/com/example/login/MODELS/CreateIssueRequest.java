@@ -11,7 +11,7 @@ public class CreateIssueRequest {
     @SerializedName("description")
     private String description;
 
-    @SerializedName("type")
+    @SerializedName("category")
     private String type;
 
     public CreateIssueRequest(String title, String description, String type) {

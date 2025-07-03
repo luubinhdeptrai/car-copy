@@ -15,7 +15,7 @@ public class Issue implements Serializable {
     @SerializedName("description")
     private String description;
 
-    @SerializedName("type")
+    @SerializedName("category")
     private String type; // technical, payment, service_quality, other
 
     @SerializedName("status")
