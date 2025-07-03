@@ -41,7 +41,6 @@ public class BuyTicketFragment extends Fragment {
 
     private AutoCompleteTextView actvDeparture, actvDestination;
     private TextView tvDepartureDate, tvDepartureDay;
-    private Spinner ticketNumberSpinner;
     private Button searchButton;
     private Toolbar toolbar;
     private Calendar selectedCalendar;
@@ -61,13 +60,11 @@ public class BuyTicketFragment extends Fragment {
         actvDestination = view.findViewById(R.id.actv_destination);
         tvDepartureDate = view.findViewById(R.id.tv_departure_date);
         tvDepartureDay = view.findViewById(R.id.tv_departure_day);
-        ticketNumberSpinner = view.findViewById(R.id.ticket_number_spinner);
         searchButton = view.findViewById(R.id.search_route_button);
         toolbar = view.findViewById(R.id.toolbar);
         ivSwap = view.findViewById(R.id.iv_swap);
 
         setupAutoCompleteTextViews();
-        setupTicketNumberSpinner();
         setupDatePicker();
         setupClickListeners(view);
     }
@@ -79,15 +76,8 @@ public class BuyTicketFragment extends Fragment {
         actvDestination.setAdapter(adapter);
     }
 
-    private void setupTicketNumberSpinner() {
-        List<String> ticketNumbers = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            ticketNumbers.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, ticketNumbers);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ticketNumberSpinner.setAdapter(adapter);
-    }
+
+
 
     private void setupDatePicker() {
         selectedCalendar = Calendar.getInstance();
