@@ -1,5 +1,7 @@
 package com.example.login.VIEW;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ public class ConfirmationFragment extends Fragment {
     private TextView pickupLocationTextView;
     private TextView dropoffLocationTextView;
 
+    private TextView providerNameTextView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -189,6 +192,7 @@ public class ConfirmationFragment extends Fragment {
         TextView departureLocation = tripInfoCard.findViewById(R.id.departure_location_text);
         TextView destinationLocation = tripInfoCard.findViewById(R.id.destination_location_text);
         TextView tripDuration = tripInfoCard.findViewById(R.id.trip_duration_text);
+        TextView providerName = tripInfoCard.findViewById(R.id.provider_name_text);
         TextView seatNumberValue = view.findViewById(R.id.seat_number_value);
 
         String routeTitleText = tripToShow.getRoute().getOriginStation().getName() + " → " + tripToShow.getRoute().getDestinationStation().getName();
@@ -214,6 +218,7 @@ public class ConfirmationFragment extends Fragment {
         }
         seatNumberValue.setText(String.join(", ", seatNumbers));
 
+        providerName.setText(tripToShow.getProvider().getName());
         // << THÊM MỚI: Điền thông tin địa chỉ vào TextViews >>
         if (tripToShow.getRoute() != null) {
             if (tripToShow.getRoute().getOriginStation() != null && tripToShow.getRoute().getOriginStation().getAddress() != null) {
@@ -231,6 +236,27 @@ public class ConfirmationFragment extends Fragment {
             pickupLocationTextView.setText("N/A");
             dropoffLocationTextView.setText("N/A");
         }
+        departureLocation.setOnClickListener(v -> {
+            Trip.Station.Coordinate coordinates = tripToShow.getRoute().getOriginStation().getCoordinates();
+            // Create a URI for Google Maps with the coordinates
+            Uri gmmIntentUri = Uri.parse("geo:" + coordinates.getLatitude() + "," + coordinates.getLongitude() +
+                    "?q=" + coordinates.getLatitude() + "," + coordinates.getLongitude() +
+                    "(" + tripToShow.getRoute().getOriginStation().getName() + ")");
+
+            // Create the intent with proper flags
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            // Add these flags to preserve your navigation stack
+            mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            mapIntent.addFlags(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
+
+            //if (mapIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivity(mapIntent);
+
+        });
+
+
     }
 
     private String formatTime(String utcDateString, String format) {

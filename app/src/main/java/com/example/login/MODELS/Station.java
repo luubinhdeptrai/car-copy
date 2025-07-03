@@ -18,6 +18,9 @@ public class Station {
     @Expose
     private String city;
 
+    @SerializedName("coordinates") // Thêm annotation cho thuộc tính address
+    private Coordinate coordinates; // Thêm thuộc tính coordinates
+
     @SerializedName("address") // Thêm annotation cho thuộc tính address
     @Expose
     private String address; // Thêm thuộc tính address
@@ -55,5 +58,35 @@ public class Station {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+
+    public Coordinate getCoordinates() {
+        return coordinates;
+    }
+
+
+    public static class Coordinate {
+        @SerializedName("lat")
+        private double latitude;
+
+        @SerializedName("lng")
+        private double longitude;
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
     }
 }

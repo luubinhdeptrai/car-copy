@@ -96,6 +96,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             String details = String.format(Locale.US, "%s     •     %s     •     %s", formattedPrice, vehicleType, seatsInfo);
             tripDetailsText.setText(details);
 
+
             // SỬA: Sự kiện click giờ sẽ gọi đến listener
             itemView.setOnClickListener(v -> {
                 if (listener != null) {

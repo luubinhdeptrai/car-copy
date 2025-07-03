@@ -155,6 +155,10 @@ public class Trip implements Serializable {
         @SerializedName("address")
         private String address; // Ensure 'address' property is here
 
+        @SerializedName("coordinates")
+        private Coordinate coordinates; // Ensure 'coordinates' property is here
+
+
         public String get_id() { // Added getter for _id, usually good to have
             return _id;
         }
@@ -170,6 +174,35 @@ public class Trip implements Serializable {
         // << THÊM MỚI: Getter cho thuộc tính address >>
         public String getAddress() {
             return address;
+        }
+
+        public Coordinate getCoordinates() {
+            return coordinates;
+        }
+
+
+        public static class Coordinate {
+            @SerializedName("lat")
+            private double latitude;
+
+            @SerializedName("lng")
+            private double longitude;
+
+            public double getLatitude() {
+                return latitude;
+            }
+
+            public void setLatitude(double latitude) {
+                this.latitude = latitude;
+            }
+
+            public double getLongitude() {
+                return longitude;
+            }
+
+            public void setLongitude(double longitude) {
+                this.longitude = longitude;
+            }
         }
     }
 
