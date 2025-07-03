@@ -11,7 +11,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Verify Account"
+        android:text="Xác thực tài khoản"
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
@@ -27,7 +27,7 @@
         android:textColor="@color/text_secondary"
         android:layout_marginBottom="32dp"
         android:lineSpacingExtra="4dp"
-        android:text="We've sent a 6-digit verification code to your email."/>
+        android:text="Chúng tôi đã gửi mã xác thực gồm 6 chữ số đến email của bạn."/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -41,7 +41,7 @@
             android:id="@+id/editTextVerificationCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter 6-digit code"
+            android:hint="Nhập mã 6 chữ số"
             android:inputType="number"
             android:maxLength="6"
             android:textAlignment="center"
@@ -53,7 +53,7 @@
         android:id="@+id/btnVerifyCode"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Verify"
+        android:text="Xác thực"
         app:backgroundTint="@color/orange_primary"
         android:textColor="@android:color/white"
         android:textSize="18sp"
@@ -63,7 +63,7 @@
         android:id="@+id/textViewResendCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resend code?"
+        android:text="Gửi lại mã?"
         android:textColor="@color/orange_primary"
         android:layout_gravity="center_horizontal"
         android:textSize="16sp"

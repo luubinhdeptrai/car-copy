@@ -16,19 +16,20 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/orange_primary"
             app:elevation="0dp">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_user_details"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:navigationIcon="@drawable/ic_arrow_back">
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:tint="@color/white">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Thông tin cá nhân"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold" />
             </androidx.appcompat.widget.Toolbar>
@@ -161,6 +162,7 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="8dp"
                 android:text="Đăng xuất"
+                android:visibility="gone"
                 android:textColor="@color/orange_primary"
                 app:strokeColor="@color/orange_primary" />
 

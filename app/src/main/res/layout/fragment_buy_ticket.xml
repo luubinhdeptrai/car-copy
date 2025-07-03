@@ -18,22 +18,23 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="0dp">
+            android:background="@color/orange_primary">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_arrow_back"
-                app:title=""> <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Mua Vé"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textColor="@color/text_primary" />
+                app:tint="@color/white">
+
+                <TextView
+                    android:id="@+id/toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Mua Vé"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:textColor="@color/white" />
 
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
@@ -42,6 +43,7 @@
             android:id="@+id/cv_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             app:cardCornerRadius="16dp"
@@ -59,6 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
+
                     <LinearLayout
                         android:id="@+id/ll_departure"
                         android:layout_width="0dp"
@@ -78,14 +81,22 @@
                                 android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
-                    <ImageView android:id="@+id/iv_swap" android:src="@drawable/ic_swap_horiz" android:layout_width="32dp" android:layout_height="32dp" android:layout_margin="8dp"/>
+
+                    <ImageView
+                        android:id="@+id/iv_swap"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:src="@drawable/ic_swap_horiz"
+                        />
+
                     <LinearLayout
                         android:id="@+id/ll_destination"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="end">
+                        android:gravity="end"
+                        android:orientation="vertical">
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_destination"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -101,7 +112,12 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <View android:id="@+id/divider" android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="16dp"/>
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/divider" />
 
                 <LinearLayout
                     android:id="@+id/ll_details"
@@ -110,28 +126,37 @@
                     android:layout_marginTop="16dp"
                     android:baselineAligned="false"
                     android:gravity="center_vertical">
+
                     <LinearLayout
                         android:id="@+id/ll_departure_date"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-                        <TextView android:id="@+id/tv_departure_date_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngày đi" android:textColor="@color/text_secondary"/>
+                        <TextView
+                            android:id="@+id/tv_departure_date_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ngày đi"
+                            android:textColor="@color/text_secondary" />
                         <TextView
                             android:id="@+id/tv_departure_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="25/06"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
                             android:paddingTop="4dp"
-                            android:paddingBottom="4dp"/>
-                        <TextView android:id="@+id/tv_departure_day"
+                            android:paddingBottom="4dp"
+                            android:text="25/06"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_departure_day"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Tuesday"
-                            android:textColor="@color/text_secondary"/>
+                            android:textStyle="bold"
+                            />
                     </LinearLayout>
 
                     <LinearLayout
@@ -139,18 +164,18 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/search_route_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_gravity="center_horizontal"
-                    android:text="Tìm chuyến đi"
                     android:layout_marginTop="24dp"
-                    app:backgroundTint="@color/orange_primary"
-                    android:textColor="@color/white"/>
+                    android:text="Tìm chuyến đi"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/orange_primary" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

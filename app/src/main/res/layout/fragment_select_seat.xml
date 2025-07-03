@@ -7,7 +7,6 @@
     android:background="@color/white"
     tools:context=".VIEW.SelectSeatFragment">
 
-    <!-- 1. PHẦN CUỐI CÙNG (BOTTOM) - CỐ ĐỊNH -->
     <LinearLayout
         android:id="@+id/bottom_summary_layout"
         android:layout_width="match_parent"
@@ -53,13 +52,14 @@
             app:backgroundTint="@color/orange_primary" />
     </LinearLayout>
 
-    <!-- 2. PHẦN ĐẦU (TOP) - CỐ ĐỊNH -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_select_seat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        app:navigationIcon="@drawable/ic_arrow_back">
+        android:background="@color/orange_primary"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:tint="@color/white">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
                 android:id="@+id/tv_toolbar_route"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="Vung Tau → Ho Chi Minh City" />
@@ -78,12 +78,11 @@
                 android:id="@+id/tv_toolbar_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
+                android:textColor="@color/white"
                 tools:text="Friday, 20/06/2025" />
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <!-- 3. NỘI DUNG CUỘN (NẰM GIỮA) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -97,7 +96,6 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <!-- Departure Date Section -->
             <TextView
                 android:id="@+id/departure_date_header"
                 android:layout_width="wrap_content"
@@ -113,7 +111,6 @@
                 android:textColor="@color/text_secondary"
                 tools:text="17:30 Friday, 20/06/2025" />
 
-            <!-- Bus Layout Container -->
             <LinearLayout
                 android:id="@+id/bus_layout_container"
                 android:layout_width="wrap_content"
@@ -121,19 +118,16 @@
                 android:layout_marginTop="24dp"
                 android:orientation="horizontal">
 
-                <!-- Dãy ghế bên trái -->
                 <GridLayout
                     android:id="@+id/seat_grid_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:columnCount="2" />
 
-                <!-- Lối đi ở giữa -->
                 <Space
                     android:layout_width="40dp"
                     android:layout_height="match_parent" />
 
-                <!-- Dãy ghế bên phải -->
                 <GridLayout
                     android:id="@+id/seat_grid_right"
                     android:layout_width="wrap_content"
@@ -141,7 +135,6 @@
                     android:columnCount="2" />
             </LinearLayout>
 
-            <!-- Legend for seat status -->
             <LinearLayout
                 android:id="@+id/seat_legend"
                 android:layout_width="match_parent"
@@ -185,4 +178,3 @@
     </ScrollView>
 
 </RelativeLayout>
-    
