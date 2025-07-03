@@ -49,6 +49,11 @@ public class ConfirmationFragment extends Fragment {
     private TextView fullnameValue;
     private TextView phoneValue;
 
+    // Thêm TextViews cho địa chỉ đón/trả
+    private TextView pickupLocationTextView;
+    private TextView dropoffLocationTextView;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +80,10 @@ public class ConfirmationFragment extends Fragment {
         phoneValue = view.findViewById(R.id.phone_value);
         continueButton = view.findViewById(R.id.continue_button);
         toolbar = view.findViewById(R.id.toolbar_confirmation);
+        // Ánh xạ TextViews địa chỉ
+        pickupLocationTextView = view.findViewById(R.id.pickup_location_textview);
+        dropoffLocationTextView = view.findViewById(R.id.dropoff_location_textview);
+
 
         if (tripToShow == null || selectedSeats == null || selectedSeats.isEmpty()) {
             Toast.makeText(getContext(), "Error: Confirmation data is missing.", Toast.LENGTH_LONG).show();
@@ -204,6 +213,24 @@ public class ConfirmationFragment extends Fragment {
             seatNumbers.add(seat.getSeatNumber());
         }
         seatNumberValue.setText(String.join(", ", seatNumbers));
+
+        // << THÊM MỚI: Điền thông tin địa chỉ vào TextViews >>
+        if (tripToShow.getRoute() != null) {
+            if (tripToShow.getRoute().getOriginStation() != null && tripToShow.getRoute().getOriginStation().getAddress() != null) {
+                pickupLocationTextView.setText(tripToShow.getRoute().getOriginStation().getAddress());
+            } else {
+                pickupLocationTextView.setText("N/A");
+            }
+
+            if (tripToShow.getRoute().getDestinationStation() != null && tripToShow.getRoute().getDestinationStation().getAddress() != null) {
+                dropoffLocationTextView.setText(tripToShow.getRoute().getDestinationStation().getAddress());
+            } else {
+                dropoffLocationTextView.setText("N/A");
+            }
+        } else {
+            pickupLocationTextView.setText("N/A");
+            dropoffLocationTextView.setText("N/A");
+        }
     }
 
     private String formatTime(String utcDateString, String format) {
