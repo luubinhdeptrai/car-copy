@@ -111,7 +111,7 @@ public class BuyTicketFragment extends Fragment {
     }
 
     private void updateDateViews(Calendar calendar) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM", Locale.US);
         tvDepartureDate.setText(dateFormat.format(calendar.getTime()));
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("vi", "VN"));
         tvDepartureDay.setText(dayFormat.format(calendar.getTime()));

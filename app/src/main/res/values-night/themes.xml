@@ -13,5 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="AppDatePickerTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/orange_primary</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:headerBackground">@color/orange_primary</item>
+    </style>
 </resources>
     
