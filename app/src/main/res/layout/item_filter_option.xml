@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checkbox_option"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Option Name"
+    android:layoutDirection="rtl"
+    android:padding="12dp"
+    android:textSize="16sp"/>
