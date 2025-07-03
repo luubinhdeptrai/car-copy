@@ -62,14 +62,14 @@
                         <TextView
                             android:id="@+id/profile_name_textview"  android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đang tải..."
+                            android:text=""
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                         <TextView
                             android:id="@+id/profile_phone_textview" android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Đang tải..."
+                            android:text=""
                             android:textColor="@color/text_secondary"/>
                     </LinearLayout>
                     <ImageView
@@ -84,7 +84,7 @@
                 <TextView
                     android:id="@+id/setting_menu_item"
                     style="@style/ProfileMenuItem"
-                    android:text="Setting"
+                    android:text="Cài đặt"
                     android:drawableStart="@drawable/ic_settings"/>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
@@ -92,7 +92,7 @@
                 <TextView
                     android:id="@+id/support_menu_item"
                     style="@style/ProfileMenuItem"
-                    android:text="Quick Support"
+                    android:text="Gửi yêu cầu hỗ trợ"
                     android:drawableStart="@drawable/ic_help"
                     app:drawableTint="@color/text_primary" />
 
@@ -101,7 +101,7 @@
                 <TextView
                     android:id="@+id/delete_account_menu_item"
                     style="@style/ProfileMenuItem"
-                    android:text="Delete Account"
+                    android:text="Xóa tài khoản"
                     android:drawableStart="@drawable/ic_delete"/>
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
@@ -109,7 +109,7 @@
                 <TextView
                     android:id="@+id/logout_menu_item"
                     style="@style/ProfileMenuItem"
-                    android:text="Logout"
+                    android:text="Đăng xuất"
                     android:drawableStart="@drawable/ic_logout"/>
 
             </LinearLayout>

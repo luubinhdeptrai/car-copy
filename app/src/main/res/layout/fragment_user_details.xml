@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"
-            android:text="Profile"
+            android:text="Thông tin cá nhân"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -49,23 +49,23 @@
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
-                        android:text="Full name" />
+                        android:text="Họ và tên" />
 
                     <TextView
                         android:id="@+id/tv_full_name"
                         style="@style/UserInfoValue"
-                        android:text="Nguyễn Đại Trường Danh" />
+                        android:text="" />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
-                        android:text="Phone number" />
+                        android:text="SĐT" />
                     <TextView
                         android:id="@+id/tv_phone_number"
                         style="@style/UserInfoValue"
-                        android:text="0968411942" />
+                        android:text="" />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
@@ -83,7 +83,7 @@
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
-                        android:text="Gender" />
+                        android:text="Giới tính" />
 
                     <RadioGroup
                         android:id="@+id/gender_radio_group_details"
@@ -118,11 +118,11 @@
                 <RelativeLayout style="@style/UserInfoRow">
                     <TextView
                         style="@style/UserInfoLabel"
-                        android:text="Birthday" />
+                        android:text="Ngày sinh" />
                     <TextView
                         android:id="@+id/tv_birthday"
                         style="@style/UserInfoValue"
-                        android:text="Please update." />
+                        android:text="Chưa cập nhật." />
                 </RelativeLayout>
 
             </LinearLayout>
@@ -134,7 +134,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="24dp"
-            android:text="Update profile"
+            android:text="Cập nhật thông tin"
             app:backgroundTint="@color/orange_primary"
             android:textColor="@color/white" />
 
@@ -144,7 +144,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"
-            android:text="Logout"
+            android:text="Đăng xuất"
             android:textColor="@color/orange_primary"
             app:strokeColor="@color/orange_primary" />
 

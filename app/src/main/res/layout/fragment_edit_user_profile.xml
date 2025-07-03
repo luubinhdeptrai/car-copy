@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile"
+            android:text="Thông tin cá nhân"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -57,17 +57,17 @@
                 android:padding="16dp">
 
                 <RelativeLayout style="@style/UserInfoRow">
-                    <TextView style="@style/UserInfoLabel" android:text="Phone number" />
+                    <TextView style="@style/UserInfoLabel" android:text="SĐT" />
                     <TextView
                         android:id="@+id/tv_phone_number_readonly"
                         style="@style/UserInfoValue"
-                        android:text="Đang tải..." />
+                        android:text="" />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
                 <RelativeLayout android:id="@+id/edit_full_name_layout" style="@style/UserInfoRowClickable">
-                    <TextView style="@style/UserInfoLabel" android:text="Full name *" />
-                    <TextView android:id="@+id/tv_edit_full_name" style="@style/UserInfoValue.Editable" android:text="Nguyễn Đại Trường Danh" app:drawableTint="@color/text_secondary"/>
+                    <TextView style="@style/UserInfoLabel" android:text="Họ và tên " />
+                    <TextView android:id="@+id/tv_edit_full_name" style="@style/UserInfoValue.Editable" android:text="" app:drawableTint="@color/text_secondary"/>
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
@@ -76,12 +76,12 @@
                     <TextView
                         android:id="@+id/tv_edit_email"
                         style="@style/UserInfoValue"
-                        android:text="Please update" />
+                        android:text="" />
                 </RelativeLayout>
                 <View style="@style/UserInfoDivider" />
 
                 <RelativeLayout style="@style/UserInfoRow">
-                    <TextView style="@style/UserInfoLabel" android:text="Gender" />
+                    <TextView style="@style/UserInfoLabel" android:text="Giới tính" />
                     <RadioGroup
                         android:id="@+id/gender_radio_group"
                         android:layout_width="wrap_content"
@@ -96,8 +96,8 @@
                 <View style="@style/UserInfoDivider" />
 
                 <RelativeLayout android:id="@+id/edit_birthday_layout" style="@style/UserInfoRowClickable">
-                    <TextView style="@style/UserInfoLabel" android:text="Birthday" />
-                    <TextView android:id="@+id/tv_edit_birthday" style="@style/UserInfoValue.Editable" android:text="Please update" app:drawableTint="@color/text_secondary"/>
+                    <TextView style="@style/UserInfoLabel" android:text="Ngày sinh" />
+                    <TextView android:id="@+id/tv_edit_birthday" style="@style/UserInfoValue.Editable" android:text="" app:drawableTint="@color/text_secondary"/>
                 </RelativeLayout>
 
             </LinearLayout>
@@ -108,7 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="24dp"
-            android:text="Update"
+            android:text="Cập nhật"
             app:backgroundTint="@color/orange_primary"/>
     </LinearLayout>
 </ScrollView>

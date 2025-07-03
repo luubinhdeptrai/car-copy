@@ -177,14 +177,8 @@
                             android:id="@+id/pickup_bus_station_radio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bến xe"
+                            android:text="Địa chỉ bến xe"
                             android:checked="true"/>
-                        <RadioButton
-                            android:id="@+id/pickup_shuttle_radio"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="Shuttle Service"/>
                     </RadioGroup>
 
                     <TextView
@@ -221,14 +215,8 @@
                             android:id="@+id/dropoff_bus_station_radio"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Bến xe"
+                            android:text="Địa chỉ bến xe"
                             android:checked="true"/>
-                        <RadioButton
-                            android:id="@+id/dropoff_shuttle_radio"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:text="Shuttle Service"/>
                     </RadioGroup>
 
                     <TextView

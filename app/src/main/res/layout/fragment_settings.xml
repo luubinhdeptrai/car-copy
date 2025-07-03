@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="Cài đặt"
         android:textSize="20sp"
         android:textStyle="bold"
         android:padding="16dp"
@@ -27,7 +27,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Biometrics Authentication"
+                android:text="Xác thực sinh trắc học"
                 android:textSize="16sp"
                 android:layout_centerVertical="true"/>
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Change Password"
+            android:text="Thay đổi mật khẩu"
             android:textSize="16sp"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"/>
@@ -54,7 +54,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notification"
+                android:text="Thông báo"
                 android:textSize="16sp"
                 android:layout_centerVertical="true"/>
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -72,7 +72,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Language"
+                android:text="Ngôn ngữ"
                 android:textSize="16sp"
                 android:layout_centerVertical="true"/>
             <TextView

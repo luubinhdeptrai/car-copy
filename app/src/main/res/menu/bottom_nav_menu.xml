@@ -3,17 +3,17 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home"
-        android:title="Home"/>
+        android:title="Trang chủ"/>
     <item
         android:id="@+id/navigation_history"
         android:icon="@drawable/ic_history"
-        android:title="History"/>
+        android:title="Lịch sử"/>
     <item
         android:id="@+id/navigation_notification"
         android:icon="@drawable/ic_notifications"
-        android:title="Notification"/>
+        android:title="Thông báo"/>
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_person"
-        android:title="Profile"/>
+        android:title="Tài khoản"/>
 </menu>
