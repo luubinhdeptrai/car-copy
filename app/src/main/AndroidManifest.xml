@@ -71,6 +71,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".VIEW.CustomerSupportActivity" />
+
 
     </application>
 

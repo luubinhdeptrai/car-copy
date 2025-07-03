@@ -12,8 +12,8 @@ public class ApiClient {
     private static Retrofit retrofitAuth = null; // Dùng biến riêng cho Auth API
     private static Retrofit retrofitNoAuth = null; // Dùng biến riêng cho NoAuth API
     
-    private static final String BASE_URL = "https://limogo-backend.onrender.com/"; // Đảm bảo đúng IP và Port
-//    private static final String BASE_URL = "http://10.0.2.2:3000/"; // Đảm bảo đúng IP và Port
+ //   private static final String BASE_URL = "https://limogo-backend.onrender.com/"; // Đảm bảo đúng IP và Port
+   private static final String BASE_URL = "http://10.0.2.2:3000/"; // Đảm bảo đúng IP và Port
 
      
     public static ApiService getAuthAPI(Context context) {
