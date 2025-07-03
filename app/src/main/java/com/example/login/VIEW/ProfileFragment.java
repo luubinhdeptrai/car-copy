@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.login.API.ApiClient;
@@ -19,8 +20,8 @@ import com.example.login.API.ApiService;
 import com.example.login.API.TokenManager;
 import com.example.login.LOGIN.LoginActivity;
 import com.example.login.MODELS.DeleteAccountResponse;
-import com.example.login.MODELS.ProfileResponse; // << THÊM IMPORT
-import com.example.login.MODELS.User;             // << THÊM IMPORT
+import com.example.login.MODELS.ProfileResponse;
+import com.example.login.MODELS.User;
 import com.example.login.R;
 
 import retrofit2.Call;
@@ -29,10 +30,9 @@ import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
 
-    // --- BIẾN MỚI ĐƯỢC THÊM ---
     private TextView profileNameTextView;
     private TextView profilePhoneTextView;
-    // -------------------------
+    private Toolbar toolbar; // SỬA: Thêm biến Toolbar
 
     @Nullable
     @Override
@@ -44,10 +44,9 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // --- CẬP NHẬT: Ánh xạ các TextView mới
         profileNameTextView = view.findViewById(R.id.profile_name_textview);
         profilePhoneTextView = view.findViewById(R.id.profile_phone_textview);
-        // ------------------------------------
+        toolbar = view.findViewById(R.id.toolbar_profile); // SỬA: Ánh xạ Toolbar
 
         LinearLayout profileInfoLayout = view.findViewById(R.id.profile_info_layout);
         TextView settingMenuItem = view.findViewById(R.id.setting_menu_item);
@@ -55,9 +54,15 @@ public class ProfileFragment extends Fragment {
         TextView deleteAccountMenuItem = view.findViewById(R.id.delete_account_menu_item);
         TextView logoutMenuItem = view.findViewById(R.id.logout_menu_item);
 
-        // --- CẬP NHẬT: Gọi hàm để tải thông tin người dùng ---
         loadUserProfile();
-        // ------------------------------------------------
+
+        // SỬA: Thêm sự kiện click cho nút back
+        toolbar.setNavigationOnClickListener(v -> {
+            // Giả lập hành động nhấn nút back của hệ thống
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
+        });
 
         profileInfoLayout.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), ProfileHostActivity.class);
@@ -86,7 +91,6 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    // --- PHƯƠNG THỨC MỚI ĐƯỢC THÊM ĐỂ TẢI DỮ LIỆU ---
     private void loadUserProfile() {
         ApiService apiService = ApiClient.getAuthAPI(requireContext());
         apiService.getUserProfile().enqueue(new Callback<ProfileResponse>() {
@@ -99,7 +103,6 @@ public class ProfileFragment extends Fragment {
                         profilePhoneTextView.setText(user.getPhoneNumber());
                     }
                 } else {
-                    // Xử lý khi không lấy được dữ liệu
                     profileNameTextView.setText("Không có dữ liệu");
                     profilePhoneTextView.setText("N/A");
                     Toast.makeText(getContext(), "Không thể tải thông tin cá nhân.", Toast.LENGTH_SHORT).show();
@@ -108,14 +111,12 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<ProfileResponse> call, @NonNull Throwable t) {
-                // Xử lý lỗi mạng
                 profileNameTextView.setText("Lỗi mạng");
                 profilePhoneTextView.setText("Vui lòng thử lại");
                 Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-    // ---------------------------------------------
 
     private void showDeleteConfirmationDialog() {
         new AlertDialog.Builder(getContext())

@@ -5,12 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RadioGroup; // << THÊM IMPORT
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -34,9 +35,8 @@ public class UserDetailsFragment extends Fragment {
 
     private ApiService apiService;
     private TextView tvFullName, tvPhoneNumber, tvEmail, tvBirthday;
-    // --- SỬA LỖI: Thay TextView bằng RadioGroup ---
     private RadioGroup genderRadioGroupDetails;
-    // ---------------------------------------------
+    private Toolbar toolbar; // SỬA: Thêm biến Toolbar
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,9 +58,8 @@ public class UserDetailsFragment extends Fragment {
         tvPhoneNumber = view.findViewById(R.id.tv_phone_number);
         tvEmail = view.findViewById(R.id.tv_email);
         tvBirthday = view.findViewById(R.id.tv_birthday);
-        // --- SỬA LỖI: Ánh xạ RadioGroup với ID đúng ---
         genderRadioGroupDetails = view.findViewById(R.id.gender_radio_group_details);
-        // ------------------------------------------
+        toolbar = view.findViewById(R.id.toolbar_user_details); // SỬA: Ánh xạ Toolbar
 
         loadUserDetails();
 
@@ -68,6 +67,20 @@ public class UserDetailsFragment extends Fragment {
         updateProfileButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_userDetails_to_editProfile);
         });
+
+        // SỬA: Thêm sự kiện click cho nút back để đóng Activity
+        toolbar.setNavigationOnClickListener(v -> {
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
+        });
+    }
+
+    // Luôn tải lại dữ liệu khi fragment này được hiển thị lại
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserDetails();
     }
 
     private void loadUserDetails() {
@@ -82,7 +95,6 @@ public class UserDetailsFragment extends Fragment {
                         tvEmail.setText(isNullOrEmpty(user.getEmail()) ? "Please update." : user.getEmail());
                         tvBirthday.setText(isNullOrEmpty(user.getDateOfBirth()) ? "Please update." : formatDate(user.getDateOfBirth()));
 
-                        // --- SỬA LỖI: Dùng logic switch-case để chọn đúng RadioButton ---
                         String gender = user.getGender();
                         if (!isNullOrEmpty(gender)) {
                             switch (gender) {
@@ -97,7 +109,6 @@ public class UserDetailsFragment extends Fragment {
                                     break;
                             }
                         }
-                        // -------------------------------------------------------------
                     }
                 } else {
                     Toast.makeText(getContext(), "Failed to load user details.", Toast.LENGTH_SHORT).show();
