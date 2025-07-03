@@ -87,19 +87,19 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     User user = response.body().getData();
                     if (user != null && user.getFullname() != null) {
-                        welcomeTextView.setText("Welcome,\n" + user.getFullname());
+                        welcomeTextView.setText("Chào mừng,\n" + user.getFullname());
                     } else {
-                        welcomeTextView.setText("Welcome,\nUser");
+                        welcomeTextView.setText("Chào mừng,\nUser");
                     }
                 } else {
-                    welcomeTextView.setText("Welcome,\nUser");
+                    welcomeTextView.setText("Chào mừng,\nUser");
                     Toast.makeText(getContext(), "Không thể tải thông tin người dùng", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ProfileResponse> call, @NonNull Throwable t) {
-                welcomeTextView.setText("Welcome,\nUser");
+                welcomeTextView.setText("Chào mừng,\nUser");
                 Toast.makeText(getContext(), "Lỗi mạng, không thể tải thông tin", Toast.LENGTH_SHORT).show();
             }
         });

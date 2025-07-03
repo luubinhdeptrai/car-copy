@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/profile_image"
                 android:layout_marginStart="16dp"
-                android:text="Welcome,\nNguyễn Đại Trường Danh"
+                android:text="Chào mừng,\nNguyễn Đại Trường Danh"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"/>

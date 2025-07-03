@@ -42,7 +42,7 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
     private RecyclerView dateRecyclerView;
     private View layoutNoData;
     private TextView tvRouteTitle;
-    private Button btnFilterPrice, btnFilterSeatType, btnFilterTime;
+    private Button btnFilterPrice, btnFilterTime;
 
     // ViewModel & Data
     private SelectTripViewModel viewModel;
@@ -93,7 +93,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
         layoutNoData = view.findViewById(R.id.layout_no_data);
         tvRouteTitle = view.findViewById(R.id.tv_route_title);
         btnFilterPrice = view.findViewById(R.id.btn_filter_price);
-        btnFilterSeatType = view.findViewById(R.id.btn_filter_seat_type);
         btnFilterTime = view.findViewById(R.id.btn_filter_time);
     }
 
@@ -121,7 +120,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
 
     private void setupClickListeners() {
         btnFilterPrice.setOnClickListener(v -> showFilterDialog("Price"));
-        btnFilterSeatType.setOnClickListener(v -> showFilterDialog("Seat types"));
         btnFilterTime.setOnClickListener(v -> showFilterDialog("Hour"));
     }
 

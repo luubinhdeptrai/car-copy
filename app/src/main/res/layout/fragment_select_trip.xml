@@ -40,22 +40,15 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="Price" />
-        <Button
-            android:id="@+id/btn_filter_seat_type"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="Seat" />
+            android:text="Giá" />
+
         <Button
             android:id="@+id/btn_filter_time"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Time" />
+            android:text="Giờ" />
     </LinearLayout>
 
     <FrameLayout

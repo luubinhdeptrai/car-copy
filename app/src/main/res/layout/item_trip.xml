@@ -121,13 +121,16 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     tools:text="VP Bến Xe Vũng Tàu"/>
+                <View
+                    android:layout_height="10dp"
+                    android:layout_width="0dp"/>
                 <TextView
                     android:id="@+id/trip_duration_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Distance: 120km - 3h"/>
                 <View
-                    android:layout_height="24dp"
+                    android:layout_height="10dp"
                     android:layout_width="0dp"/>
                 <TextView
                     android:id="@+id/destination_location_text"

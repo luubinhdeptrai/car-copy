@@ -78,7 +78,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             if (trip.getRoute() != null && trip.getRoute().getOriginStation() != null && trip.getRoute().getDestinationStation() != null) {
                 departureLocationText.setText(trip.getRoute().getOriginStation().getName());
                 destinationLocationText.setText(trip.getRoute().getDestinationStation().getName());
-                String durationString = String.format(Locale.US, "Distance: %dkm - %s", trip.getRoute().getDistanceKm(), calculateDuration(trip.getDepartureTime(), trip.getArrivalTime()));
+                String durationString = String.format(Locale.US, "Khoảng cách: %dkm - %s", trip.getRoute().getDistanceKm(), calculateDuration(trip.getDepartureTime(), trip.getArrivalTime()));
                 tripDurationText.setText(durationString);
             }
 
@@ -90,10 +90,10 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             if (trip.getAvailableSeats() == -1) {
                 seatsInfo = "Checking...";
             } else {
-                seatsInfo = String.format(Locale.US, "%d seats left", trip.getAvailableSeats());
+                seatsInfo = String.format(Locale.US, "%d ghế trống", trip.getAvailableSeats());
             }
 
-            String details = String.format(Locale.US, "%s • %s • %s", formattedPrice, vehicleType, seatsInfo);
+            String details = String.format(Locale.US, "%s     •     %s     •     %s", formattedPrice, vehicleType, seatsInfo);
             tripDetailsText.setText(details);
 
             // SỬA: Sự kiện click giờ sẽ gọi đến listener
