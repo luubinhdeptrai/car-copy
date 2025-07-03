@@ -17,6 +17,10 @@ public class BookingHistoryItem implements Serializable {
     private String paymentMethod;
     @SerializedName("createdAt")
     private String createdAt;
+
+    @SerializedName("review")
+    private ReviewInfo review;
+
     @SerializedName("userInfo")
     private UserInfo userInfo;
     @SerializedName("providerInfo")
@@ -33,10 +37,35 @@ public class BookingHistoryItem implements Serializable {
     public String getApprovalStatus() { return approvalStatus; }
     public String getPaymentMethod() { return paymentMethod; }
     public String getCreatedAt() { return createdAt; }
+    public ReviewInfo getReview() { return review; }
     public UserInfo getUserInfo() { return userInfo; }
     public ProviderInfo getProviderInfo() { return providerInfo; }
     public TripInfo getTripInfo() { return tripInfo; }
     public List<TicketInfo> getTickets() { return tickets; }
+
+    public void setReview(ReviewInfo review) {
+        this.review = review;
+    }
+
+    public static class ReviewInfo implements Serializable {
+        @SerializedName("_id")
+        private String id;
+        @SerializedName("rating")
+        private float rating;
+        @SerializedName("comment")
+        private String comment;
+        public ReviewInfo() {}
+
+
+        public String getId() { return id; }
+        public float getRating() { return rating; }
+        public String getComment() { return comment; }
+
+        // << THÊM CÁC HÀM SETTER >>
+        public void setId(String id) { this.id = id; }
+        public void setRating(float rating) { this.rating = rating; }
+        public void setComment(String comment) { this.comment = comment; }
+    }
 
     public static class UserInfo implements Serializable {
         @SerializedName("name")
@@ -55,7 +84,6 @@ public class BookingHistoryItem implements Serializable {
         private String id;
         @SerializedName("phone")
         private String phone;
-
         @SerializedName("name")
         private String name;
         public String getName() { return name; }
@@ -90,4 +118,6 @@ public class BookingHistoryItem implements Serializable {
         public String getAccessId() { return accessId; }
         public String getId() { return id; }
     }
+
+
 }
