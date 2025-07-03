@@ -1,5 +1,7 @@
 package com.example.login.VIEW;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -7,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,11 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
-import com.example.login.VIEW.TicketDetailsAdapter;
 import com.example.login.MODELS.BookingHistoryItem;
 import com.example.login.MODELS.CanReviewResponse;
 import com.example.login.MODELS.CreateReviewRequest;
 import com.example.login.MODELS.CreateReviewResponse;
+import com.example.login.MODELS.UpdateReviewRequest;
 import com.example.login.R;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -46,15 +47,21 @@ public class BookingDetailsFragment extends Fragment {
 
     private BookingHistoryItem booking;
     private ApiService apiService;
+    private String existingReviewId = null;
 
-    // Khai báo các View
+    private static final String PREFS_NAME = "BookingDetailsPrefs";
+    private static final String KEY_DRAFT_RATING_PREFIX = "draft_review_rating_";
+    private static final String KEY_DRAFT_COMMENT_PREFIX = "draft_review_comment_";
+    private static final String KEY_SAVED_REVIEW_RATING_PREFIX = "saved_review_rating_";
+    private static final String KEY_SAVED_REVIEW_COMMENT_PREFIX = "saved_review_comment_";
+    private static final String KEY_SAVED_REVIEW_ID_PREFIX = "saved_review_id_";
+    private static final String KEY_REVIEW_POSTED_PREFIX = "review_posted_";
+
     private Toolbar toolbar;
     private TextView providerNameText, bookingIdText, statusText, paymentMethodText,
             totalPriceText, createdAtText, routeText, departureTimeText,
             userNameText, userEmailText, userPhoneText;
     private RecyclerView ticketsRecyclerView;
-
-    // Khai báo các View cho phần đánh giá
     private CardView reviewSection;
     private RatingBar ratingBar;
     private TextInputEditText commentEditText;
@@ -64,7 +71,6 @@ public class BookingDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         apiService = ApiClient.getAuthAPI(getContext());
-
         if (getArguments() != null) {
             booking = (BookingHistoryItem) getArguments().getSerializable("BOOKING_DETAILS");
         }
@@ -79,19 +85,16 @@ public class BookingDetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         if (booking == null) {
             Toast.makeText(getContext(), "Không thể tải chi tiết đặt vé.", Toast.LENGTH_SHORT).show();
             Navigation.findNavController(view).popBackStack();
             return;
         }
-
         initViews(view);
         setupToolbar();
         populateData();
         checkCanReview();
-
-        submitReviewButton.setOnClickListener(v -> submitReview());
+        submitReviewButton.setOnClickListener(v -> handleReviewSubmission());
     }
 
     private void initViews(View view) {
@@ -108,7 +111,6 @@ public class BookingDetailsFragment extends Fragment {
         userEmailText = view.findViewById(R.id.user_email_text);
         userPhoneText = view.findViewById(R.id.user_phone_text);
         ticketsRecyclerView = view.findViewById(R.id.tickets_recycler_view);
-
         reviewSection = view.findViewById(R.id.review_section);
         ratingBar = view.findViewById(R.id.rating_bar);
         commentEditText = view.findViewById(R.id.comment_edit_text);
@@ -121,95 +123,35 @@ public class BookingDetailsFragment extends Fragment {
     }
 
     private void checkCanReview() {
-        reviewSection.setVisibility(View.GONE); // Mặc định ẩn
+        reviewSection.setVisibility(View.GONE);
+        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) return;
 
-        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
-            return;
-        }
-
-        String tripId = booking.getTripInfo().getId();
-
-        apiService.canReview(tripId).enqueue(new Callback<CanReviewResponse>() {
+        apiService.canReview(booking.getTripInfo().getId()).enqueue(new Callback<CanReviewResponse>() {
             @Override
             public void onResponse(@NonNull Call<CanReviewResponse> call, @NonNull Response<CanReviewResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isCanReview()) {
                     reviewSection.setVisibility(View.VISIBLE);
-                } else {
-                    reviewSection.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<CanReviewResponse> call, @NonNull Throwable t) {
-                reviewSection.setVisibility(View.GONE);
-                Log.e("BookingDetails", "CanReview API call failed: " + t.getMessage());
-            }
-        });
-    }
-
-    private void submitReview() {
-        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
-            Toast.makeText(getContext(), "Lỗi: Không tìm thấy thông tin chuyến đi.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String tripId = booking.getTripInfo().getId();
-        float rating = ratingBar.getRating();
-        String comment = commentEditText.getText().toString().trim();
-
-        if (rating == 0) {
-            Toast.makeText(getContext(), "Vui lòng chọn số sao đánh giá.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        submitReviewButton.setEnabled(false);
-        Toast.makeText(getContext(), "Đang gửi đánh giá...", Toast.LENGTH_SHORT).show();
-
-        CreateReviewRequest request = new CreateReviewRequest(tripId, (int) rating, comment);
-
-        apiService.createReview(request).enqueue(new Callback<CreateReviewResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<CreateReviewResponse> call, @NonNull Response<CreateReviewResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    Toast.makeText(getContext(), "Gửi đánh giá thành công!", Toast.LENGTH_LONG).show();
-                    ratingBar.setIsIndicator(true);
-                    commentEditText.setEnabled(false);
-                    submitReviewButton.setText("Đã gửi đánh giá");
-                } else {
-                    Toast.makeText(getContext(), "Gửi đánh giá thất bại. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
-                    submitReviewButton.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<CreateReviewResponse> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                submitReviewButton.setEnabled(true);
+                Log.e("BookingDetailsFragment", "Error checking canReview: " + t.getMessage());
             }
         });
     }
 
     private void populateData() {
-        if (booking.getProviderInfo() != null) {
-            providerNameText.setText(booking.getProviderInfo().getName());
-        }
-
+        if (booking.getProviderInfo() != null) providerNameText.setText(booking.getProviderInfo().getName());
         bookingIdText.setText("Mã đặt vé: " + booking.getId());
-
-        String statusString = getStatusText(booking.getPaymentStatus(), booking.getApprovalStatus());
-        statusText.setText(statusString);
-
-        String paymentMethodString = getPaymentMethodText(booking.getPaymentMethod());
-        paymentMethodText.setText("Phương thức: " + paymentMethodString);
-
+        statusText.setText(getStatusText(booking.getPaymentStatus(), booking.getApprovalStatus()));
+        paymentMethodText.setText("Phương thức: " + getPaymentMethodText(booking.getPaymentMethod()));
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         totalPriceText.setText("Tổng tiền: " + currencyFormat.format(booking.getTotalPrice()));
-
         createdAtText.setText("Ngày đặt: " + formatDateTime(booking.getCreatedAt()));
 
         if (booking.getTripInfo() != null) {
-            String route = booking.getTripInfo().getOrigin() + " → " + booking.getTripInfo().getDestination();
-            routeText.setText(route);
+            routeText.setText(booking.getTripInfo().getOrigin() + " → " + booking.getTripInfo().getDestination());
             departureTimeText.setText("Khởi hành: " + formatDateTime(booking.getTripInfo().getDepartureTime()));
         }
 
@@ -224,6 +166,135 @@ public class BookingDetailsFragment extends Fragment {
             ticketsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             ticketsRecyclerView.setAdapter(adapter);
         }
+
+        if (booking.getReview() != null) {
+            BookingHistoryItem.ReviewInfo review = booking.getReview();
+            existingReviewId = review.getId();
+            ratingBar.setRating(review.getRating());
+            commentEditText.setText(review.getComment());
+        } else if (getReviewPostedFlag()) {
+            float savedRating = getPrefs().getFloat(KEY_SAVED_REVIEW_RATING_PREFIX + booking.getId(), 0);
+            String savedComment = getPrefs().getString(KEY_SAVED_REVIEW_COMMENT_PREFIX + booking.getId(), "");
+            String savedReviewId = getPrefs().getString(KEY_SAVED_REVIEW_ID_PREFIX + booking.getId(), null);
+
+            ratingBar.setRating(savedRating);
+            commentEditText.setText(savedComment);
+            if (savedReviewId != null) {
+                existingReviewId = savedReviewId;
+            }
+        } else {
+            loadDraftReview();
+        }
+
+        submitReviewButton.setText(existingReviewId == null ? "Gửi đánh giá" : "Cập nhật đánh giá");
+        submitReviewButton.setEnabled(true);
+        ratingBar.setIsIndicator(false);
+        commentEditText.setEnabled(true);
+    }
+
+    private void handleReviewSubmission() {
+        if (existingReviewId == null) {
+            createReview();
+        } else {
+            updateReview();
+        }
+    }
+
+    private void createReview() {
+        if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) {
+            Toast.makeText(getContext(), "Không tìm thấy chuyến đi.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        float rating = ratingBar.getRating();
+        if (rating == 0) {
+            Toast.makeText(getContext(), "Vui lòng chọn số sao.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String comment = commentEditText.getText().toString().trim();
+        submitReviewButton.setEnabled(false);
+        CreateReviewRequest request = new CreateReviewRequest(booking.getTripInfo().getId(), (int) rating, comment);
+
+        apiService.createReview(request).enqueue(new Callback<CreateReviewResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreateReviewResponse> call, @NonNull Response<CreateReviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Gửi đánh giá thành công!", Toast.LENGTH_SHORT).show();
+
+                    BookingHistoryItem.ReviewInfo review = new BookingHistoryItem.ReviewInfo();
+                    if (response.body().getData() != null) {
+                        review.setId(response.body().getData().getId());
+                    }
+                    review.setRating(rating);
+                    review.setComment(comment);
+
+                    booking.setReview(review);
+                    existingReviewId = review.getId();
+                    submitReviewButton.setText("Cập nhật đánh giá");
+                    setReviewPostedFlag(true);
+                    saveRealReview(rating, comment);
+                    clearDraftReview();
+                } else {
+                    Toast.makeText(getContext(), "Gửi thất bại", Toast.LENGTH_SHORT).show();
+                }
+                submitReviewButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreateReviewResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                submitReviewButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void updateReview() {
+        if (existingReviewId == null) return;
+
+        float rating = ratingBar.getRating();
+        if (rating == 0) {
+            Toast.makeText(getContext(), "Vui lòng chọn số sao.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String comment = commentEditText.getText().toString().trim();
+        submitReviewButton.setEnabled(false);
+        UpdateReviewRequest request = new UpdateReviewRequest((int) rating, comment);
+
+        apiService.updateReview(existingReviewId, request).enqueue(new Callback<CreateReviewResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreateReviewResponse> call, @NonNull Response<CreateReviewResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    Toast.makeText(getContext(), "Cập nhật đánh giá thành công!", Toast.LENGTH_SHORT).show();
+                    if (booking.getReview() != null) {
+                        booking.getReview().setRating(rating);
+                        booking.getReview().setComment(comment);
+                    }
+                    saveRealReview(rating, comment);
+                    clearDraftReview();
+                } else {
+                    Toast.makeText(getContext(), "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                }
+                submitReviewButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreateReviewResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Lỗi mạng: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                submitReviewButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void saveRealReview(float rating, String comment) {
+        SharedPreferences.Editor editor = getPrefs().edit();
+        editor.putFloat(KEY_SAVED_REVIEW_RATING_PREFIX + booking.getId(), rating);
+        editor.putString(KEY_SAVED_REVIEW_COMMENT_PREFIX + booking.getId(), comment);
+        if (existingReviewId != null) {
+            editor.putString(KEY_SAVED_REVIEW_ID_PREFIX + booking.getId(), existingReviewId);
+        }
+        editor.apply();
     }
 
     private String getStatusText(String paymentStatus, String approvalStatus) {
@@ -236,7 +307,6 @@ public class BookingDetailsFragment extends Fragment {
                 default: payment = paymentStatus;
             }
         }
-
         String approval = "N/A";
         if (approvalStatus != null) {
             switch (approvalStatus) {
@@ -271,5 +341,49 @@ public class BookingDetailsFragment extends Fragment {
             e.printStackTrace();
             return "N/A";
         }
+    }
+
+    private SharedPreferences getPrefs() {
+        return requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    private void saveDraftReview() {
+        if (!getReviewPostedFlag()) {
+            SharedPreferences.Editor editor = getPrefs().edit();
+            editor.putFloat(KEY_DRAFT_RATING_PREFIX + booking.getId(), ratingBar.getRating());
+            editor.putString(KEY_DRAFT_COMMENT_PREFIX + booking.getId(), commentEditText.getText().toString().trim());
+            editor.apply();
+        }
+    }
+
+    private void loadDraftReview() {
+        SharedPreferences prefs = getPrefs();
+        float savedRating = prefs.getFloat(KEY_DRAFT_RATING_PREFIX + booking.getId(), 0f);
+        String savedComment = prefs.getString(KEY_DRAFT_COMMENT_PREFIX + booking.getId(), "");
+        if (savedRating > 0 || !TextUtils.isEmpty(savedComment)) {
+            ratingBar.setRating(savedRating);
+            commentEditText.setText(savedComment);
+        }
+    }
+
+    private void clearDraftReview() {
+        SharedPreferences.Editor editor = getPrefs().edit();
+        editor.remove(KEY_DRAFT_RATING_PREFIX + booking.getId());
+        editor.remove(KEY_DRAFT_COMMENT_PREFIX + booking.getId());
+        editor.apply();
+    }
+
+    private void setReviewPostedFlag(boolean posted) {
+        getPrefs().edit().putBoolean(KEY_REVIEW_POSTED_PREFIX + booking.getId(), posted).apply();
+    }
+
+    private boolean getReviewPostedFlag() {
+        return getPrefs().getBoolean(KEY_REVIEW_POSTED_PREFIX + booking.getId(), false);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveDraftReview();
     }
 }

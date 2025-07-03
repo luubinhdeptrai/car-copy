@@ -14,6 +14,7 @@ import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
 import com.example.login.MODELS.UnlockSeatsRequest;
 import com.example.login.MODELS.UpdateProfileRequest;
+import com.example.login.MODELS.UpdateReviewRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeResponse;
 import com.example.login.SEND_VERIFICATION.EmailRequest;
@@ -115,4 +116,10 @@ public interface ApiService {
 
     @POST("api/reviews")
     Call<CreateReviewResponse> createReview(@Body CreateReviewRequest request);
+
+    @PATCH("api/reviews/{reviewId}")
+    Call<CreateReviewResponse> updateReview(
+            @Path("reviewId") String reviewId,
+            @Body UpdateReviewRequest request
+    );
 }

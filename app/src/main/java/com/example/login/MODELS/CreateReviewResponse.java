@@ -1,6 +1,7 @@
 package com.example.login.MODELS;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
 public class CreateReviewResponse {
 
@@ -10,15 +11,17 @@ public class CreateReviewResponse {
     @SerializedName("message")
     private String message;
 
-    // Bạn có thể thêm trường 'data' nếu cần xử lý review vừa tạo
-    // @SerializedName("data")
-    // private ReviewData data;
+    @SerializedName("data")
+    private ReviewData data;
 
-    public boolean isSuccess() {
-        return success;
-    }
+    public boolean isSuccess() { return success; }
+    public String getMessage() { return message; }
+    public ReviewData getData() { return data; }
 
-    public String getMessage() {
-        return message;
+    public static class ReviewData implements Serializable {
+        @SerializedName("_id")
+        private String id;
+
+        public String getId() { return id; }
     }
 }
