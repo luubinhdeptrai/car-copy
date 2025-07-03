@@ -181,7 +181,7 @@ public class Trip implements Serializable {
         }
 
 
-        public static class Coordinate {
+        public static class Coordinate implements Serializable  {
             @SerializedName("lat")
             private double latitude;
 

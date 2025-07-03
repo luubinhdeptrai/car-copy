@@ -5,22 +5,22 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Route" />
+        <TextView style="@style/PaymentLabel" android:text="Tuyến xe" />
         <TextView android:id="@+id/tv_payment_route" style="@style/PaymentValue" tools:text="Mien Tay - Vung Tau" />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Departure time" />
+        <TextView style="@style/PaymentLabel" android:text="Thời gian khởi hành" />
         <TextView android:id="@+id/tv_payment_departure_time" style="@style/PaymentValue" tools:text="17:30 25/06/2025" />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Number of tickets" />
+        <TextView style="@style/PaymentLabel" android:text="Số lượng vé" />
         <TextView android:id="@+id/tv_payment_ticket_count" style="@style/PaymentValue" tools:text="2 tickets" />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Seat position" />
+        <TextView style="@style/PaymentLabel" android:text="Vị trí ghế" />
         <TextView android:id="@+id/tv_payment_seat_position" style="@style/PaymentValue" tools:text="14, 16" />
     </RelativeLayout>
 </LinearLayout>
