@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +50,7 @@ public class HomeFragment extends Fragment {
         fetchAndDisplayUserInfo();
 
         LinearLayout futaBusTicketLayout = view.findViewById(R.id.futa_bus_ticket_layout);
-        LinearLayout customerSupportLayout = view.findViewById(R.id.city_bus_layout); // Đổi tên ID logic hơn
+        ImageView customerSupportLayout = view.findViewById(R.id.help_icon);
         LinearLayout expressLayout = view.findViewById(R.id.express_layout);
 
         futaBusTicketLayout.setOnClickListener(v -> {
