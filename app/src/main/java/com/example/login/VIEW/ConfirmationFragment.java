@@ -47,6 +47,7 @@ public class ConfirmationFragment extends Fragment {
     private ApiService apiService;
     private Button continueButton;
     private Toolbar toolbar;
+    private long lockExpirationTime; // SỬA: Thêm biến để lưu thời gian
 
     private TextView fullnameValue;
     private TextView phoneValue;
@@ -64,6 +65,8 @@ public class ConfirmationFragment extends Fragment {
         if (getArguments() != null) {
             tripToShow = (Trip) getArguments().getSerializable("CONFIRMATION_TRIP");
             selectedSeats = (ArrayList<Seat>) getArguments().getSerializable("CONFIRMATION_SEATS");
+            // SỬA: Nhận thời gian hết hạn
+            lockExpirationTime = getArguments().getLong("LOCK_EXPIRATION_TIME", 0);
         }
     }
 
@@ -171,15 +174,16 @@ public class ConfirmationFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putSerializable("PAYMENT_TRIP", tripToShow);
         bundle.putSerializable("PAYMENT_SEATS", selectedSeats);
+        // SỬA: Truyền tiếp thời gian hết hạn
+        bundle.putLong("LOCK_EXPIRATION_TIME", lockExpirationTime);
         if(getView() != null) {
             Navigation.findNavController(getView()).navigate(R.id.action_confirmation_to_payment, bundle);
         }
     }
 
     private void populateViews(View view) {
-        // Ánh xạ các view
         TextView tvRouteTitle = view.findViewById(R.id.tv_route_title_confirmation);
-        TextView tvToolbarDate = view.findViewById(R.id.tv_toolbar_date_confirmation); // SỬA: Thêm ánh xạ
+        TextView tvToolbarDate = view.findViewById(R.id.tv_toolbar_date_confirmation);
         View tripInfoCard = view.findViewById(R.id.trip_info_card);
         TextView departureTime = tripInfoCard.findViewById(R.id.departure_time_text);
         TextView arrivalTime = tripInfoCard.findViewById(R.id.arrival_time_text);
@@ -190,11 +194,9 @@ public class ConfirmationFragment extends Fragment {
         TextView providerName = tripInfoCard.findViewById(R.id.provider_name_text);
         TextView seatNumberValue = view.findViewById(R.id.seat_number_value);
 
-        // Gán dữ liệu
         String routeTitleText = tripToShow.getRoute().getOriginStation().getName() + " → " + tripToShow.getRoute().getDestinationStation().getName();
         tvRouteTitle.setText(routeTitleText);
 
-        // SỬA: Gán dữ liệu ngày cho Toolbar
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -208,7 +210,6 @@ public class ConfirmationFragment extends Fragment {
             e.printStackTrace();
             tvToolbarDate.setText("N/A");
         }
-        // KẾT THÚC SỬA ĐỔI
 
         departureTime.setText(formatTime(tripToShow.getDepartureTime(), "HH:mm"));
         arrivalTime.setText(formatTime(tripToShow.getArrivalTime(), "HH:mm"));

@@ -103,11 +103,9 @@ public class SelectSeatFragment extends Fragment {
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date departureDateObj = utcFormat.parse(selectedTrip.getDepartureTime());
 
-            // << SỬA ĐỔI: Chuyển Locale sang Tiếng Việt >>
             Locale vietnameseLocale = new Locale("vi", "VN");
             SimpleDateFormat toolbarDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", vietnameseLocale);
             SimpleDateFormat detailsDateFormat = new SimpleDateFormat("HH:mm, EEEE, dd/MM/yyyy", vietnameseLocale);
-            // << KẾT THÚC SỬA ĐỔI >>
 
             tvToolbarDate.setText(toolbarDateFormat.format(departureDateObj));
             tvDepartureDetails.setText(detailsDateFormat.format(departureDateObj));
@@ -156,9 +154,15 @@ public class SelectSeatFragment extends Fragment {
             public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(getContext(), "Seats locked successfully!", Toast.LENGTH_SHORT).show();
+
+                    // SỬA: Tính toán thời gian hết hạn và truyền đi
+                    long lockExpirationTime = System.currentTimeMillis() + 10 * 60 * 1000; // 10 phút từ bây giờ
+
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("CONFIRMATION_TRIP", selectedTrip);
                     bundle.putSerializable("CONFIRMATION_SEATS", selectedSeats);
+                    bundle.putLong("LOCK_EXPIRATION_TIME", lockExpirationTime); // Truyền thời gian hết hạn
+
                     if (getView() != null) {
                         Navigation.findNavController(getView()).navigate(R.id.action_selectSeat_to_confirmation, bundle);
                     }
@@ -168,8 +172,8 @@ public class SelectSeatFragment extends Fragment {
                         errorMsg += " " + response.body().getMessage();
                     }
                     Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    continueButton.setEnabled(true);
                 }
-                continueButton.setEnabled(true);
             }
 
             @Override

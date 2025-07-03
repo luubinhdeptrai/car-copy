@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/grey_background">
 
-    <!-- Header -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
@@ -42,7 +41,6 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Footer -->
     <LinearLayout
         android:id="@+id/footer_layout"
         android:layout_width="match_parent"
@@ -53,6 +51,7 @@
         android:orientation="vertical"
         android:padding="16dp">
         <TextView
+            android:id="@+id/tv_countdown_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -61,7 +60,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="Time left to hold tickets: 08:19"
+            android:text="Thời gian giữ v còn lại: 10:00"
             android:textColor="@color/orange_dark" />
         <Button
             android:id="@+id/btn_pay"
@@ -73,7 +72,6 @@
             app:backgroundTint="@color/orange_primary" />
     </LinearLayout>
 
-    <!-- Nội dung có thể cuộn -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -86,7 +84,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Trip Info Section -->
             <TextView
                 style="@style/SectionTitle"
                 android:text="Thông tin chuyến đi" />
@@ -109,7 +106,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Payment Info Section -->
             <TextView
                 style="@style/SectionTitle"
                 android:layout_marginTop="24dp"
@@ -123,12 +119,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-                    <!-- SỬA: Include file layout đã được cập nhật -->
                     <include layout="@layout/item_payment_info_row" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Price Summary Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -146,4 +140,3 @@
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
-    
