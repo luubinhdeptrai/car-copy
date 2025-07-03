@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_arrow_back"
-                app:title="Buy ticket"
+                app:title="                      Mua Vé"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                 app:titleTextColor="@color/text_primary"/>
         </com.google.android.material.appbar.AppBarLayout>
@@ -135,13 +135,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView android:id="@+id/tv_ticket_number_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ticket number" android:textColor="@color/text_secondary"/>
-                        <Spinner
-                            android:id="@+id/ticket_number_spinner"
-                            android:layout_width="wrap_content"
-                            android:layout_height="48dp"/>
-                    </LinearLayout>
+                        android:orientation="vertical"/>
                 </LinearLayout>
 
                 <Button
