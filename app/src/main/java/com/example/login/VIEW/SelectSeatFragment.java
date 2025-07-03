@@ -103,8 +103,11 @@ public class SelectSeatFragment extends Fragment {
             utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date departureDateObj = utcFormat.parse(selectedTrip.getDepartureTime());
 
-            SimpleDateFormat toolbarDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", Locale.US);
-            SimpleDateFormat detailsDateFormat = new SimpleDateFormat("HH:mm EEEE, dd/MM/yyyy", Locale.US);
+            // << SỬA ĐỔI: Chuyển Locale sang Tiếng Việt >>
+            Locale vietnameseLocale = new Locale("vi", "VN");
+            SimpleDateFormat toolbarDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", vietnameseLocale);
+            SimpleDateFormat detailsDateFormat = new SimpleDateFormat("HH:mm, EEEE, dd/MM/yyyy", vietnameseLocale);
+            // << KẾT THÚC SỬA ĐỔI >>
 
             tvToolbarDate.setText(toolbarDateFormat.format(departureDateObj));
             tvDepartureDetails.setText(detailsDateFormat.format(departureDateObj));
@@ -127,13 +130,11 @@ public class SelectSeatFragment extends Fragment {
     private void setupClickListeners(View view) {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
 
-        // << SỬA ĐỔI: Thêm logic lock ghế vào nút Continue >>
         continueButton.setOnClickListener(v -> {
             lockSelectedSeatsAndNavigate();
         });
     }
 
-    // << THÊM HÀM MỚI: Dùng để lock ghế và điều hướng >>
     private void lockSelectedSeatsAndNavigate() {
         ArrayList<Seat> selectedSeats = getSelectedSeatsFromList(viewModel.getSeatList().getValue());
         if (selectedSeats.isEmpty()) {
@@ -246,9 +247,9 @@ public class SelectSeatFragment extends Fragment {
         String seatNumbersText = String.join(", ", seatNumbersList);
 
         if (ticketCount > 0) {
-            selectedSeatsInfo.setText(String.format(Locale.US, "%d ticket(s): %s", ticketCount, seatNumbersText));
+            selectedSeatsInfo.setText(String.format(Locale.US, "%d ghế: %s", ticketCount, seatNumbersText));
         } else {
-            selectedSeatsInfo.setText("Please select a seat");
+            selectedSeatsInfo.setText("Vui lòng chọn ghế");
         }
 
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
