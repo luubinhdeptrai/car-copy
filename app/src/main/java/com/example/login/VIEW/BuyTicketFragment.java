@@ -92,10 +92,9 @@ public class BuyTicketFragment extends Fragment {
         int month = selectedCalendar.get(Calendar.MONTH);
         int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
 
-        // SỬA: Thêm R.style.AppDatePickerTheme vào hàm tạo
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 getContext(),
-                R.style.AppDatePickerTheme, // <-- Áp dụng theme mới tại đây
+                R.style.AppDatePickerTheme,
                 (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
                     selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
                     updateDateViews(selectedCalendar);
@@ -115,7 +114,8 @@ public class BuyTicketFragment extends Fragment {
     }
 
     private void setupClickListeners(View view) {
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(view).popBackStack());
+        // SỬA ĐỔI: Dùng finish() để đóng Activity hiện tại và quay về màn hình trước đó
+        toolbar.setNavigationOnClickListener(v -> requireActivity().finish());
         searchButton.setOnClickListener(v -> searchForTrips(view));
         ivSwap.setOnClickListener(v -> swapLocations());
     }

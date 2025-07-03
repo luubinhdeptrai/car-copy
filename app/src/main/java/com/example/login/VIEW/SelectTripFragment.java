@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar; // SỬA: Thêm import
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -43,6 +44,7 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
     private View layoutNoData;
     private TextView tvRouteTitle;
     private Button btnFilterPrice, btnFilterTime;
+    private Toolbar toolbar; // SỬA: Khai báo biến Toolbar
 
     // ViewModel & Data
     private SelectTripViewModel viewModel;
@@ -52,7 +54,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Khởi tạo ViewModel
         viewModel = new ViewModelProvider(this).get(SelectTripViewModel.class);
     }
 
@@ -83,7 +84,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
         setupDateRecyclerView(selectedDateMillis);
         observeViewModel();
 
-        // Gọi ViewModel để khởi tạo dữ liệu (chỉ chạy một lần duy nhất)
         viewModel.init(getArguments());
     }
 
@@ -94,17 +94,16 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
         tvRouteTitle = view.findViewById(R.id.tv_route_title);
         btnFilterPrice = view.findViewById(R.id.btn_filter_price);
         btnFilterTime = view.findViewById(R.id.btn_filter_time);
+        toolbar = view.findViewById(R.id.toolbar_select_trip); // SỬA: Ánh xạ Toolbar
     }
 
     private void setupRecyclerViews() {
         tripRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        // Khởi tạo adapter rỗng và truyền 'this' làm listener
         tripAdapter = new TripAdapter(getContext(), new ArrayList<>(), this);
         tripRecyclerView.setAdapter(tripAdapter);
     }
 
     private void observeViewModel() {
-        // Lắng nghe dữ liệu từ ViewModel
         viewModel.getFilteredTrips().observe(getViewLifecycleOwner(), trips -> {
             if (trips == null || trips.isEmpty()) {
                 tripRecyclerView.setVisibility(View.GONE);
@@ -112,13 +111,15 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
             } else {
                 tripRecyclerView.setVisibility(View.VISIBLE);
                 layoutNoData.setVisibility(View.GONE);
-                // Cập nhật dữ liệu cho adapter
                 tripAdapter.updateTrips(trips);
             }
         });
     }
 
     private void setupClickListeners() {
+        // SỬA: Thêm sự kiện click cho nút back trên Toolbar
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(requireView()).popBackStack());
+
         btnFilterPrice.setOnClickListener(v -> showFilterDialog("Price"));
         btnFilterTime.setOnClickListener(v -> showFilterDialog("Hour"));
     }
@@ -126,7 +127,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
     @Override
     public void onDateSelected(Date selectedDate) {
         Toast.makeText(getContext(), "Loading trips for new date...", Toast.LENGTH_SHORT).show();
-        // Thông báo cho ViewModel biết ngày đã thay đổi để nó tự gọi API
         viewModel.fetchTripsForDate(departureLocation, destinationLocation, selectedDate);
     }
 
@@ -171,8 +171,6 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
 
     private void showFilterDialog(String filterType) {
         ArrayList<FilterOption> options = new ArrayList<>();
-        // TODO: Đoạn code này cần truy cập vào trạng thái filter hiện tại từ ViewModel
-        // Để đơn giản, tạm thời tạo mới. Bạn có thể nâng cấp sau.
         switch (filterType) {
             case "Price":
                 options.add(new FilterOption("Price Ascending", false));
