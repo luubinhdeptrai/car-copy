@@ -3,9 +3,12 @@ package com.example.login.API;
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
 import com.example.login.MODELS.CanReviewResponse;
+import com.example.login.MODELS.CreateIssueRequest;
 import com.example.login.MODELS.CreateReviewRequest;
 import com.example.login.MODELS.CreateReviewResponse;
 import com.example.login.MODELS.DeleteAccountResponse;
+import com.example.login.MODELS.IssueListResponse;
+import com.example.login.MODELS.IssueResponse;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
 import com.example.login.MODELS.TicketSeatListResponse;
@@ -13,6 +16,7 @@ import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
 import com.example.login.MODELS.TripSearchResponse;
 import com.example.login.MODELS.UnlockSeatsRequest;
+import com.example.login.MODELS.UpdateIssueRequest;
 import com.example.login.MODELS.UpdateProfileRequest;
 import com.example.login.MODELS.UpdateReviewRequest;
 import com.example.login.SEND_RESET_PASSWORD.SendResetPasswordCodeRequest;
@@ -122,4 +126,19 @@ public interface ApiService {
             @Path("reviewId") String reviewId,
             @Body UpdateReviewRequest request
     );
+
+    @POST("api/issues")
+    Call<IssueResponse> createIssue(@Body CreateIssueRequest request);
+
+    @PATCH("api/issues/{id}")
+    Call<IssueResponse> updateIssue(
+            @Path("id") String issueId,
+            @Body UpdateIssueRequest request
+    );
+
+    @DELETE("api/issues/{id}")
+    Call<IssueResponse> deleteIssue(@Path("id") String issueId);
+
+    @GET("api/issues/my-issues") // Giả sử có API để lấy các issue của người dùng hiện tại
+    Call<IssueListResponse> getMyIssues();
 }

@@ -138,7 +138,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="City Bus"
+                    android:text="Hỗ trợ khách hàng"
                     android:layout_marginTop="4dp"
                     android:gravity="center"/>
             </LinearLayout>

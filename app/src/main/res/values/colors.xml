@@ -24,4 +24,7 @@
     <color name="background_light">#FAFAFA</color>
     <color name="text_primary">#212121</color>
 
-</resources>
+    <color name="blue_primary">#2196F3</color> <color name="red_primary">#F44336</color>
+
+
+    </resources>
