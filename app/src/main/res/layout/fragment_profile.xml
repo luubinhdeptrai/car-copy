@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,15 +14,26 @@
         android:orientation="vertical"
         android:paddingBottom="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Profile"
-            android:padding="16dp"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold"/>
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_profile"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_arrow_back">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -35,7 +47,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Profile Info -->
                 <LinearLayout
                     android:id="@+id/profile_info_layout"
                     android:layout_width="match_parent"
@@ -60,14 +71,16 @@
                         android:layout_marginStart="16dp"
                         android:orientation="vertical">
                         <TextView
-                            android:id="@+id/profile_name_textview"  android:layout_width="wrap_content"
+                            android:id="@+id/profile_name_textview"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                         <TextView
-                            android:id="@+id/profile_phone_textview" android:layout_width="wrap_content"
+                            android:id="@+id/profile_phone_textview"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="@color/text_secondary"/>
@@ -80,7 +93,6 @@
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"/>
 
-                <!-- Các mục khác -->
                 <TextView
                     android:id="@+id/setting_menu_item"
                     style="@style/ProfileMenuItem"

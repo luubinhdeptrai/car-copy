@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.login.API.ApiClient;
@@ -40,6 +41,7 @@ public class EditUserProfileFragment extends Fragment {
     private TextView tvEditFullName, tvEditEmail, tvEditBirthday;
     private RadioGroup radioGroupGender;
     private Button btnUpdate;
+    private Toolbar toolbar; // SỬA: Thêm biến Toolbar
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class EditUserProfileFragment extends Fragment {
         tvEditBirthday = view.findViewById(R.id.tv_edit_birthday);
         radioGroupGender = view.findViewById(R.id.gender_radio_group);
         btnUpdate = view.findViewById(R.id.btn_update);
+        toolbar = view.findViewById(R.id.toolbar_edit_profile); // SỬA: Ánh xạ Toolbar
 
         // Gán sự kiện cho các layout có thể click
         RelativeLayout editFullNameLayout = view.findViewById(R.id.edit_full_name_layout);
@@ -72,35 +75,31 @@ public class EditUserProfileFragment extends Fragment {
         editFullNameLayout.setOnClickListener(v -> showEditTextDialog("Full name", tvEditFullName));
         editBirthdayLayout.setOnClickListener(v -> showDatePicker());
 
-        // Gán sự kiện cho nút Update
         btnUpdate.setOnClickListener(v -> performProfileUpdate());
 
-        // Tải dữ liệu ban đầu của người dùng
+        // SỬA: Thêm sự kiện click cho nút back
+        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+
         loadInitialUserData();
     }
 
     private void performProfileUpdate() {
-        // Lấy dữ liệu từ các trường trên giao diện
         String fullName = tvEditFullName.getText().toString().trim();
         String gender = getGenderFromRadioGroup();
         String birthdayUI = tvEditBirthday.getText().toString();
 
-        // Kiểm tra dữ liệu hợp lệ
         if (TextUtils.isEmpty(fullName)) {
             Toast.makeText(getContext(), "Full name cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Định dạng lại ngày sinh cho API (từ dd/MM/yyyy -> yyyy-MM-dd)
         String birthdayForApi = formatBirthdayForApi(birthdayUI);
 
-        // Tạo đối tượng request để gửi đi
         UpdateProfileRequest request = new UpdateProfileRequest(fullName, birthdayForApi, gender);
 
         btnUpdate.setEnabled(false);
         Toast.makeText(getContext(), "Updating...", Toast.LENGTH_SHORT).show();
 
-        // Gọi API
         apiService.updateUserProfile(request).enqueue(new Callback<ProfileResponse>() {
             @Override
             public void onResponse(@NonNull Call<ProfileResponse> call, @NonNull Response<ProfileResponse> response) {
