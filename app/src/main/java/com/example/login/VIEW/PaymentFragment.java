@@ -244,8 +244,16 @@ public class PaymentFragment extends Fragment {
         final String[] paymentMethodKeys = {"bank_transfer", "cash"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Chọn phương thức thanh toán")
-                .setItems(paymentMethods, (dialog, which) -> {
+
+        // Inflate layout custom từ file xml
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View customTitleView = inflater.inflate(R.layout.dialog_custom_title, null);
+
+        // Gán layout custom làm tiêu đề cho dialog
+        builder.setCustomTitle(customTitleView);
+
+        // Các phần còn lại giữ nguyên
+        builder.setItems(paymentMethods, (dialog, which) -> {
                     Toast.makeText(getContext(), "Creating booking...", Toast.LENGTH_SHORT).show();
                     confirmBooking(paymentMethodKeys[which]);
                 })

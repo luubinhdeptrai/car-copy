@@ -17,9 +17,9 @@
             android:id="@+id/toolbar_confirmation"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
+            android:background="@color/orange_primary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:tint="@android:color/black"
+            app:tint="@color/white"
             app:contentInsetStartWithNavigation="0dp">
 
             <LinearLayout
@@ -33,7 +33,7 @@
                     android:id="@+id/tv_route_title_confirmation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:text="Vung Tau -> Ho Chi Minh City" />
@@ -42,7 +42,7 @@
                     android:id="@+id/tv_toolbar_date_confirmation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/white"
                     tools:text="Friday, 20/06/2025" />
 
             </LinearLayout>

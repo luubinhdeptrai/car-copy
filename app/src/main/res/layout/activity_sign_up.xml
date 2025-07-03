@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Account"
+            android:text="Tạo tài khoản"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
@@ -52,7 +52,7 @@
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="Mật khẩu"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -69,7 +69,7 @@
                 android:id="@+id/editTextConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Confirm Password"
+                android:hint="Xác nhận mật khẩu"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -85,7 +85,7 @@
                 android:id="@+id/editTextPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone Number"
+                android:hint="Số điện thoại"
                 android:inputType="phone"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,7 +93,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="Register"
+            android:text="Đăng ký"
             app:backgroundTint="@color/orange_primary"
             android:textColor="@android:color/white"
             android:textSize="18sp"
@@ -103,7 +103,7 @@
             android:id="@+id/textViewLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have an account? Sign In"
+            android:text="Đã có tài khoản? Đăng nhập"
             android:textColor="@color/orange_primary"
             android:layout_gravity="center_horizontal"
             android:textSize="16sp"
@@ -113,4 +113,3 @@
             android:focusable="true"/>
     </LinearLayout>
 </ScrollView>
-

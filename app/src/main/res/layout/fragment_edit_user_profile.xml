@@ -16,18 +16,19 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/orange_primary"
             app:elevation="0dp">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_edit_profile"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:navigationIcon="@drawable/ic_arrow_back">
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:tint="@color/white">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chỉnh sửa thông tin"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:layout_gravity="center_horizontal"
                     android:textStyle="bold"/>
@@ -104,9 +105,12 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:orientation="horizontal">
-                            <RadioButton android:id="@+id/radio_male" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Male"/>
-                            <RadioButton android:id="@+id/radio_female" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Female"/>
-                            <RadioButton android:id="@+id/radio_other" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Others"/>
+                            <RadioButton android:id="@+id/radio_male" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nam"/>
+                            <RadioButton android:id="@+id/radio_female" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Nữ"/>
+                            <RadioButton android:id="@+id/radio_other" android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Khác"/>
                         </RadioGroup>
                     </RelativeLayout>
                     <View style="@style/UserInfoDivider" />
