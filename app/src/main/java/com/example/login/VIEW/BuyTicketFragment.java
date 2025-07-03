@@ -56,7 +56,7 @@ public class BuyTicketFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Ánh xạ views
+
         actvDeparture = view.findViewById(R.id.actv_departure);
         actvDestination = view.findViewById(R.id.actv_destination);
         tvDepartureDate = view.findViewById(R.id.tv_departure_date);
@@ -66,7 +66,6 @@ public class BuyTicketFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         ivSwap = view.findViewById(R.id.iv_swap);
 
-        // Gọi các hàm thiết lập
         setupAutoCompleteTextViews();
         setupTicketNumberSpinner();
         setupDatePicker();
@@ -102,10 +101,18 @@ public class BuyTicketFragment extends Fragment {
         int year = selectedCalendar.get(Calendar.YEAR);
         int month = selectedCalendar.get(Calendar.MONTH);
         int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
-            selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
-            updateDateViews(selectedCalendar);
-        }, year, month, day);
+
+        // SỬA: Thêm R.style.AppDatePickerTheme vào hàm tạo
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                R.style.AppDatePickerTheme, // <-- Áp dụng theme mới tại đây
+                (view, selectedYear, selectedMonth, selectedDayOfMonth) -> {
+                    selectedCalendar.set(selectedYear, selectedMonth, selectedDayOfMonth);
+                    updateDateViews(selectedCalendar);
+                },
+                year, month, day
+        );
+
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
@@ -175,4 +182,3 @@ public class BuyTicketFragment extends Fragment {
         Navigation.findNavController(view).navigate(R.id.action_buyTicket_to_selectTrip, bundle);
     }
 }
-    

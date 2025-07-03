@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.livedata.ktx)
 
+    implementation(libs.material.v1110alpha01)
 
 
     implementation(files("libs/merchant-1.0.25.aar"))
