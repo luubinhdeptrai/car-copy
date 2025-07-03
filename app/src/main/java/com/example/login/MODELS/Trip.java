@@ -62,6 +62,10 @@ public class Trip implements Serializable {
         private Station destinationStation;
         private int distanceKm;
 
+        public String get_id() { // Added getter for _id, usually good to have
+            return _id;
+        }
+
         public Station getOriginStation() {
             return originStation;
         }
@@ -80,6 +84,10 @@ public class Trip implements Serializable {
         private String type;
         private int capacity;
 
+        public String get_id() { // Added getter for _id, usually good to have
+            return _id;
+        }
+
         public String getType() {
             return type;
         }
@@ -93,9 +101,23 @@ public class Trip implements Serializable {
         private String _id;
         private String name;
         private String city;
+        private String address; // Ensure 'address' property is here
+
+        public String get_id() { // Added getter for _id, usually good to have
+            return _id;
+        }
 
         public String getName() {
             return name;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        // << THÊM MỚI: Getter cho thuộc tính address >>
+        public String getAddress() {
+            return address;
         }
     }
 }

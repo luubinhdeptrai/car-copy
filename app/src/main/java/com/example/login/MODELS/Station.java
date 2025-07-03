@@ -18,6 +18,10 @@ public class Station {
     @Expose
     private String city;
 
+    @SerializedName("address") // Thêm annotation cho thuộc tính address
+    @Expose
+    private String address; // Thêm thuộc tính address
+
     // Getters
     public String getId() {
         return id;
@@ -29,5 +33,27 @@ public class Station {
 
     public String getCity() {
         return city;
+    }
+
+    // Getter cho thuộc tính address
+    public String getAddress() {
+        return address;
+    }
+
+    // Setters (tùy chọn, nếu bạn cần đặt giá trị từ bên ngoài)
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
