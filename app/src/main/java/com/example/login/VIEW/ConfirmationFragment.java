@@ -221,7 +221,7 @@ public class ConfirmationFragment extends Fragment {
         String detailsText = String.format(Locale.US, "%s • %s", formattedPrice, tripToShow.getVehicle().getType());
         tripDetails.setText(detailsText);
 
-        String durationText = String.format(Locale.US, "Distance: %dkm - %s",
+        String durationText = String.format(Locale.US, "khoảng cách: %dkm - %s",
                 tripToShow.getRoute().getDistanceKm(),
                 calculateDuration(tripToShow.getDepartureTime(), tripToShow.getArrivalTime()));
         tripDuration.setText(durationText);
