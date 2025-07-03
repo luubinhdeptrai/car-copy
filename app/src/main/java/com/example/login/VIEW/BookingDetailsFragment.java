@@ -160,7 +160,7 @@ public class BookingDetailsFragment extends Fragment {
                         apiService.refundBooking( new RefundRequest(booking.getId()))
                                 .enqueue(new Callback<RefundResponse>() {
                                     @Override
-                                    public void onResponse(@NonNull Call<com.example.login.MODELS.RefundResponse> call, @NonNull Response<com.example.login.MODELS.RefundResponse> response) {
+                                    public void onResponse(@NonNull Call<RefundResponse> call, @NonNull Response<RefundResponse> response) {
                                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                                             Toast.makeText(getContext(), "Refund request successful!", Toast.LENGTH_SHORT).show();
                                             refundButton.setVisibility(View.GONE);
@@ -172,7 +172,7 @@ public class BookingDetailsFragment extends Fragment {
                                     }
 
                                     @Override
-                                    public void onFailure(@NonNull Call<com.example.login.MODELS.RefundResponse> call, @NonNull Throwable t) {
+                                    public void onFailure(@NonNull Call<RefundResponse> call, @NonNull Throwable t) {
                                         Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
