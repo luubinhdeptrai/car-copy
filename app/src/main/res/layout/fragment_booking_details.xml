@@ -77,6 +77,14 @@
                         android:visibility="gone"
                         android:text="Thanh Toán" />
 
+                    <Button
+                        android:id="@+id/refund_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Hủy vé/Hoàn tiền"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

@@ -2,6 +2,7 @@ package com.example.login.API;
 
 import com.example.login.LOGIN.LoginRequest;
 import com.example.login.LOGIN.LoginResponse;
+import com.example.login.MODELS.CanRefundResponse;
 import com.example.login.MODELS.CanReviewResponse;
 import com.example.login.MODELS.CreateIssueRequest;
 import com.example.login.MODELS.CreateReviewRequest;
@@ -11,6 +12,8 @@ import com.example.login.MODELS.IssueListResponse;
 import com.example.login.MODELS.IssueResponse;
 import com.example.login.MODELS.LockSeatResponse;
 import com.example.login.MODELS.ProfileResponse;
+import com.example.login.MODELS.RefundRequest;
+import com.example.login.MODELS.RefundResponse;
 import com.example.login.MODELS.TicketSeatListResponse;
 import com.example.login.MODELS.TicketSeatResponse; // Import mới
 import com.example.login.MODELS.Trip;
@@ -37,6 +40,7 @@ import com.example.login.MODELS.LockSeatRequest;
 import com.example.login.MODELS.LockManySeatsRequest;
 import com.example.login.MODELS.PaymentStatusResponse;
 import com.example.login.MODELS.BookingHistoryResponse;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
@@ -103,6 +107,12 @@ public interface ApiService {
 
     @GET("api/bookings/{bookingId}/payment-status")
     Call<PaymentStatusResponse> getPaymentStatus(@Path("bookingId") String bookingId);
+
+    @GET("api/bookings/{bookingId}/refundable")
+    Call<CanRefundResponse> isBookingRefundable(@Path("bookingId") String bookingId);
+
+    @POST("api/bookings/refund")
+    Call<RefundResponse> refundBooking(@Body RefundRequest request);
 
     @GET("api/bookings/my-history")
 

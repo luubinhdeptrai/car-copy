@@ -27,11 +27,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
 import com.example.login.MODELS.BookingHistoryItem;
+import com.example.login.MODELS.CanRefundResponse;
 import com.example.login.MODELS.CanReviewResponse;
 import com.example.login.MODELS.CreatePaymentUrlRequest;
 import com.example.login.MODELS.CreatePaymentUrlResponse;
 import com.example.login.MODELS.CreateReviewRequest;
 import com.example.login.MODELS.CreateReviewResponse;
+import com.example.login.MODELS.RefundRequest;
+import com.example.login.MODELS.RefundResponse;
 import com.example.login.MODELS.UpdateReviewRequest;
 import com.example.login.R;
 import com.google.android.material.textfield.TextInputEditText;
@@ -76,6 +79,8 @@ public class BookingDetailsFragment extends Fragment {
 
     private Button paymentButton;
 
+    private Button refundButton;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +111,7 @@ public class BookingDetailsFragment extends Fragment {
         populateData();
         checkCanReview();
         setupPaymentButton();
+        setupRefundButton();
         submitReviewButton.setOnClickListener(v -> handleReviewSubmission());
     }
 
@@ -128,11 +134,64 @@ public class BookingDetailsFragment extends Fragment {
         commentEditText = view.findViewById(R.id.comment_edit_text);
         submitReviewButton = view.findViewById(R.id.submit_review_button);
         paymentButton = view.findViewById(R.id.payment_button);
+        refundButton = view.findViewById(R.id.refund_button);
     }
 
     private void setupToolbar() {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
         toolbar.setTitle("Chi tiết đặt vé");
+    }
+
+    private void setupRefundButton() {
+        refundButton.setVisibility(View.GONE);
+        //only show refund button if payment is completed, approval is confirmed, and trip departure time - current time > 12 hours
+        apiService.isBookingRefundable(booking.getId()).enqueue(new Callback<CanRefundResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CanRefundResponse> call, @NonNull Response<CanRefundResponse> response) {
+                boolean refundable = false;
+                if (response.isSuccessful() && response.body() != null) {
+                    refundable= response.body().isCanRefund();
+                }
+
+
+                if(refundable) {
+                    refundButton.setVisibility(View.VISIBLE);
+                    refundButton.setOnClickListener(v -> {
+                        apiService.refundBooking( new RefundRequest(booking.getId()))
+                                .enqueue(new Callback<RefundResponse>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<com.example.login.MODELS.RefundResponse> call, @NonNull Response<com.example.login.MODELS.RefundResponse> response) {
+                                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                                            Toast.makeText(getContext(), "Refund request successful!", Toast.LENGTH_SHORT).show();
+                                            refundButton.setVisibility(View.GONE);
+                                            // show success screen
+
+                                        } else {
+                                            Toast.makeText(getContext(), "Refund failed: " + (response.body() != null ? response.body().getMessage() : "Unknown error"), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<com.example.login.MODELS.RefundResponse> call, @NonNull Throwable t) {
+                                        Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    });
+                } else {
+                    refundButton.setVisibility(View.GONE);
+                }
+                // You can use the 'refundable' boolean here as needed
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CanRefundResponse> call, @NonNull Throwable t) {
+                // Handle failure if needed
+            }
+        });
+
+
+
+
     }
     private void setupPaymentButton() {
         paymentButton.setVisibility(View.GONE);
