@@ -69,6 +69,14 @@
                         android:background="@drawable/status_background"
                         android:padding="6dp" />
 
+                    <Button
+                        android:id="@+id/payment_button"
+                        android:layout_width="153dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:visibility="gone"
+                        android:text="Thanh Toán" />
+
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
