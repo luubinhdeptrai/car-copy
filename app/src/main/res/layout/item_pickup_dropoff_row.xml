@@ -21,10 +21,10 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:layout_marginStart="16dp">
-        <TextView style="@style/PaymentLabel" android:text="Pickup Point" />
+        <TextView style="@style/PaymentLabel" android:text="Điểm lên xe" />
         <TextView android:id="@+id/tv_payment_pickup" style="@style/PaymentValue" android:layout_width="wrap_content" tools:text="BX Mien Tay..." />
         <Space android:layout_height="24dp" android:layout_width="match_parent"/>
-        <TextView style="@style/PaymentLabel" android:text="Dropoff Point" />
+        <TextView style="@style/PaymentLabel" android:text="Điểm xuống xe" />
         <TextView android:id="@+id/tv_payment_dropoff" style="@style/PaymentValue" android:layout_width="wrap_content" tools:text="Vung Tau..." />
     </LinearLayout>
 </LinearLayout>

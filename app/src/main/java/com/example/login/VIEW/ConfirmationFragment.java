@@ -51,7 +51,6 @@ public class ConfirmationFragment extends Fragment {
     private TextView fullnameValue;
     private TextView phoneValue;
 
-    // Thêm TextViews cho địa chỉ đón/trả
     private TextView pickupLocationTextView;
     private TextView dropoffLocationTextView;
 
@@ -78,12 +77,10 @@ public class ConfirmationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Ánh xạ các views
         fullnameValue = view.findViewById(R.id.fullname_value);
         phoneValue = view.findViewById(R.id.phone_value);
         continueButton = view.findViewById(R.id.continue_button);
         toolbar = view.findViewById(R.id.toolbar_confirmation);
-        // Ánh xạ TextViews địa chỉ
         pickupLocationTextView = view.findViewById(R.id.pickup_location_textview);
         dropoffLocationTextView = view.findViewById(R.id.dropoff_location_textview);
 
@@ -97,7 +94,6 @@ public class ConfirmationFragment extends Fragment {
         populateViews(view);
         fetchAndDisplayUserInfo();
 
-        // Xử lý nút back -> Sẽ gọi API unlock ghế
         toolbar.setNavigationOnClickListener(v -> handleBackPressWithUnlock());
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -106,13 +102,12 @@ public class ConfirmationFragment extends Fragment {
             }
         });
 
-        // Nút continue bây giờ chỉ có nhiệm vụ điều hướng, mặc định là bật
         continueButton.setEnabled(true);
         continueButton.setOnClickListener(v -> navigateToPayment());
     }
 
     private void handleBackPressWithUnlock() {
-        toolbar.setNavigationOnClickListener(null); // Vô hiệu hóa để tránh click nhiều lần
+        toolbar.setNavigationOnClickListener(null);
 
         Toast.makeText(getContext(), "Cancelling...", Toast.LENGTH_SHORT).show();
 
@@ -125,7 +120,6 @@ public class ConfirmationFragment extends Fragment {
         apiService.unlockSeats(request).enqueue(new Callback<LockSeatResponse>() {
             @Override
             public void onResponse(@NonNull Call<LockSeatResponse> call, @NonNull Response<LockSeatResponse> response) {
-                // << THÊM TOAST TẠI ĐÂY >>
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     Toast.makeText(getContext(), "Seats have been unlocked.", Toast.LENGTH_SHORT).show();
                 } else {
@@ -139,7 +133,6 @@ public class ConfirmationFragment extends Fragment {
             }
             @Override
             public void onFailure(@NonNull Call<LockSeatResponse> call, @NonNull Throwable t) {
-                // << THÊM TOAST TẠI ĐÂY >>
                 Toast.makeText(getContext(), "Failed to unlock seats due to network error.", Toast.LENGTH_SHORT).show();
                 Log.e("ConfirmationFragment", "Unlock seats failed: " + t.getMessage());
                 if (getView() != null) {
@@ -184,7 +177,9 @@ public class ConfirmationFragment extends Fragment {
     }
 
     private void populateViews(View view) {
+        // Ánh xạ các view
         TextView tvRouteTitle = view.findViewById(R.id.tv_route_title_confirmation);
+        TextView tvToolbarDate = view.findViewById(R.id.tv_toolbar_date_confirmation); // SỬA: Thêm ánh xạ
         View tripInfoCard = view.findViewById(R.id.trip_info_card);
         TextView departureTime = tripInfoCard.findViewById(R.id.departure_time_text);
         TextView arrivalTime = tripInfoCard.findViewById(R.id.arrival_time_text);
@@ -195,8 +190,26 @@ public class ConfirmationFragment extends Fragment {
         TextView providerName = tripInfoCard.findViewById(R.id.provider_name_text);
         TextView seatNumberValue = view.findViewById(R.id.seat_number_value);
 
+        // Gán dữ liệu
         String routeTitleText = tripToShow.getRoute().getOriginStation().getName() + " → " + tripToShow.getRoute().getDestinationStation().getName();
         tvRouteTitle.setText(routeTitleText);
+
+        // SỬA: Gán dữ liệu ngày cho Toolbar
+        try {
+            SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date departureDateObj = utcFormat.parse(tripToShow.getDepartureTime());
+
+            Locale vietnameseLocale = new Locale("vi", "VN");
+            SimpleDateFormat toolbarDateFormat = new SimpleDateFormat("EEEE, dd/MM/yyyy", vietnameseLocale);
+
+            tvToolbarDate.setText(toolbarDateFormat.format(departureDateObj));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            tvToolbarDate.setText("N/A");
+        }
+        // KẾT THÚC SỬA ĐỔI
+
         departureTime.setText(formatTime(tripToShow.getDepartureTime(), "HH:mm"));
         arrivalTime.setText(formatTime(tripToShow.getArrivalTime(), "HH:mm"));
         departureLocation.setText(tripToShow.getRoute().getOriginStation().getName());
@@ -219,7 +232,7 @@ public class ConfirmationFragment extends Fragment {
         seatNumberValue.setText(String.join(", ", seatNumbers));
 
         providerName.setText(tripToShow.getProvider().getName());
-        // << THÊM MỚI: Điền thông tin địa chỉ vào TextViews >>
+
         if (tripToShow.getRoute() != null) {
             if (tripToShow.getRoute().getOriginStation() != null && tripToShow.getRoute().getOriginStation().getAddress() != null) {
                 pickupLocationTextView.setText(tripToShow.getRoute().getOriginStation().getAddress());
@@ -238,25 +251,18 @@ public class ConfirmationFragment extends Fragment {
         }
         departureLocation.setOnClickListener(v -> {
             Trip.Station.Coordinate coordinates = tripToShow.getRoute().getOriginStation().getCoordinates();
-            // Create a URI for Google Maps with the coordinates
             Uri gmmIntentUri = Uri.parse("geo:" + coordinates.getLatitude() + "," + coordinates.getLongitude() +
                     "?q=" + coordinates.getLatitude() + "," + coordinates.getLongitude() +
                     "(" + tripToShow.getRoute().getOriginStation().getName() + ")");
 
-            // Create the intent with proper flags
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");
 
-            // Add these flags to preserve your navigation stack
             mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
             mapIntent.addFlags(Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
 
-            //if (mapIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(mapIntent);
-
         });
-
-
     }
 
     private String formatTime(String utcDateString, String format) {

@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Full name" />
+        <TextView style="@style/PaymentLabel" android:text="Họ và tên" />
         <TextView android:id="@+id/tv_payment_fullname" style="@style/PaymentValue"  />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
     <RelativeLayout style="@style/PaymentRow">
-        <TextView style="@style/PaymentLabel" android:text="Phone number" />
+        <TextView style="@style/PaymentLabel" android:text="SĐT" />
         <TextView android:id="@+id/tv_payment_phone" style="@style/PaymentValue"  />
     </RelativeLayout>
     <View style="@style/SectionDivider" android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>

@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:text="TP. Ho Chi Minh → Vung Tau"
                     android:textColor="@color/text_primary"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/tv_date_payment"
@@ -68,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="16dp"
-            android:text="Pay"
+            android:text="Thanh toán"
             android:textColor="@color/white"
             app:backgroundTint="@color/orange_primary" />
     </LinearLayout>
@@ -89,7 +89,7 @@
             <!-- Trip Info Section -->
             <TextView
                 style="@style/SectionTitle"
-                android:text="Trip Information" />
+                android:text="Thông tin chuyến đi" />
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -113,7 +113,7 @@
             <TextView
                 style="@style/SectionTitle"
                 android:layout_marginTop="24dp"
-                android:text="Payment Information" />
+                android:text="Thông tin thanh toán" />
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

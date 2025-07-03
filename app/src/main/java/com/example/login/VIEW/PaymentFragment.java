@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone; // SỬA: Thêm import TimeZone
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,7 +82,6 @@ public class PaymentFragment extends Fragment {
         bindViews(view);
         populateData();
 
-        // Bây giờ chỉ cần quay lại, không cần gọi API
         toolbar.setNavigationOnClickListener(v -> {
             if (getView() != null) {
                 Navigation.findNavController(getView()).popBackStack();
@@ -128,11 +128,16 @@ public class PaymentFragment extends Fragment {
         tvPaymentRoute.setText(routeTitleText);
         try {
             SimpleDateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            // SỬA LỖI: Thêm dòng này để xử lý đúng múi giờ UTC
+            utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date departureDate = utcFormat.parse(trip.getDepartureTime());
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat dateTimeFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+
             tvDate.setText(dateFormat.format(departureDate));
-            tvPaymentDepartureTime.setText(timeFormat.format(departureDate));
+            tvPaymentDepartureTime.setText(dateTimeFormat.format(departureDate));
+
         } catch (Exception e) {
             tvDate.setText("N/A");
             tvPaymentDepartureTime.setText("N/A");
