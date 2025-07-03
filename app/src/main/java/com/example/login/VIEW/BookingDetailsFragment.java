@@ -1,7 +1,9 @@
 package com.example.login.VIEW;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,17 +28,22 @@ import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
 import com.example.login.MODELS.BookingHistoryItem;
 import com.example.login.MODELS.CanReviewResponse;
+import com.example.login.MODELS.CreatePaymentUrlRequest;
+import com.example.login.MODELS.CreatePaymentUrlResponse;
 import com.example.login.MODELS.CreateReviewRequest;
 import com.example.login.MODELS.CreateReviewResponse;
 import com.example.login.MODELS.UpdateReviewRequest;
 import com.example.login.R;
 import com.google.android.material.textfield.TextInputEditText;
+import com.vnpay.authentication.VNP_AuthenticationActivity;
+import com.vnpay.authentication.VNP_SdkCompletedCallback;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import retrofit2.Call;
@@ -67,6 +74,9 @@ public class BookingDetailsFragment extends Fragment {
     private TextInputEditText commentEditText;
     private Button submitReviewButton;
 
+    private Button paymentButton;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +84,7 @@ public class BookingDetailsFragment extends Fragment {
         if (getArguments() != null) {
             booking = (BookingHistoryItem) getArguments().getSerializable("BOOKING_DETAILS");
         }
+
     }
 
     @Nullable
@@ -94,6 +105,7 @@ public class BookingDetailsFragment extends Fragment {
         setupToolbar();
         populateData();
         checkCanReview();
+        setupPaymentButton();
         submitReviewButton.setOnClickListener(v -> handleReviewSubmission());
     }
 
@@ -115,13 +127,25 @@ public class BookingDetailsFragment extends Fragment {
         ratingBar = view.findViewById(R.id.rating_bar);
         commentEditText = view.findViewById(R.id.comment_edit_text);
         submitReviewButton = view.findViewById(R.id.submit_review_button);
+        paymentButton = view.findViewById(R.id.payment_button);
     }
 
     private void setupToolbar() {
         toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(v).popBackStack());
         toolbar.setTitle("Chi tiết đặt vé");
     }
-
+    private void setupPaymentButton() {
+        paymentButton.setVisibility(View.GONE);
+        if (Objects.equals(booking.getPaymentStatus(), "pending") && Objects.equals(booking.getPaymentMethod(), "bank_transfer")) {
+            paymentButton.setVisibility(View.VISIBLE);
+            paymentButton.setOnClickListener(v -> {
+                createPaymentUrl(booking.getId());
+                Toast.makeText(getContext(), "Chức năng thanh toán sẽ được cập nhật sau.", Toast.LENGTH_SHORT).show();
+            });
+        } else {
+            paymentButton.setVisibility(View.GONE);
+        }
+    }
     private void checkCanReview() {
         reviewSection.setVisibility(View.GONE);
         if (booking.getTripInfo() == null || booking.getTripInfo().getId() == null) return;
@@ -385,5 +409,91 @@ public class BookingDetailsFragment extends Fragment {
     public void onPause() {
         super.onPause();
         saveDraftReview();
+    }
+
+
+    private void createPaymentUrl(String bookingId) {
+        CreatePaymentUrlRequest request = new CreatePaymentUrlRequest(bookingId);
+        apiService.createPaymentUrl(request).enqueue(new Callback<CreatePaymentUrlResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreatePaymentUrlResponse> call, @NonNull Response<CreatePaymentUrlResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    String paymentUrl = response.body().getPaymentUrl();
+                    if (paymentUrl != null && !paymentUrl.isEmpty()) {
+                        openVnpaySdk(paymentUrl, bookingId);
+
+                    } else {
+                        Toast.makeText(getContext(), "Received an empty payment URL.", Toast.LENGTH_LONG).show();
+                        paymentButton.setEnabled(true);
+                    }
+                } else {
+                    String errorMsg = "Failed to create payment URL.";
+                    if (response.body() != null) {
+                        errorMsg += " " + response.body().getMessage();
+                    }
+                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                    paymentButton.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreatePaymentUrlResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Network Error while creating payment URL.", Toast.LENGTH_SHORT).show();
+                paymentButton.setEnabled(true);
+            }
+        });
+    }
+
+    private void openVnpaySdk(String paymentUrl, String bookingId) {
+        Intent intent = new Intent(requireActivity(), VNP_AuthenticationActivity.class);
+        intent.putExtra("url", paymentUrl);
+        intent.putExtra("tmn_code", "EX6ATLAM");
+        intent.putExtra("scheme", "paymentresult");
+        intent.putExtra("is_sandbox", true);
+
+        VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+            @Override
+            public void sdkAction(String action) {
+                if (action == null) return;
+                Log.d("VNPAY_SDK", "SDK Action: " + action);
+
+                switch (action) {
+                    case "AppBackAction":
+                        Toast.makeText(getActivity(), "Payment cancelled.", Toast.LENGTH_SHORT).show();
+                        if (getView() != null) {
+                            Navigation.findNavController(getView()).popBackStack();
+                        }
+                        break;
+                    case "CallMobileBankingApp":
+                        savePendingTransaction(bookingId);
+                        Toast.makeText(getActivity(), "Redirecting to banking app...", Toast.LENGTH_SHORT).show();
+                        break;
+                    case "WebBackAction":
+                    case "FailedBackAction":
+                    case "SuccessBackAction":
+                        Intent resultIntent = new Intent(getActivity(), PaymentResultActivity.class);
+                        Uri resultData = Uri.parse("paymentresult://payment?bookingId=" + bookingId + "&action=" + action);
+                        resultIntent.setData(resultData);
+                        startActivity(resultIntent);
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                        }
+                        break;
+                    default:
+                        Toast.makeText(getActivity(), "Unknown VNPAY action", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+        startActivity(intent);
+    }
+
+    private void savePendingTransaction(String transactionId) {
+        if (getContext() != null && transactionId != null) {
+            getContext().getSharedPreferences("PaymentPrefs", Context.MODE_PRIVATE)
+                    .edit()
+                    .putString("PENDING_TRANSACTION_ID", transactionId)
+                    .apply();
+        }
     }
 }
