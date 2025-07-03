@@ -57,7 +57,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
     }
 
     public static class TripViewHolder extends RecyclerView.ViewHolder {
-        TextView departureTimeText, arrivalTimeText, tripDetailsText, departureLocationText, tripDurationText, destinationLocationText;
+        TextView departureTimeText, arrivalTimeText, tripDetailsText, departureLocationText, tripDurationText, destinationLocationText, providerNameText;
 
         public TripViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,6 +67,7 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
             departureLocationText = itemView.findViewById(R.id.departure_location_text);
             tripDurationText = itemView.findViewById(R.id.trip_duration_text);
             destinationLocationText = itemView.findViewById(R.id.destination_location_text);
+            providerNameText = itemView.findViewById(R.id.provider_name_text);
         }
 
         // SỬA: Cập nhật hàm bind để nhận listener
@@ -101,6 +102,8 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
                     listener.onTripSelected(trip);
                 }
             });
+
+            providerNameText.setText(trip.getProvider() != null ? trip.getProvider().getName() : "Unknown Provider");
         }
 
         private String formatTime(String utcDateString) {
