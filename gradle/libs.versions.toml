@@ -21,6 +21,8 @@ retrofit = "2.11.0"
 retrofitVersion = "2.9.0"
 navigationFragment = "2.9.0"
 navigationUi = "2.9.0"
+kotlin = "2.0.21"
+coreKtx = "1.16.0"
 
 [libraries]
 android-otpview = { module = "com.github.mukeshsolanki:Android-OtpView", version.ref = "androidOtpview" }
@@ -47,7 +49,9 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

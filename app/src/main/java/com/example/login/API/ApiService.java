@@ -74,39 +74,42 @@ public interface ApiService {
     @PATCH("api/auth/verify-reset-password-code")
     Call<VerifyResetPasswordResponse> verifyResetPasswordCode(@Body VerifyResetPasswordRequest request);
 
+
+    // === API MỚI CHO CUSTOMER SEARCH TRIPS ===
     @GET("api/trips/search")
     Call<TripSearchResponse> searchTrips(
             @Query("originCity") String originCity,
             @Query("destinationCity") String destinationCity,
-            @Query("departureDate") String departureDate // Định dạng YYYY-MM-dd
+            @Query("departureDate") String departureDate // Định dạng YYYY-MM-DD
     );
+    // ==========================================
 
-    // Thêm API mới để lấy trạng thái ghế cho một chuyến đi
+    // === API MỚI/CẬP NHẬT CHO SEAT SELECTION & BOOKING ===
+    // API để lấy trạng thái ghế cho một chuyến đi (backend: getTicketsForTrip)
     @GET("api/trips/{tripId}/tickets")
     Call<TicketSeatListResponse> getTicketsForTrip(@Path("tripId") String tripId);
 
-    // THÊM MỚI: API để xoá tài khoản người dùng hiện tại
-    @DELETE("api/users/deleteMe")
-    Call<DeleteAccountResponse> deleteAccount();
-    @GET("api/users/me")
-    Call<ProfileResponse> getUserProfile();
-
-
-
-    @POST("api/bookings/lock")
-    Call<LockSeatResponse> lockSeat(@Body LockSeatRequest request);
-
+    // API để khóa ghế (backend: lockManySeats)
     @POST("api/bookings/lock-many")
-    Call<LockSeatResponse> lockManySeats(@Body LockManySeatsRequest request);
+    Call<LockSeatResponse> lockManySeats(@Body LockManySeatsRequest request); // request includes tripId, originStopId, destinationStopId
 
+    // API để xác nhận booking (backend: confirmBooking)
     @POST("api/bookings/confirm")
-    Call<ConfirmBookingResponse> confirmBooking(@Body ConfirmBookingRequest request);
+    Call<ConfirmBookingResponse> confirmBooking(@Body ConfirmBookingRequest request); // request includes originStopId, destinationStopId
+    // ====================================================
 
+    // === CÁC API KHÁC (ĐẢM BẢO MODEL TRẢ VỀ ĐÚNG) ===
     @POST("api/bookings/create-payment-url")
     Call<CreatePaymentUrlResponse> createPaymentUrl(@Body CreatePaymentUrlRequest request);
 
     @GET("api/bookings/{bookingId}/payment-status")
     Call<PaymentStatusResponse> getPaymentStatus(@Path("bookingId") String bookingId);
+
+    @DELETE("api/users/deleteMe")
+    Call<DeleteAccountResponse> deleteAccount();
+
+    @GET("api/users/me")
+    Call<ProfileResponse> getUserProfile();
 
     @GET("api/bookings/{bookingId}/refundable")
     Call<CanRefundResponse> isBookingRefundable(@Path("bookingId") String bookingId);
@@ -115,13 +118,11 @@ public interface ApiService {
     Call<RefundResponse> refundBooking(@Body RefundRequest request);
 
     @GET("api/bookings/my-history")
-
     Call<BookingHistoryResponse> getMyBookingHistory();
 
     @PATCH("api/users/updateMe")
     Call<ProfileResponse> updateUserProfile(@Body UpdateProfileRequest request);
 
-    // << THÊM PHƯƠNG THỨC MỚI DƯỚI ĐÂY >>
     @POST("api/bookings/unlock")
     Call<LockSeatResponse> unlockSeats(@Body UnlockSeatsRequest request);
 
@@ -149,6 +150,6 @@ public interface ApiService {
     @DELETE("api/issues/{id}")
     Call<IssueResponse> deleteIssue(@Path("id") String issueId);
 
-    @GET("api/issues/my-issues") // Giả sử có API để lấy các issue của người dùng hiện tại
+    @GET("api/issues/my-issues")
     Call<IssueListResponse> getMyIssues();
 }

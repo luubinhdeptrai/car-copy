@@ -1,14 +1,18 @@
-// File: com/example/login/MODELS/TripSearchResponse.java
 package com.example.login.MODELS;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class TripSearchResponse {
+    @SerializedName("success")
     private boolean success;
-    private String message;
-    private List<Trip> data;
 
-    // Getters
+    @SerializedName("message")
+    private String message;
+
+    @SerializedName("data")
+    private List<TripSearchResult> data;
+
     public boolean isSuccess() {
         return success;
     }
@@ -17,7 +21,7 @@ public class TripSearchResponse {
         return message;
     }
 
-    public List<Trip> getData() {
+    public List<TripSearchResult> getData() {
         return data;
     }
 }
