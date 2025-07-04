@@ -213,7 +213,13 @@ public class BookingDetailsFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<CanReviewResponse> call, @NonNull Response<CanReviewResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isCanReview()) {
+
                     reviewSection.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    reviewSection.setVisibility(View.GONE);
+
                 }
             }
 

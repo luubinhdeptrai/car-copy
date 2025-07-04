@@ -103,6 +103,7 @@ public class SelectTripViewModel extends ViewModel {
 
     // THÊM: Hàm mới để xử lý việc chọn ngày
     public void fetchTripsForDate(String origin, String destination, Date date) {
+
         SimpleDateFormat forApi = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String formattedDate = forApi.format(date);
 

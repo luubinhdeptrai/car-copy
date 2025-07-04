@@ -70,7 +70,7 @@ public class BuyTicketFragment extends Fragment {
     }
 
     private void setupAutoCompleteTextViews() {
-        String[] locations = {"Hồ Chí Minh", "Đà Lạt", "Vũng Tàu", "Nha Trang", "Cần Thơ"};
+        String[] locations = {"TP.HCM", "Đà Lạt", "Vũng Tàu", "Nha Trang", "Cần Thơ", "Huế" , "Đà Nẵng"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, locations);
         actvDeparture.setAdapter(adapter);
         actvDestination.setAdapter(adapter);
@@ -148,7 +148,7 @@ public class BuyTicketFragment extends Fragment {
                         trips = response.body().getData();
                     }
                 } else {
-                    String errorMessage = response.body() != null ? response.body().getMessage() : "Server error: " + response.code();
+                    String errorMessage = response.body() != null ? response.body().getMessage() : "Không có chuyến đi phù hợp";
                     Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
                 }
                 navigateToSelectTrip(view, origin, destination, trips);
