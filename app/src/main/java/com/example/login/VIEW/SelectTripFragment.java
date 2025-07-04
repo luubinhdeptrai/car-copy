@@ -5,57 +5,61 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar; // SỬA: Thêm import
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.login.ADAPTERS.DateAdapter;
-import com.example.login.ADAPTERS.TripAdapter;
 import com.example.login.API.ApiClient;
 import com.example.login.API.ApiService;
-import com.example.login.INTERFACES.OnDateSelectedListener;
-import com.example.login.INTERFACES.OnTripSelectedListener;
+import com.example.login.ADAPTERS.DateAdapter;
+import com.example.login.ADAPTERS.SearchResultAdapter;
 import com.example.login.MODELS.DateModel;
-import com.example.login.MODELS.FilterOption;
-import com.example.login.MODELS.Trip;
+import com.example.login.MODELS.TripSearchResponse;
+import com.example.login.MODELS.TripSearchResult;
 import com.example.login.R;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.Locale;
 
-public class SelectTripFragment extends Fragment implements OnDateSelectedListener, FilterBottomSheetDialogFragment.FilterListener, OnTripSelectedListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    // Views
-    private RecyclerView tripRecyclerView;
-    private TripAdapter tripAdapter;
-    private RecyclerView dateRecyclerView;
-    private View layoutNoData;
+public class SelectTripFragment extends Fragment implements DateAdapter.OnDateClickListener { // THAY ĐỔI: Implement OnDateClickListener
+
+    private Toolbar toolbar;
     private TextView tvRouteTitle;
-    private Button btnFilterPrice, btnFilterTime;
-    private Toolbar toolbar; // SỬA: Khai báo biến Toolbar
+    private RecyclerView dateRecyclerView;
+    private DateAdapter dateAdapter;
+    private Button btnFilterPrice;
+    private Button btnFilterTime;
+    private LinearLayout layoutNoData;
 
-    // ViewModel & Data
-    private SelectTripViewModel viewModel;
-    private String departureLocation;
-    private String destinationLocation;
+    private RecyclerView tripListRecyclerView;
+    private SearchResultAdapter searchResultAdapter;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(SelectTripViewModel.class);
-    }
+    private ApiService apiService;
+
+    private String originCity;
+    private String destinationCity;
+    private String departureDateString; // Ngày đi (String từ API)
+    private Date selectedSearchDate; // Ngày được chọn trên dateRecyclerView (Date object)
+
+    private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US); // Format chuẩn API
+    private final SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()); // Format hiển thị ngày (vd: 04/07/2025)
 
     @Nullable
     @Override
@@ -67,161 +71,183 @@ public class SelectTripFragment extends Fragment implements OnDateSelectedListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        apiService = ApiClient.getPublicApiService();
+
         bindViews(view);
-        setupClickListeners();
+        setupToolbar();
+        setupDateRecyclerView(); // Setup RecyclerView cho ngày
+        setupFilterButtons(); // Setup các nút filter
+        setupTripListRecyclerView(); // Setup RecyclerView chính hiển thị kết quả
 
-        long selectedDateMillis = System.currentTimeMillis();
+        // Lấy arguments từ Bundle
         if (getArguments() != null) {
-            selectedDateMillis = getArguments().getLong("SELECTED_DATE_MILLIS", selectedDateMillis);
-            departureLocation = getArguments().getString("DEPARTURE_LOCATION", "");
-            destinationLocation = getArguments().getString("DESTINATION_LOCATION", "");
+            originCity = getArguments().getString("originCity");
+            destinationCity = getArguments().getString("destinationCity");
+            departureDateString = getArguments().getString("departureDate"); // Lấy ngày đi dạng String
+
+            tvRouteTitle.setText(originCity + " → " + destinationCity);
+
+            // Chuyển đổi departureDateString thành Date và set cho dateAdapter
+            try {
+                selectedSearchDate = apiDateFormat.parse(departureDateString);
+            } catch (java.text.ParseException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Lỗi định dạng ngày", Toast.LENGTH_SHORT).show();
+                selectedSearchDate = Calendar.getInstance().getTime(); // Fallback to current date
+            }
+
+            // Cập nhật ngày cho dateAdapter (quan trọng để ngày tìm kiếm ban đầu được highlight)
+            // Lần đầu tải dates cho DateAdapter sẽ nằm trong setupDateRecyclerView(),
+            // sau đó gọi setSelectedDate để highlight ngày tương ứng.
+            // dateAdapter.setSelectedDate(selectedSearchDate); // Gọi sau khi dates được submitList ban đầu
+            // TẠI SAO PHẢI THỰC HIỆN LẠI TÌM KIẾM Ở ĐÂY?
+            // Vì backend API searchTrips đã trả về kết quả cho ngày này rồi
+            // Chúng ta chỉ cần submit list results.
+            List<TripSearchResult> results = (List<TripSearchResult>) getArguments().getSerializable("searchResults");
+            if (results != null && !results.isEmpty()) {
+                searchResultAdapter.submitList(results);
+                tripListRecyclerView.setVisibility(View.VISIBLE);
+                layoutNoData.setVisibility(View.GONE);
+            } else {
+                searchResultAdapter.submitList(null);
+                tripListRecyclerView.setVisibility(View.GONE);
+                layoutNoData.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), "Không tìm thấy chuyến đi nào phù hợp.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Trường hợp không có arguments, hiển thị "No data"
+            searchResultAdapter.submitList(null);
+            tripListRecyclerView.setVisibility(View.GONE);
+            layoutNoData.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "Không có dữ liệu tìm kiếm.", Toast.LENGTH_SHORT).show();
         }
-
-        String routeTitle = departureLocation + " → " + destinationLocation;
-        tvRouteTitle.setText(routeTitle);
-
-        setupRecyclerViews();
-        setupDateRecyclerView(selectedDateMillis);
-        observeViewModel();
-
-        viewModel.init(getArguments());
     }
 
     private void bindViews(View view) {
-        tripRecyclerView = view.findViewById(R.id.trip_list_recycler_view);
-        dateRecyclerView = view.findViewById(R.id.date_recycler_view);
-        layoutNoData = view.findViewById(R.id.layout_no_data);
+        toolbar = view.findViewById(R.id.toolbar_select_trip);
         tvRouteTitle = view.findViewById(R.id.tv_route_title);
+        dateRecyclerView = view.findViewById(R.id.date_recycler_view);
         btnFilterPrice = view.findViewById(R.id.btn_filter_price);
         btnFilterTime = view.findViewById(R.id.btn_filter_time);
-        toolbar = view.findViewById(R.id.toolbar_select_trip); // SỬA: Ánh xạ Toolbar
+        tripListRecyclerView = view.findViewById(R.id.trip_list_recycler_view);
+        layoutNoData = view.findViewById(R.id.layout_no_data);
     }
 
-    private void setupRecyclerViews() {
-        tripRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        tripAdapter = new TripAdapter(getContext(), new ArrayList<>(), this);
-        tripRecyclerView.setAdapter(tripAdapter);
-    }
-
-    private void observeViewModel() {
-        viewModel.getFilteredTrips().observe(getViewLifecycleOwner(), trips -> {
-            if (trips == null || trips.isEmpty()) {
-                tripRecyclerView.setVisibility(View.GONE);
-                layoutNoData.setVisibility(View.VISIBLE);
-            } else {
-                tripRecyclerView.setVisibility(View.VISIBLE);
-                layoutNoData.setVisibility(View.GONE);
-                tripAdapter.updateTrips(trips);
+    private void setupToolbar() {
+        if (getActivity() instanceof AppCompatActivity) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            activity.setSupportActionBar(toolbar);
+            if (activity.getSupportActionBar() != null) {
+                activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
             }
+        }
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+    }
+
+    private void setupDateRecyclerView() {
+        // Khởi tạo Adapter
+        // Pass 'this' (Fragment) as listener because it implements OnDateClickListener
+        dateAdapter = new DateAdapter(requireContext(), this);
+        dateRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        dateRecyclerView.setAdapter(dateAdapter);
+
+        // Tạo danh sách ngày (ví dụ: 30 ngày tới)
+        List<DateModel> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        for (int i = 0; i < 30; i++) { // Hiển thị 30 ngày tới
+            dates.add(new DateModel(calendar.getTime(), false));
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        dateAdapter.updateDates(dates, selectedSearchDate); // Gửi dates và ngày tìm kiếm ban đầu để highlight
+    }
+
+    private void setupFilterButtons() {
+        btnFilterPrice.setOnClickListener(v -> Toast.makeText(getContext(), "Nút Lọc Giá", Toast.LENGTH_SHORT).show());
+        btnFilterTime.setOnClickListener(v -> Toast.makeText(getContext(), "Nút Lọc Giờ", Toast.LENGTH_SHORT).show());
+    }
+
+    private void setupTripListRecyclerView() {
+        searchResultAdapter = new SearchResultAdapter();
+        tripListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        tripListRecyclerView.setAdapter(searchResultAdapter);
+
+        searchResultAdapter.setOnItemClickListener(trip -> {
+            Toast.makeText(getContext(), "Đã chọn chuyến: " + trip.getItinerary().getName() + " Giá: " + trip.getPriceForSelectedSegment(), Toast.LENGTH_SHORT).show();
+
+            String selectedTripId = trip.getId();
+            String selectedOriginStationId = trip.getItinerary().getBaseRoute().getOriginStation().getId();
+            String selectedDestinationStationId = trip.getItinerary().getBaseRoute().getDestinationStation().getId();
+
+            Bundle bundle = new Bundle();
+            bundle.putString("tripId", selectedTripId);
+            bundle.putString("originStopId", selectedOriginStationId);
+            bundle.putString("destinationStopId", selectedDestinationStationId);
+
+            Navigation.findNavController(requireView()).navigate(R.id.action_selectTrip_to_selectSeat, bundle);
         });
     }
 
-    private void setupClickListeners() {
-        // SỬA: Thêm sự kiện click cho nút back trên Toolbar
-        toolbar.setNavigationOnClickListener(v -> Navigation.findNavController(requireView()).popBackStack());
-
-        btnFilterPrice.setOnClickListener(v -> showFilterDialog("Price"));
-        btnFilterTime.setOnClickListener(v -> showFilterDialog("Hour"));
-    }
-
+    // === THÊM PHƯƠNG THỨC NÀY ĐỂ XỬ LÝ KHI NGƯỜI DÙNG CHỌN NGÀY MỚI ===
     @Override
     public void onDateSelected(Date selectedDate) {
-        Toast.makeText(getContext(), "Loading trips for new date...", Toast.LENGTH_SHORT).show();
-        viewModel.fetchTripsForDate(departureLocation, destinationLocation, selectedDate);
+        this.selectedSearchDate = selectedDate; // Cập nhật ngày đã chọn
+        Toast.makeText(getContext(), "Selected date from RecyclerView: " + displayDateFormat.format(selectedDate), Toast.LENGTH_SHORT).show();
+
+        // Gọi lại API tìm kiếm với ngày mới
+        performSearchWithNewCriteria(originCity, destinationCity, selectedSearchDate);
     }
 
-    @Override
-    public void onTripSelected(Trip trip) {
-        if (trip.getAvailableSeats() == -1) {
-            Toast.makeText(getContext(), "Please wait, checking seat info...", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (getView() != null) {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("SELECTED_TRIP", trip);
-            Navigation.findNavController(getView()).navigate(R.id.action_selectTrip_to_selectSeat, bundle);
-        }
-    }
+    private void performSearchWithNewCriteria(String originCity, String destinationCity, Date newDepartureDate) {
+        String formattedDate = apiDateFormat.format(newDepartureDate); // Định dạng ngày cho API
 
-    @Override
-    public void onFilterApplied(String filterType, List<FilterOption> selectedOptions) {
-        List<String> selectedNames = selectedOptions.stream()
-                .filter(FilterOption::isSelected)
-                .map(FilterOption::getName)
-                .collect(Collectors.toList());
+        // Hiển thị loading state (nếu có ProgressBar riêng cho kết quả)
+        // searchProgressBar.setVisibility(View.VISIBLE); // Không có ProgressBar riêng
 
-        switch (filterType) {
-            case "Price":
-                viewModel.setPriceFilter(selectedNames.isEmpty() ? "" : selectedNames.get(0));
-                break;
-            case "Seat types":
-                viewModel.setSeatTypeFilters(selectedNames);
-                break;
-            case "Hour":
-                List<String> timeKeywords = new ArrayList<>();
-                for (String name : selectedNames) {
-                    if (name.startsWith("Morning")) timeKeywords.add("Morning");
-                    else if (name.startsWith("Afternoon")) timeKeywords.add("Afternoon");
-                    else if (name.startsWith("Evening")) timeKeywords.add("Evening");
-                }
-                viewModel.setTimeFilters(timeKeywords);
-                break;
-        }
-    }
+        // Ẩn kết quả cũ
+        tripListRecyclerView.setVisibility(View.GONE);
+        layoutNoData.setVisibility(View.GONE);
 
-    private void showFilterDialog(String filterType) {
-        ArrayList<FilterOption> options = new ArrayList<>();
-        switch (filterType) {
-            case "Price":
-                options.add(new FilterOption("Price Ascending", false));
-                options.add(new FilterOption("Price Descending", false));
-                break;
-            case "Seat types":
-                options.add(new FilterOption("Chair", false));
-                options.add(new FilterOption("Limousine", false));
-                options.add(new FilterOption("Bed", false));
-                break;
-            case "Hour":
-                options.add(new FilterOption("Morning (00:00 - 11:59)", false));
-                options.add(new FilterOption("Afternoon (12:00 - 17:59)", false));
-                options.add(new FilterOption("Evening (18:00 - 23:59)", false));
-                break;
-        }
-        FilterBottomSheetDialogFragment dialog = FilterBottomSheetDialogFragment.newInstance(filterType, options);
-        dialog.setFilterListener(this);
-        dialog.show(getParentFragmentManager(), "FilterDialog");
-    }
+        apiService.searchTrips(originCity, destinationCity, formattedDate)
+                .enqueue(new Callback<TripSearchResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<TripSearchResponse> call, @NonNull Response<TripSearchResponse> response) {
+                        // searchProgressBar.setVisibility(View.GONE);
+                        if (response.isSuccessful() && response.body() != null) {
+                            List<TripSearchResult> results = response.body().getData();
+                            if (results != null && !results.isEmpty()) {
+                                searchResultAdapter.submitList(results);
+                                tripListRecyclerView.setVisibility(View.VISIBLE);
+                                layoutNoData.setVisibility(View.GONE);
+                            } else {
+                                searchResultAdapter.submitList(null);
+                                tripListRecyclerView.setVisibility(View.GONE);
+                                layoutNoData.setVisibility(View.VISIBLE);
+                                Toast.makeText(getContext(), "Không tìm thấy chuyến đi nào phù hợp.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            String errorMessage = "Lỗi tìm kiếm: " + response.code();
+                            if (response.errorBody() != null) {
+                                try {
+                                    errorMessage += " - " + response.errorBody().string();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+                            searchResultAdapter.submitList(null);
+                            tripListRecyclerView.setVisibility(View.GONE);
+                            layoutNoData.setVisibility(View.VISIBLE);
+                        }
+                    }
 
-    private void setupDateRecyclerView(long selectedDateMillis) {
-        List<DateModel> dates = new ArrayList<>();
-        Calendar iterator = Calendar.getInstance();
-        normalizeCalendar(iterator);
-        for (int i = 0; i < 365; i++) {
-            dates.add(new DateModel(iterator.getTime()));
-            iterator.add(Calendar.DAY_OF_YEAR, 1);
-        }
-        Calendar today = Calendar.getInstance();
-        normalizeCalendar(today);
-        Calendar selectedDate = Calendar.getInstance();
-        selectedDate.setTimeInMillis(selectedDateMillis);
-        normalizeCalendar(selectedDate);
-        long diffInMillis = selectedDate.getTimeInMillis() - today.getTimeInMillis();
-        int initialSelectedPosition = (int) TimeUnit.MILLISECONDS.toDays(diffInMillis);
-        if (initialSelectedPosition < 0) {
-            initialSelectedPosition = 0;
-        }
-        DateAdapter dateAdapter = new DateAdapter(getContext(), dates, initialSelectedPosition, this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        dateRecyclerView.setLayoutManager(layoutManager);
-        dateRecyclerView.setAdapter(dateAdapter);
-        int finalInitialSelectedPosition = initialSelectedPosition;
-        dateRecyclerView.post(() -> layoutManager.scrollToPositionWithOffset(finalInitialSelectedPosition, 150));
-    }
-
-    private void normalizeCalendar(Calendar cal) {
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+                    @Override
+                    public void onFailure(@NonNull Call<TripSearchResponse> call, @NonNull Throwable t) {
+                        // searchProgressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        searchResultAdapter.submitList(null);
+                        tripListRecyclerView.setVisibility(View.GONE);
+                        layoutNoData.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 }

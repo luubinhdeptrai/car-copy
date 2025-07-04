@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey_background"
-    tools:context=".VIEW.BuyTicketFragment">
+    tools:context=".VIEW.SearchTripFragment">
 
     <LinearLayout
         android:id="@+id/ll_main_container"

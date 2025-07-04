@@ -10,8 +10,16 @@ public class ConfirmBookingRequest {
     @SerializedName("paymentMethod")
     private String paymentMethod;
 
-    public ConfirmBookingRequest(List<String> ticketIds, String paymentMethod) {
+    // THÊM MỚI: Cần gửi originStopId và destinationStopId cho ConfirmBooking API
+    @SerializedName("originStopId")
+    private String originStopId;
+    @SerializedName("destinationStopId")
+    private String destinationStopId;
+
+    public ConfirmBookingRequest(List<String> ticketIds, String paymentMethod, String originStopId, String destinationStopId) {
         this.ticketIds = ticketIds;
         this.paymentMethod = paymentMethod;
+        this.originStopId = originStopId;
+        this.destinationStopId = destinationStopId;
     }
 }
